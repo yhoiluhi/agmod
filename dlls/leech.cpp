@@ -53,7 +53,7 @@
 
 #define		LEECH_ACCELERATE		10
 #define		LEECH_CHECK_DIST		45
-#define		LEECH_SWIM_SPEED		50
+#define		LEECH_SWIM_SPEED		40
 #define		LEECH_SWIM_ACCEL		80
 #define		LEECH_SWIM_DECEL		10
 #define		LEECH_TURN_RATE			90
@@ -92,8 +92,8 @@ public:
 
 	void SetObjectCollisionBox( void )
 	{
-		pev->absmin = pev->origin + Vector(-8,-8,0);
-		pev->absmax = pev->origin + Vector(8,8,2);
+		pev->absmin = pev->origin + Vector(-1,-1,0);
+		pev->absmax = pev->origin + Vector(1,1,2);
 	}
 
 	void AttackSound( void );
@@ -194,7 +194,7 @@ void CLeech::Spawn( void )
 	pev->health			= gSkillData.leechHealth;
 
 	m_flFieldOfView		= -0.5;	// 180 degree FOV
-	m_flDistLook		= 750;
+	m_flDistLook		= 300;
 	MonsterInit();
 	SetThink( &CLeech::SwimThink );
 	SetUse( NULL );
@@ -254,7 +254,7 @@ void CLeech::SwitchLeechState( void )
 	{
 		Look( m_flDistLook );
 		CBaseEntity *pEnemy = BestVisibleEnemy();
-		if ( pEnemy && pEnemy->pev->waterlevel != 0 )
+		if ( pEnemy && pEnemy->pev->waterlevel != 0 && RANDOM_LONG( 0, 99 ) < 33 )
 		{
 			m_hEnemy = pEnemy;
 			SetState( MONSTERSTATE_COMBAT );
