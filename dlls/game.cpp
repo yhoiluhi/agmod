@@ -46,6 +46,9 @@ cvar_t  allow_spectators = { "allow_spectators", "1.0", FCVAR_SERVER };		// 0 pr
 
 cvar_t  mp_chattime = {"mp_chattime","10", FCVAR_SERVER };
 
+// sv_singleplayer 1: enables entities and stuff that allows playing singleplayer campaigns properly
+cvar_t	singleplayer = { "sv_singleplayer", "0", FCVAR_SERVER };
+
 // Engine Cvars
 cvar_t 	*g_psv_gravity = NULL;
 cvar_t	*g_psv_aim = NULL;
@@ -486,6 +489,8 @@ void GameDLLInit( void )
 	CVAR_REGISTER (&allowmonsters);
 
 	CVAR_REGISTER (&mp_chattime);
+
+	CVAR_REGISTER(&singleplayer);
 
 // REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

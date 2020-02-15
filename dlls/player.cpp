@@ -117,7 +117,7 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD( CBasePlayer, m_pTank, FIELD_EHANDLE ),
 	DEFINE_FIELD( CBasePlayer, m_iHideHUD, FIELD_INTEGER ),
 	DEFINE_FIELD( CBasePlayer, m_iFOV, FIELD_INTEGER ),
-	
+
 	//DEFINE_FIELD( CBasePlayer, m_fDeadTime, FIELD_FLOAT ), // only used in multiplayer games
 	//DEFINE_FIELD( CBasePlayer, m_fGameHUDInitialized, FIELD_INTEGER ), // only used in multiplayer games
 	//DEFINE_FIELD( CBasePlayer, m_flStopExtraSoundTime, FIELD_TIME ),
@@ -1365,7 +1365,6 @@ void CBasePlayer::PlayerDeathThink(void)
 		// we aren't calling into any of their code anymore through the player pointer.
 		PackDeadPlayerItems();
 	}
-
 
 	if (pev->modelindex && (!m_fSequenceFinished) && (pev->deadflag == DEAD_DYING))
 	{
@@ -2966,6 +2965,8 @@ edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer )
 			pSpot = UTIL_FindEntityByClassname( pSpot, "info_player_deathmatch" );
 		if ( FNullEnt( pSpot ) )  // skip over the null point
 			pSpot = UTIL_FindEntityByClassname( pSpot, "info_player_deathmatch" );
+		if ( FNullEnt(pSpot) && singleplayer.value == 1)
+			pSpot = UTIL_FindEntityByClassname( pSpot, "info_player_start" );
 
 		CBaseEntity *pFirstSpot = pSpot;
 
@@ -3788,9 +3789,9 @@ void CBasePlayer::ImpulseCommands( )
 //=========================================================
 void CBasePlayer::CheatImpulseCommands( int iImpulse )
 {
-  //++ BulliT
-  return;
-  /*
+	if (!AgIsLocalServer() || singleplayer.value == 1)
+		return;
+
 #if !defined( HLDEMO_BUILD )
 	if ( g_flWeaponCheat == 0.0 )
 	{
@@ -3964,8 +3965,6 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		break;
 	}
 #endif	// HLDEMO_BUILD
-	*/
-  //-- Martin Webrant
 }
 
 //

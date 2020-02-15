@@ -283,6 +283,7 @@
     <ClInclude Include="..\..\dlls\schedule.h" />
     <ClInclude Include="..\..\dlls\scripted.h" />
     <ClInclude Include="..\..\dlls\scriptevent.h" />
+    <ClInclude Include="..\..\dlls\singleplay_gamerules.h" />
     <ClInclude Include="..\..\dlls\skill.h" />
     <ClInclude Include="..\..\dlls\soundent.h" />
     <ClInclude Include="..\..\dlls\spectator.h" />

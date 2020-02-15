@@ -27,6 +27,7 @@
 #include "saverestore.h"
 #include "trains.h"			// trigger_camera has train functionality
 #include "gamerules.h"
+#include "game.h"
 
 #define	SF_TRIGGER_PUSH_START_OFF	2//spawnflag that makes trigger_push spawn turned OFF
 #define SF_TRIGGER_HURT_TARGETONCE	1// Only fire hurt target once
@@ -1471,7 +1472,7 @@ void CChangeLevel :: ChangeLevelNow( CBaseEntity *pActivator )
 	ASSERT(!FStrEq(m_szMapName, ""));
 
 	// Don't work in deathmatch
-	if ( g_pGameRules->IsDeathmatch() )
+	if ( g_pGameRules->IsDeathmatch() && singleplayer.value == 0)
 		return;
 
 	// Some people are firing these multiple times in a frame, disable
@@ -1952,7 +1953,7 @@ LINK_ENTITY_TO_CLASS( trigger_autosave, CTriggerSave );
 
 void CTriggerSave::Spawn( void )
 {
-	if ( g_pGameRules->IsDeathmatch() )
+	if ( g_pGameRules->IsDeathmatch() && singleplayer.value == 0 )
 	{
 		REMOVE_ENTITY( ENT(pev) );
 		return;
@@ -2006,7 +2007,7 @@ void CTriggerEndSection::EndSectionUse( CBaseEntity *pActivator, CBaseEntity *pC
 
 void CTriggerEndSection::Spawn( void )
 {
-	if ( g_pGameRules->IsDeathmatch() )
+	if ( g_pGameRules->IsDeathmatch() && singleplayer.value == 0 )
 	{
 		REMOVE_ENTITY( ENT(pev) );
 		return;

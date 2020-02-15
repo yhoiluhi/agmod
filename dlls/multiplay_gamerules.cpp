@@ -48,10 +48,6 @@ extern int gmsgServerName;
 
 extern int g_teamplay;
 
-#define ITEM_RESPAWN_TIME	30
-#define WEAPON_RESPAWN_TIME	20
-#define AMMO_RESPAWN_TIME	20
-
 float g_flIntermissionStartTime = 0;
 
 CVoiceGameMgr	g_VoiceGameMgr;
@@ -1179,13 +1175,13 @@ Vector CHalfLifeMultiplay::VecAmmoRespawnSpot( CBasePlayerAmmo *pAmmo )
 //=========================================================
 float CHalfLifeMultiplay::FlHealthChargerRechargeTime( void )
 {
-	return 60;
+	return HEALTHCHARGER_RECHARGE_TIME;
 }
 
 
 float CHalfLifeMultiplay::FlHEVChargerRechargeTime( void )
 {
-	return 30;
+	return HEVCHARGER_RECHARGE_TIME;
 }
 
 //=========================================================

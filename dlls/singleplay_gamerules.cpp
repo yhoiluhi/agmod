@@ -25,6 +25,11 @@
 #include	"items.h"
 
 //++ BulliT
+#include "aggamerules.h"
+#include "multiplay_gamerules.h"
+#include "singleplay_gamerules.h"
+
+//extern DLL_GLOBAL CGameRules	*g_pGameRules;
 extern DLL_GLOBAL AgGameRules* g_pGameRules;
 //-- Martin Webrant
 extern DLL_GLOBAL BOOL	g_fGameOver;
@@ -71,6 +76,7 @@ BOOL CHalfLifeRules::IsCoOp( void )
 //=========================================================
 BOOL CHalfLifeRules::FShouldSwitchWeapon( CBasePlayer *pPlayer, CBasePlayerItem *pWeapon )
 {
+	/*
 	if ( !pPlayer->m_pActiveItem )
 	{
 		// player doesn't have an active item!
@@ -83,6 +89,8 @@ BOOL CHalfLifeRules::FShouldSwitchWeapon( CBasePlayer *pPlayer, CBasePlayerItem 
 	}
 
 	return TRUE;
+	*/
+	return AgGameRules::FShouldSwitchWeapon(pPlayer, pWeapon);
 }
 
 //=========================================================
@@ -90,6 +98,7 @@ BOOL CHalfLifeRules::FShouldSwitchWeapon( CBasePlayer *pPlayer, CBasePlayerItem 
 BOOL CHalfLifeRules :: GetNextBestWeapon( CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon )
 {
 	return FALSE;
+	//return AgGameRules::GetNextBestWeapon(pPlayer, pCurrentWeapon);
 }
 
 //=========================================================
@@ -113,10 +122,13 @@ void CHalfLifeRules :: ClientDisconnected( edict_t *pClient )
 //=========================================================
 float CHalfLifeRules::FlPlayerFallDamage( CBasePlayer *pPlayer )
 {
+	/*
 	// subtract off the speed at which a player is allowed to fall without being hurt,
 	// so damage will be based on speed beyond that, not the entire fall
 	pPlayer->m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
 	return pPlayer->m_flFallVelocity * DAMAGE_FOR_FALL_SPEED;
+	*/
+	return 10;
 }
 
 //=========================================================
@@ -190,7 +202,8 @@ void CHalfLifeRules :: PlayerGotWeapon( CBasePlayer *pPlayer, CBasePlayerItem *p
 //=========================================================
 float CHalfLifeRules :: FlWeaponRespawnTime( CBasePlayerItem *pWeapon )
 {
-	return -1;
+	//return -1;
+	return gpGlobals->time + WEAPON_RESPAWN_TIME;
 }
 
 //=========================================================
@@ -218,7 +231,13 @@ Vector CHalfLifeRules :: VecWeaponRespawnSpot( CBasePlayerItem *pWeapon )
 //=========================================================
 int CHalfLifeRules :: WeaponShouldRespawn( CBasePlayerItem *pWeapon )
 {
-	return GR_WEAPON_RESPAWN_NO;
+	//return GR_WEAPON_RESPAWN_NO;
+	if (pWeapon->pev->spawnflags & SF_NORESPAWN)
+	{
+		return GR_WEAPON_RESPAWN_NO;
+	}
+
+	return GR_WEAPON_RESPAWN_YES;
 }
 
 //=========================================================
@@ -238,7 +257,13 @@ void CHalfLifeRules::PlayerGotItem( CBasePlayer *pPlayer, CItem *pItem )
 //=========================================================
 int CHalfLifeRules::ItemShouldRespawn( CItem *pItem )
 {
-	return GR_ITEM_RESPAWN_NO;
+	//return GR_ITEM_RESPAWN_NO;
+	if (pItem->pev->spawnflags & SF_NORESPAWN)
+	{
+		return GR_ITEM_RESPAWN_NO;
+	}
+
+	return GR_ITEM_RESPAWN_YES;
 }
 
 
@@ -247,7 +272,8 @@ int CHalfLifeRules::ItemShouldRespawn( CItem *pItem )
 //=========================================================
 float CHalfLifeRules::FlItemRespawnTime( CItem *pItem )
 {
-	return -1;
+	//return -1;
+	return gpGlobals->time + ITEM_RESPAWN_TIME;
 }
 
 //=========================================================
@@ -263,7 +289,8 @@ Vector CHalfLifeRules::VecItemRespawnSpot( CItem *pItem )
 //=========================================================
 BOOL CHalfLifeRules::IsAllowedToSpawn( CBaseEntity *pEntity )
 {
-	return TRUE;
+	//return TRUE;
+	return AgGameRules::IsAllowedToSpawn(pEntity);
 }
 
 //=========================================================
@@ -276,14 +303,21 @@ void CHalfLifeRules::PlayerGotAmmo( CBasePlayer *pPlayer, char *szName, int iCou
 //=========================================================
 int CHalfLifeRules::AmmoShouldRespawn( CBasePlayerAmmo *pAmmo )
 {
-	return GR_AMMO_RESPAWN_NO;
+	//return GR_AMMO_RESPAWN_NO;
+	if (pAmmo->pev->spawnflags & SF_NORESPAWN)
+	{
+		return GR_AMMO_RESPAWN_NO;
+	}
+
+	return GR_AMMO_RESPAWN_YES;
 }
 
 //=========================================================
 //=========================================================
 float CHalfLifeRules::FlAmmoRespawnTime( CBasePlayerAmmo *pAmmo )
 {
-	return -1;
+	//return -1;
+	return gpGlobals->time + AMMO_RESPAWN_TIME;
 }
 
 //=========================================================
@@ -297,7 +331,13 @@ Vector CHalfLifeRules::VecAmmoRespawnSpot( CBasePlayerAmmo *pAmmo )
 //=========================================================
 float CHalfLifeRules::FlHealthChargerRechargeTime( void )
 {
-	return 0;// don't recharge
+	//return 0;// don't recharge
+	return HEALTHCHARGER_RECHARGE_TIME;
+}
+
+float CHalfLifeRules::FlHEVChargerRechargeTime(void)
+{
+	return HEVCHARGER_RECHARGE_TIME;
 }
 
 //=========================================================
