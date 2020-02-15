@@ -42,8 +42,6 @@ public:
 
 	void StartTask( Task_t *pTask );
 	void RunTask( Task_t *pTask );
-	int  TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
-	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 
 	void PlayScriptedSentence( const char *pszSentence, float duration, float volume, float attenuation, BOOL bConcurrent, CBaseEntity *pListener );
 
@@ -124,7 +122,7 @@ void CGMan :: Spawn()
 
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
-	m_bloodColor		= DONT_BLEED;
+	m_bloodColor		= BLOOD_COLOR_ORANGE;
 	pev->health			= 100;
 	m_flFieldOfView		= 0.5;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState		= MONSTERSTATE_NONE;
@@ -199,34 +197,6 @@ void CGMan :: RunTask( Task_t *pTask )
 		break;
 	}
 }
-
-
-//=========================================================
-// Override all damage
-//=========================================================
-int CGMan :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType )
-{
-	pev->health = pev->max_health / 2; // always trigger the 50% damage aitrigger
-
-	if ( flDamage > 0 )
-	{
-		SetConditions(bits_COND_LIGHT_DAMAGE);
-	}
-
-	if ( flDamage >= 20 )
-	{
-		SetConditions(bits_COND_HEAVY_DAMAGE);
-	}
-	return TRUE;
-}
-
-
-void CGMan::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
-{
-	UTIL_Ricochet( ptr->vecEndPos, 1.0 );
-	AddMultiDamage( pevAttacker, this, flDamage, bitsDamageType );
-}
-
 
 void CGMan::PlayScriptedSentence( const char *pszSentence, float duration, float volume, float attenuation, BOOL bConcurrent, CBaseEntity *pListener )
 {

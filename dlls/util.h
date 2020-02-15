@@ -156,6 +156,7 @@ inline BOOL FStringNull(int iString)			{ return iString == iStringNull; }
 
 // All monsters need this data
 #define		DONT_BLEED			-1
+#define		BLOOD_COLOR_ORANGE	(BYTE)105
 #define		BLOOD_COLOR_RED		(BYTE)247
 #define		BLOOD_COLOR_YELLOW	(BYTE)195
 #define		BLOOD_COLOR_GREEN	BLOOD_COLOR_YELLOW
