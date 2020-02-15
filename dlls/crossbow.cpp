@@ -162,11 +162,8 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		}
 	}
 
-	if ( g_pGameRules->IsMultiplayer() )
-	{
-		SetThink( &CCrossbowBolt::ExplodeThink );
-		pev->nextthink = gpGlobals->time + 0.1;
-	}
+	SetThink( &CCrossbowBolt::ExplodeThink );
+	pev->nextthink = gpGlobals->time + 0.1;
 }
 
 void CCrossbowBolt::BubbleThink( void )
@@ -318,12 +315,7 @@ void CCrossbow::Holster( int skiplocal /* = 0 */ )
 
 void CCrossbow::PrimaryAttack( void )
 {
-
-#ifdef CLIENT_DLL
-	if ( m_fInZoom && bIsMultiplayer() )
-#else
-	if ( m_fInZoom && g_pGameRules->IsMultiplayer() )
-#endif
+	if (m_fInZoom)
 	{
 		FireSniperBolt();
 		return;
@@ -332,7 +324,6 @@ void CCrossbow::PrimaryAttack( void )
 	FireBolt();
 }
 
-// this function only gets called in multiplayer
 void CCrossbow::FireSniperBolt()
 {
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.75);

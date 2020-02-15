@@ -375,14 +375,11 @@ void CSqueakGrenade::SuperBounceTouch( CBaseEntity *pOther )
 	m_flNextHit = gpGlobals->time + 0.1;
 	m_flNextHunt = gpGlobals->time;
 
-	if ( g_pGameRules->IsMultiplayer() )
+	// we limit how often snarks can make their bounce sounds to prevent overflows.
+	if ( gpGlobals->time < m_flNextBounceSoundTime )
 	{
-		// in multiplayer, we limit how often snarks can make their bounce sounds to prevent overflows.
-		if ( gpGlobals->time < m_flNextBounceSoundTime )
-		{
-			// too soon!
-			return;
-		}
+		// too soon!
+		return;
 	}
 
 	if (!(pev->flags & FL_ONGROUND))
