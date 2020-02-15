@@ -482,6 +482,11 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 
 							vecSrc = beam_tr.vecEndPos + vecDir;
 						}
+						else
+						{
+							// Self-gauss fix by Lev (https://github.com/LevShisterov/BugfixedHL/commit/adb616153729102975800edbbdcc8ed8a50ed8ad):
+							flDamage = 0;
+						}
 					}
 					else
 					{
