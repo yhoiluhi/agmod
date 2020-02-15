@@ -3789,7 +3789,7 @@ void CBasePlayer::ImpulseCommands( )
 //=========================================================
 void CBasePlayer::CheatImpulseCommands( int iImpulse )
 {
-	if (!AgIsLocalServer() || singleplayer.value == 1)
+	if (!AgIsLocalServer() && singleplayer.value == 0)
 		return;
 
 #if !defined( HLDEMO_BUILD )
