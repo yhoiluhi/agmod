@@ -27,7 +27,6 @@
 #include	"animation.h"
 #include	"soundent.h"
 
-
 #define		NUM_SCIENTIST_HEADS		4 // four heads available for scientist model
 enum { HEAD_GLASSES = 0, HEAD_EINSTEIN = 1, HEAD_LUTHER = 2, HEAD_SLICK = 3 };
 
@@ -522,13 +521,13 @@ void CScientist :: RunTask( Task_t *pTask )
 	case TASK_RUN_PATH_SCARED:
 		if ( MovementIsComplete() )
 			TaskComplete();
-		if ( RANDOM_LONG(0,31) < 8 )
+		if ( RANDOM_LONG(0,31) < 4 )
 			Scream();
 		break;
 
 	case TASK_MOVE_TO_TARGET_RANGE_SCARED:
 		{
-			if ( RANDOM_LONG(0,63)< 8 )
+			if ( RANDOM_LONG(0,63)< 4 )
 				Scream();
 
 			if ( m_hEnemy == NULL )
@@ -907,7 +906,7 @@ Schedule_t *CScientist :: GetSchedule ( void )
 	case MONSTERSTATE_IDLE:
 		if ( pEnemy )
 		{
-			if ( HasConditions( bits_COND_SEE_ENEMY ) )
+			if ( HasConditionsRand( bits_COND_SEE_ENEMY, 25 ) )
 				m_fearTime = gpGlobals->time;
 			else if ( DisregardEnemy( pEnemy ) )		// After 15 seconds of being hidden, return to alert
 			{
@@ -933,7 +932,7 @@ Schedule_t *CScientist :: GetSchedule ( void )
 			{
 				if ( pSound->m_iType & (bits_SOUND_DANGER | bits_SOUND_COMBAT) )
 				{
-					if ( gpGlobals->time - m_fearTime > 3 )	// Only cower every 3 seconds or so
+					if ( gpGlobals->time - m_fearTime > 6 )	// Only cower every 3 seconds or so
 					{
 						m_fearTime = gpGlobals->time;		// Update last fear
 						return GetScheduleOfType( SCHED_STARTLE );	// This will just duck for a second
@@ -973,7 +972,7 @@ Schedule_t *CScientist :: GetSchedule ( void )
 			}
 			else	// UNDONE: When afraid, scientist won't move out of your way.  Keep This?  If not, write move away scared
 			{
-				if ( HasConditions( bits_COND_NEW_ENEMY ) ) // I just saw something new and scary, react
+				if ( HasConditionsRand( bits_COND_NEW_ENEMY, 25 ) ) // I just saw something new and scary, react
 					return GetScheduleOfType( SCHED_FEAR );					// React to something scary
 				return GetScheduleOfType( SCHED_TARGET_FACE_SCARED );	// face and follow, but I'm scared!
 			}
@@ -986,9 +985,9 @@ Schedule_t *CScientist :: GetSchedule ( void )
 		TrySmellTalk();
 		break;
 	case MONSTERSTATE_COMBAT:
-		if ( HasConditions( bits_COND_NEW_ENEMY ) )
+		if ( HasConditionsRand( bits_COND_NEW_ENEMY, 25 ) )
 			return slFear;					// Point and scream!
-		if ( HasConditions( bits_COND_SEE_ENEMY ) )
+		if ( HasConditionsRand( bits_COND_SEE_ENEMY, 25 ) )
 			return slScientistCover;		// Take Cover
 		
 		if ( HasConditions( bits_COND_HEAR_SOUND ) )

@@ -332,6 +332,8 @@ public:
 	BOOL CineCleanup( );
 
 	CBaseEntity* DropItem ( char *pszItemName, const Vector &vecPos, const Vector &vecAng );// drop an item.
+
+	inline BOOL HasConditionsRand(int iConditions, int chance) { return HasConditions(iConditions) && RANDOM_LONG(0, 99) < chance; }
 };
 
 
