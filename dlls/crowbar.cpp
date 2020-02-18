@@ -193,6 +193,20 @@ int CCrowbar::Swing( int fFirst )
 				FindHullIntersection( vecSrc, tr, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX, m_pPlayer->edict() );
 			vecEnd = tr.vecEndPos;	// This is the point on the actual surface (the hull could have hit space)
 		}
+		else
+		{
+			// TODO: Refactor, DRY
+			UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, large_hull, ENT(m_pPlayer->pev), &tr);
+			if (tr.flFraction < 1.0)
+			{
+				// Calculate the point of intersection of the line (or hull) and the object we hit
+				// This is and approximation of the "best" intersection
+				CBaseEntity* pHit = CBaseEntity::Instance(tr.pHit);
+				if (!pHit || pHit->IsBSPModel())
+					FindHullIntersection(vecSrc, tr, VEC_LARGE_HULL_MIN, VEC_LARGE_HULL_MAX, m_pPlayer->edict());
+				vecEnd = tr.vecEndPos;	// This is the point on the actual surface (the hull could have hit space)
+			}
+		}
 	}
 #endif
 

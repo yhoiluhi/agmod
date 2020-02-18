@@ -416,6 +416,9 @@ extern DLL_GLOBAL int			g_Language;
 #define VEC_DUCK_HULL_MAX	Vector( 16,  16,  18)
 #define VEC_DUCK_VIEW		Vector( 0, 0, 12 )
 
+#define VEC_LARGE_HULL_MIN	Vector(-32, -32, -32)
+#define VEC_LARGE_HULL_MAX	Vector(32, 32, 32)
+
 #define SVC_TEMPENTITY		23
 #define SVC_INTERMISSION	30
 #define SVC_CDTRACK			32
