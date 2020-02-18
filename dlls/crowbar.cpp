@@ -88,12 +88,15 @@ int CCrowbar::GetItemInfo(ItemInfo *p)
 
 BOOL CCrowbar::Deploy( )
 {
-	return DefaultDeploy( "models/v_crowbar.mdl", "models/p_crowbar.mdl", CROWBAR_DRAW, "crowbar" );
+	BOOL result = DefaultDeploy( "models/v_crowbar.mdl", "models/p_crowbar.mdl", CROWBAR_DRAW, "crowbar" );
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.1;
+
+	return result;
 }
 
 void CCrowbar::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.4;
 	SendWeaponAnim( CROWBAR_HOLSTER );
 }
 
@@ -203,7 +206,7 @@ int CCrowbar::Swing( int fFirst )
 		if (fFirst)
 		{
 			// miss
-			m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
+			m_flNextPrimaryAttack = GetNextAttackDelay(0.3);
 			
 			// player "shoot" animation
 			m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
