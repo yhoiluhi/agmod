@@ -595,7 +595,7 @@ float CHalfLifeMultiplay :: FlPlayerFallDamage( CBasePlayer *pPlayer )
 		break;
 	default:
 	case 0:// fixed
-		return 10;
+		return PLAYER_FALL_DAMAGE;
 		break;
 	}
 } 

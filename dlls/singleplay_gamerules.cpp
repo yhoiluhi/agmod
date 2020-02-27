@@ -128,13 +128,32 @@ float CHalfLifeRules::FlPlayerFallDamage( CBasePlayer *pPlayer )
 	pPlayer->m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
 	return pPlayer->m_flFallVelocity * DAMAGE_FOR_FALL_SPEED;
 	*/
-	return 10;
+	return PLAYER_FALL_DAMAGE;
 }
 
 //=========================================================
 //=========================================================
 void CHalfLifeRules :: PlayerSpawn( CBasePlayer *pPlayer )
 {
+	BOOL		addDefault;
+	CBaseEntity* pWeaponEntity = NULL;
+
+	pPlayer->pev->weapons |= (1 << WEAPON_SUIT);
+
+	addDefault = TRUE;
+
+	while (pWeaponEntity = UTIL_FindEntityByClassname(pWeaponEntity, "game_player_equip"))
+	{
+		pWeaponEntity->Touch(pPlayer);
+		addDefault = FALSE;
+	}
+
+	if (addDefault)
+	{
+		pPlayer->GiveNamedItem("weapon_crowbar");
+		pPlayer->GiveNamedItem("weapon_9mmhandgun");
+		pPlayer->GiveAmmo(68, "9mm", _9MM_MAX_CARRY); // 4 full reloads
+	}
 }
 
 //=========================================================
@@ -289,8 +308,8 @@ Vector CHalfLifeRules::VecItemRespawnSpot( CItem *pItem )
 //=========================================================
 BOOL CHalfLifeRules::IsAllowedToSpawn( CBaseEntity *pEntity )
 {
-	//return TRUE;
-	return AgGameRules::IsAllowedToSpawn(pEntity);
+	return TRUE;
+	//return AgGameRules::IsAllowedToSpawn(pEntity);
 }
 
 //=========================================================
