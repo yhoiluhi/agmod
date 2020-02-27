@@ -529,6 +529,7 @@ void CBaseMonster::BecomeDead( void )
 	//pev->origin.z += 2;
 	//pev->velocity = g_vecAttackDir * -1;
 	//pev->velocity = pev->velocity * RANDOM_FLOAT( 300, 400 );
+	pev->solid = SOLID_NOT;
 }
 
 

@@ -1208,7 +1208,8 @@ case TASK_GET_PATH_TO_BESTSCENT:
 			
 			m_IdealActivity = GetDeathActivity();
 
-			pev->deadflag = DEAD_DYING;
+			pev->deadflag	= DEAD_DYING;
+			pev->solid		= SOLID_NOT;
 			break;
 		}
 	case TASK_SOUND_WAKE:
