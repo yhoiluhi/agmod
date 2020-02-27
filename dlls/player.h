@@ -124,6 +124,11 @@ public:
 	int					m_afButtonLast;
 	int					m_afButtonPressed;
 	int					m_afButtonReleased;
+	int					m_afButtonOriginal;		// buttons that the player has pressed at the start of the frame (no processing yet)
+	int					m_afButtonOnLoad;		// buttons that the player has pressed right before starting a load, and that should be kept in the meanwhile
+
+	int					m_fLoading;	// when loading a save or map in singleplayer
+	float				m_flLoadTime; // global time at which the first load frame happens, so we can compare it to skip all the load frames where the user cannot input
 	
 	edict_t			   *m_pentSndLast;			// last sound entity to modify player room type
 	float				m_flSndRoomtype;		// last roomtype set by sound entity
