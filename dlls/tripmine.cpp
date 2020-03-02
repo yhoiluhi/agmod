@@ -366,6 +366,7 @@ void CTripmine::Spawn( )
 	pev->framerate = 0;
 
 	FallInit();// get ready to fall down
+	pev->solid = SOLID_NOT;
 
 	m_iDefaultAmmo = TRIPMINE_DEFAULT_GIVE;
 
@@ -476,10 +477,6 @@ void CTripmine::PrimaryAttack( void )
 			// ALERT( at_console, "no deploy\n" );
 		}
 	}
-	else
-	{
-
-	}
 	
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.3);
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
@@ -520,7 +517,3 @@ void CTripmine::WeaponIdle( void )
 
 	SendWeaponAnim( iAnim );
 }
-
-
-
-
