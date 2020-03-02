@@ -80,8 +80,6 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD(CBasePlayer, m_afButtonOriginal, FIELD_INTEGER),
 	DEFINE_FIELD(CBasePlayer, m_afButtonOnLoad, FIELD_INTEGER),
 
-	//DEFINE_FIELD(CBasePlayer, m_fLoading, FIELD_INTEGER),
-
 	DEFINE_ARRAY(CBasePlayer, m_rgItems, FIELD_INTEGER, MAX_ITEMS),
 	DEFINE_FIELD(CBasePlayer, m_afPhysicsFlags, FIELD_INTEGER),
 
@@ -525,6 +523,21 @@ void CBasePlayer :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector 
 
 int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
+	if (m_fLoading)
+		return 0;
+
+	// Already dead
+	if (!IsAlive())
+		return 0;
+
+	CBaseEntity* pAttacker = CBaseEntity::Instance(pevAttacker);
+
+	if (!g_pGameRules->FPlayerCanTakeDamage(this, pAttacker))
+	{
+		// Refuse the damage
+		return 0;
+	}
+
 	// have suit diagnose the problem - ie: report damage type
 	int bitsDamage = bitsDamageType;
 	int ffound = TRUE;
@@ -545,19 +558,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		flBonus *= 2;
 	}
 
-	// Already dead
-	if ( !IsAlive() )
-		return 0;
 	// go take the damage first
-
-	
-	CBaseEntity *pAttacker = CBaseEntity::Instance(pevAttacker);
-
-	if ( !g_pGameRules->FPlayerCanTakeDamage( this, pAttacker ) )
-	{
-		// Refuse the damage
-		return 0;
-	}
 
 	// keep track of amount of damage last sustained
 	m_lastDamageAmount = flDamage;
