@@ -529,14 +529,18 @@ void CBaseMonster::BecomeDead( void )
 	//pev->origin.z += 2;
 	//pev->velocity = g_vecAttackDir * -1;
 	//pev->velocity = pev->velocity * RANDOM_FLOAT( 300, 400 );
-	pev->solid = SOLID_NOT;
+
+	if (!FBitSet(pev->spawnflags, SF_MONSTER_SOLID_CORPSE)) {
+		pev->solid = SOLID_NOT;
+	}
 }
 
 
 BOOL CBaseMonster::ShouldGibMonster( int iGib )
 {
-	if ( ( iGib == GIB_NORMAL && pev->health < GIB_HEALTH_VALUE ) || ( iGib == GIB_ALWAYS ) )
-		return TRUE;
+	// Commented out so they never gib, and thus they always drop items (if any) upon death
+	//if ( ( iGib == GIB_NORMAL && pev->health < GIB_HEALTH_VALUE ) || ( iGib == GIB_ALWAYS ) )
+	//	return TRUE;
 	
 	return FALSE;
 }
@@ -544,31 +548,11 @@ BOOL CBaseMonster::ShouldGibMonster( int iGib )
 
 void CBaseMonster::CallGibMonster( void )
 {
-	BOOL fade = FALSE;
-
-	if ( HasHumanGibs() )
-	{
-		if ( CVAR_GET_FLOAT("violence_hgibs") == 0 )
-			fade = TRUE;
-	}
-	else if ( HasAlienGibs() )
-	{
-		if ( CVAR_GET_FLOAT("violence_agibs") == 0 )
-			fade = TRUE;
-	}
-
 	pev->takedamage = DAMAGE_NO;
-	pev->solid = SOLID_NOT;// do something with the body. while monster blows up
+	pev->solid = SOLID_NOT; // do something with the body. while monster blows up
 
-	if ( fade )
-	{
-		FadeMonster();
-	}
-	else
-	{
-		pev->effects = EF_NODRAW; // make the model invisible.
-		GibMonster();
-	}
+	pev->effects = EF_NODRAW; // make the model invisible.
+	GibMonster();
 
 	pev->deadflag = DEAD_DEAD;
 	FCheckAITrigger();
@@ -579,7 +563,7 @@ void CBaseMonster::CallGibMonster( void )
 		pev->health = 0;
 	}
 	
-	if ( ShouldFadeOnDeath() && !fade )
+	if ( ShouldFadeOnDeath() )
 		UTIL_Remove(this);
 }
 

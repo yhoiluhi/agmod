@@ -51,6 +51,7 @@
 #define	SF_MONSTER_WAIT_FOR_SCRIPT		128 //spawnflag that makes monsters wait to check for attacking until the script is done or they've been attacked
 #define SF_MONSTER_PREDISASTER			256	//this is a predisaster scientist or barney. Influences how they speak.
 #define SF_MONSTER_FADECORPSE			512 // Fade out corpse after death
+#define SF_MONSTER_SOLID_CORPSE			1024 // Avoid dead corpse from being non-solid (which is by default in AG)
 #define SF_MONSTER_FALL_TO_GROUND		0x80000000
 
 // specialty spawnflags

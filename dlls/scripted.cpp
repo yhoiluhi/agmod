@@ -905,7 +905,11 @@ BOOL CBaseMonster :: CineCleanup( )
 		m_IdealMonsterState = MONSTERSTATE_DEAD;
 		SetConditions( bits_COND_LIGHT_DAMAGE );
 		pev->deadflag	= DEAD_DYING;
-		pev->solid		= SOLID_NOT;
+
+		if (!FBitSet(pev->spawnflags, SF_MONSTER_SOLID_CORPSE)) {
+			pev->solid = SOLID_NOT;
+		}
+
 		FCheckAITrigger();
 		pev->deadflag	= DEAD_NO;
 	}

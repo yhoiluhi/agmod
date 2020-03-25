@@ -1208,8 +1208,11 @@ case TASK_GET_PATH_TO_BESTSCENT:
 			
 			m_IdealActivity = GetDeathActivity();
 
-			pev->deadflag	= DEAD_DYING;
-			pev->solid		= SOLID_NOT;
+			pev->deadflag = DEAD_DYING;
+
+			if (!FBitSet(pev->spawnflags, SF_MONSTER_SOLID_CORPSE)) {
+				pev->solid = SOLID_NOT;
+			}
 			break;
 		}
 	case TASK_SOUND_WAKE:
@@ -1494,7 +1497,7 @@ Schedule_t *CBaseMonster :: GetSchedule ( void )
 		}
 	case MONSTERSTATE_SCRIPT:
 		{
-			ASSERT( m_pCine != NULL );
+			//ASSERT( m_pCine != NULL );
 			if ( !m_pCine )
 			{
 				ALERT( at_aiconsole, "Script failed for %s\n", STRING(pev->classname) );
