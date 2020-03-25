@@ -27,6 +27,7 @@
 #include	"animation.h"
 #include	"soundent.h"
 
+#define		SCIENTIST_EXTRA_HEALTH	50.0
 #define		NUM_SCIENTIST_HEADS		4 // four heads available for scientist model
 enum { HEAD_GLASSES = 0, HEAD_EINSTEIN = 1, HEAD_LUTHER = 2, HEAD_SLICK = 3 };
 
@@ -521,13 +522,13 @@ void CScientist :: RunTask( Task_t *pTask )
 	case TASK_RUN_PATH_SCARED:
 		if ( MovementIsComplete() )
 			TaskComplete();
-		if ( RANDOM_LONG(0,31) < 4 )
+		if ( RANDOM_LONG(0,31) < 8 )
 			Scream();
 		break;
 
 	case TASK_MOVE_TO_TARGET_RANGE_SCARED:
 		{
-			if ( RANDOM_LONG(0,63)< 4 )
+			if ( RANDOM_LONG(0,63)< 8 )
 				Scream();
 
 			if ( m_hEnemy == NULL )
@@ -663,7 +664,7 @@ void CScientist :: Spawn( void )
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
 	m_bloodColor		= BLOOD_COLOR_RED;
-	pev->health			= gSkillData.scientistHealth;
+	pev->health			= gSkillData.scientistHealth + SCIENTIST_EXTRA_HEALTH; // TODO: refactor
 	pev->view_ofs		= Vector ( 0, 0, 50 );// position of the eyes relative to monster's origin.
 	m_flFieldOfView		= VIEW_FIELD_WIDE; // NOTE: we need a wide field of view so scientists will notice player and say hello
 	m_MonsterState		= MONSTERSTATE_NONE;
@@ -760,7 +761,7 @@ int CScientist :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, f
 	if ( pevInflictor && pevInflictor->flags & FL_CLIENT )
 	{
 		Remember( bits_MEMORY_PROVOKED );
-		StopFollowing( TRUE );
+		//StopFollowing( TRUE );
 	}
 
 	// make sure friends talk about it if player hurts scientist...
@@ -906,7 +907,7 @@ Schedule_t *CScientist :: GetSchedule ( void )
 	case MONSTERSTATE_IDLE:
 		if ( pEnemy )
 		{
-			if ( HasConditionsRand( bits_COND_SEE_ENEMY, 25 ) )
+			if ( HasConditions(bits_COND_SEE_ENEMY) )
 				m_fearTime = gpGlobals->time;
 			else if ( DisregardEnemy( pEnemy ) )		// After 15 seconds of being hidden, return to alert
 			{
@@ -932,7 +933,7 @@ Schedule_t *CScientist :: GetSchedule ( void )
 			{
 				if ( pSound->m_iType & (bits_SOUND_DANGER | bits_SOUND_COMBAT) )
 				{
-					if ( gpGlobals->time - m_fearTime > 6 )	// Only cower every 3 seconds or so
+					if ( gpGlobals->time - m_fearTime > 3 )	// Only cower every 3 seconds or so
 					{
 						m_fearTime = gpGlobals->time;		// Update last fear
 						return GetScheduleOfType( SCHED_STARTLE );	// This will just duck for a second
@@ -961,7 +962,7 @@ Schedule_t *CScientist :: GetSchedule ( void )
 			if ( relationship != R_DL && relationship != R_HT )
 			{
 				// If I'm already close enough to my target
-				if ( TargetDistance() <= 128 )
+				if ( TargetDistance() <= 160 )
 				{
 					if ( CanHeal() )	// Heal opportunistically
 						return slHeal;
@@ -972,7 +973,7 @@ Schedule_t *CScientist :: GetSchedule ( void )
 			}
 			else	// UNDONE: When afraid, scientist won't move out of your way.  Keep This?  If not, write move away scared
 			{
-				if ( HasConditionsRand( bits_COND_NEW_ENEMY, 25 ) ) // I just saw something new and scary, react
+				if ( HasConditions( bits_COND_NEW_ENEMY ) ) // I just saw something new and scary, react
 					return GetScheduleOfType( SCHED_FEAR );					// React to something scary
 				return GetScheduleOfType( SCHED_TARGET_FACE_SCARED );	// face and follow, but I'm scared!
 			}
@@ -985,9 +986,9 @@ Schedule_t *CScientist :: GetSchedule ( void )
 		TrySmellTalk();
 		break;
 	case MONSTERSTATE_COMBAT:
-		if ( HasConditionsRand( bits_COND_NEW_ENEMY, 25 ) )
+		if ( HasConditions( bits_COND_NEW_ENEMY ) )
 			return slFear;					// Point and scream!
-		if ( HasConditionsRand( bits_COND_SEE_ENEMY, 25 ) )
+		if ( HasConditions( bits_COND_SEE_ENEMY ) )
 			return slScientistCover;		// Take Cover
 		
 		if ( HasConditions( bits_COND_HEAR_SOUND ) )
