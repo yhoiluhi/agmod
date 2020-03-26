@@ -4,11 +4,10 @@ In previous versions, you could only play singleplayer maps by modifying _liblis
 From AG 6.7 on, you can just type `sv_singleplayer 1`, load a map with `map <name>` and there you go: triggers and other entities will work as in HL Steam.
 
 Singleplayer in AG has some quirks. It uses most of the multiplayer features, like vertical gauss boosting, constant 10hp falldamage...
-and some more stuff, like dead corpses being non-solid, scientists and barneys having some more health... you can find the changes
-below.
+and some more stuff, like dead corpses being non-solid, scientists and barneys having some more health... you can find the changes below.
 
 Also some singleplayer maps of HL1 have been modified to fit these changes. The maps are included in the AG package,
-not here in this repo. You can find a download link for AG in the README, and with it you can run the AG% category extension of HL speedrunning.
+not here in this repo. You can find a download link for AG in the README, and with it you can run the AG% category extension of HL speedrunning. If you're going to do singleplayer speedruns in AG, you'll also need BunnymodXT, [this one](https://drive.google.com/open?id=1fJTl5TG9H2pGBVdUs7lOFzkrwqQUcuO8) works with AG; it's not merged yet with the [official BunnymodXT](https://github.com/YaLTeR/BunnymodXT), but it will be in the future.
 
 ## Changelog
 These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and some are specific to the HL campaign.
