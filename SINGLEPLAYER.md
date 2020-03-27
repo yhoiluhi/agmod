@@ -15,7 +15,6 @@ If you already have AG, then you can download the minimal files to speedrun AG% 
 
 ## Changelog
 These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and some are specific to the HL campaign.
-- You're now able to hold the gauss charge between maps (not on saveloads though).
 - Fixed hornet-related crash.
 - Fixed weapon drop related crash.
 - Fixed satchel softlock.
@@ -28,7 +27,8 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 - Fixed scientist on QE going too far upstairs (at c2a4e).
 - Fixed grunt on QE going downstairs and scaring the scientist (at c2a4f).
 - Fixed WGH door getting closed.
-- Removes Game Over triggered by damaging a scientist (at c3a2 and c3a2d).
+- Now it's possible to hold the gauss charge between maps (not on saveloads though).
+- Removed Game Over triggered by damaging a scientist (at c3a2 and c3a2d).
 - Moved further the scientist that may get into your path when finishing the first map of AM (at c1a0).
 - Removed some scripted sequences for the scientist at the start of the 2nd map of AM (c1a0d), so it doesn't get in your way.
 - Removed glass on the doors at the end of the second map of AM (c1a0d), as starting with HEV suit disables doing that part normally.
@@ -47,7 +47,7 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 - Enabled vertical gauss boost.
 - Lowered the time to charge gauss fully from 4s to 1.5s.
 - Lowered ammo burning factor for gauss, so it takes a bit less charge to get the max. boost.
-- Now crowbar always deals full damage (subsequent swings after the first one were halved).
+- Now crowbar always deals full damage (subsequent swings after the first one dealt half the damage before).
 - Now items reappear after a while and chargers get refilled too.
 - Halved the spread for 9mmAR.
 - Halved the vertical spread for shotgun.
@@ -64,7 +64,7 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 ## Known issues
 Some of these are specific to the HL campaign.
 - The modified maps are generally too dark, except the 2nd QE map that maybe it's too bright. This will be fixed.
-- Prestrafing is slower. This is because in AG we use `sv_maxspeed 300` by default. This won't change, as this is AG after all, not HL.
+- Prestrafing is slower, leading to harder TC skip and harder object boosting at 100 fps. This is because in AG we use `sv_maxspeed 300` by default. This won't change, as this is AG after all, not HL.
 - It's harder to get stuck in doors, which you may want to do in case the door deals negative damage (heals you). This issue will probably not be fixed, as it's hard to debug what is causing it, seems like in HL WON there's some kind of attraction towards the door.
 - Gauss charging sound is not completely correct and it makes an annoying noise when released after a saveload. This is because the client and server sides of the game are not the same yet. The game client will be updated soon, fixing this issue.
 - Gauss charge (secondary fire) is always released on saveload, so remember to not save or load a save while charging, unless you want to quickgauss (I don't really know if that's working properly or is worthy here), because the charge will be released potentially making you lose time and some ammo. This issue can't be fixed, unless you come up with a solution, of course.
