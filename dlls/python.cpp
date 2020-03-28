@@ -99,7 +99,9 @@ void CPython::Precache( void )
 
 BOOL CPython::Deploy( )
 {
+	// enable laser sight geometry.
 	pev->body = 1;
+
 	return DefaultDeploy( "models/v_357.mdl", "models/p_357.mdl", PYTHON_DRAW, "python", UseDecrement(), pev->body );
 }
 

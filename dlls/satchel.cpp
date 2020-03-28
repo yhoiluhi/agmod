@@ -300,7 +300,8 @@ BOOL CSatchel::Deploy( )
 	else
 		result = DefaultDeploy( "models/v_satchel.mdl", "models/p_satchel.mdl", SATCHEL_DRAW, "trip" );
 
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.3;
+	if (CVAR_GET_FLOAT("sv_singleplayer") > 0.0f)
+		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.3;
 	
 	return result;
 }
@@ -308,7 +309,10 @@ BOOL CSatchel::Deploy( )
 
 void CSatchel::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.2;
+	if (CVAR_GET_FLOAT("sv_singleplayer") > 0.0f)
+		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.2;
+	else
+		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	
 	if ( m_chargeReady )
 	{

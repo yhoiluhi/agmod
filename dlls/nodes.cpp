@@ -2430,7 +2430,7 @@ int CGraph :: FLoadGraph ( char *szMapName )
 		m_pRouteInfo = (char *)calloc( sizeof(char), m_nRouteInfo );
 		if ( !m_pRouteInfo )
 		{
-			ALERT ( at_aiconsole, "***ERROR**\nCounldn't malloc %d route bytes!\n", m_nRouteInfo );
+			ALERT ( at_aiconsole, "***ERROR**\nCouldn't malloc %d route bytes!\n", m_nRouteInfo );
 			goto NoMemory;
 		}
 		m_CheckedCounter = 0;
@@ -2452,7 +2452,7 @@ int CGraph :: FLoadGraph ( char *szMapName )
 		m_pHashLinks = (short *)calloc(sizeof(short), m_nHashLinks);
 		if (!m_pHashLinks)
 		{
-			ALERT ( at_aiconsole, "***ERROR**\nCounldn't malloc %d hash link bytes!\n", m_nHashLinks );
+			ALERT ( at_aiconsole, "***ERROR**\nCouldn't malloc %d hash link bytes!\n", m_nHashLinks );
 			goto NoMemory;
 		}
 

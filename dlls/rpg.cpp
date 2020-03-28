@@ -337,7 +337,6 @@ void CRpg::Spawn( )
 
 	SET_MODEL(ENT(pev), "models/w_rpg.mdl");
 	m_fSpotActive = 1;
-
 	m_iDefaultAmmo = RPG_DEFAULT_GIVE * 2;
 
 	FallInit();// get ready to fall down.

@@ -3017,7 +3017,7 @@ edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer )
 			pSpot = UTIL_FindEntityByClassname( pSpot, "info_player_deathmatch" );
 		if ( FNullEnt( pSpot ) )  // skip over the null point
 			pSpot = UTIL_FindEntityByClassname( pSpot, "info_player_deathmatch" );
-		if ( FNullEnt(pSpot) && singleplayer.value == 1)
+		if ( FNullEnt(pSpot) && singleplayer.value > 0.0f)
 			pSpot = UTIL_FindEntityByClassname( pSpot, "info_player_start" );
 
 		CBaseEntity *pFirstSpot = pSpot;
@@ -3846,7 +3846,7 @@ void CBasePlayer::ImpulseCommands( )
 //=========================================================
 void CBasePlayer::CheatImpulseCommands( int iImpulse )
 {
-	if (!AgIsLocalServer() && singleplayer.value == 0)
+	if (!AgIsLocalServer() && singleplayer.value == 0.0f)
 		return;
 
 #if !defined( HLDEMO_BUILD )

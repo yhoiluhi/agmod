@@ -355,7 +355,7 @@ AgGameRules* InstallGameRules(void)
 	SERVER_COMMAND(UTIL_VarArgs("exec %s.cfg\n", STRING(gpGlobals->mapname)));
 	SERVER_EXECUTE();
 
-	if ( singleplayer.value == 1 )
+	if ( singleplayer.value > 0.0f )
 	{
 		// generic half-life
 		g_teamplay = 0;
