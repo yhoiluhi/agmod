@@ -139,11 +139,11 @@ Schedule_t	slFollow[] =
 	{
 		tlFollow,
 		ARRAYSIZE ( tlFollow ),
-		bits_COND_NEW_ENEMY |
+//		bits_COND_NEW_ENEMY |
 		bits_COND_LIGHT_DAMAGE |
 		bits_COND_HEAVY_DAMAGE |
 		bits_COND_HEAR_SOUND,
-		bits_SOUND_COMBAT |
+//		bits_SOUND_COMBAT |
 		bits_SOUND_DANGER,
 		"Follow"
 	},
@@ -161,9 +161,9 @@ Schedule_t	slFollowScared[] =
 	{
 		tlFollowScared,
 		ARRAYSIZE ( tlFollowScared ),
-		bits_COND_NEW_ENEMY |
+//		bits_COND_NEW_ENEMY |
 		bits_COND_HEAR_SOUND |
-		bits_COND_LIGHT_DAMAGE |
+//		bits_COND_LIGHT_DAMAGE |
 		bits_COND_HEAVY_DAMAGE,
 		bits_SOUND_DANGER,
 		"FollowScared"
@@ -208,7 +208,7 @@ Schedule_t	slStopFollowing[] =
 
 Task_t	tlHeal[] =
 {
-	{ TASK_MOVE_TO_TARGET_RANGE,(float)50		},	// Move within 60 of target ent (client)
+	{ TASK_MOVE_TO_TARGET_RANGE,(float)60		},	// Move within 60 of target ent (client)
 	{ TASK_SET_FAIL_SCHEDULE,	(float)SCHED_TARGET_CHASE },	// If you fail, catch up with that guy! (change this to put syringe away and then chase)
 	{ TASK_FACE_IDEAL,			(float)0		},
 	{ TASK_SAY_HEAL,			(float)0		},
@@ -1018,7 +1018,7 @@ MONSTERSTATE CScientist :: GetIdealState ( void )
 					m_IdealMonsterState = MONSTERSTATE_ALERT;
 					return m_IdealMonsterState;
 				}
-				StopFollowing( TRUE );
+				//StopFollowing( TRUE );
 			}
 		}
 		else if ( HasConditions( bits_COND_LIGHT_DAMAGE | bits_COND_HEAVY_DAMAGE ) )
