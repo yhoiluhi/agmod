@@ -16,7 +16,7 @@ If you already have AG, then you can download the minimal files to speedrun AG% 
 ## Changelog
 These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and some are specific to the HL campaign.
 - Fixed hornet-related crash.
-- Fixed weapon drop related crash.
+- Fixed weapon-drop-related crash.
 - Fixed satchel softlock.
 - Fixed getting stuck on slopes at high FPS.
 - Fixed On A Rail collisions (c2a2a ~ c2a2f).
@@ -27,6 +27,7 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 - Fixed scientist on QE going too far upstairs (at c2a4e).
 - Fixed grunt on QE going downstairs and scaring the scientist (at c2a4f).
 - Fixed WGH door getting closed.
+- Made it harder for scientists to get scared of enemies while following you, even with high HP (>50).
 - Now it's possible to hold the gauss charge between maps (not on saveloads though).
 - Removed Game Over triggered by damaging a scientist (at c3a2 and c3a2d).
 - Moved further the scientist that may get into your path when finishing the first map of AM (at c1a0).
@@ -63,15 +64,12 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 
 ## Known issues
 Some of these are specific to the HL campaign.
-- The modified maps are generally too dark, except the 2nd QE map that maybe it's too bright. This will be fixed.
 - Prestrafing is slower, leading to harder TC skip and harder object boosting at 100 fps. This is because in AG we use `sv_maxspeed 300` by default. This won't change, as this is AG after all, not HL.
 - It's harder to get stuck in doors, which you may want to do in case the door deals negative damage (heals you). This issue will probably not be fixed, as it's hard to debug what is causing it, seems like in HL WON there's some kind of attraction towards the door.
-- Gauss charging sound is not completely correct and it makes an annoying noise when released after a saveload. This is because the client and server sides of the game are not the same yet. The game client will be updated soon, fixing this issue.
+- Gauss charging sound makes an annoying noise after loads. This will probably be fixed.
 - Gauss charge (secondary fire) is always released on saveload, so remember to not save or load a save while charging, unless you want to quickgauss (I don't really know if that's working properly or is worthy here), because the charge will be released potentially making you lose time and some ammo. This issue can't be fixed, unless you come up with a solution, of course.
 - If you go through a load pressing some key and you keep holding the same key after the load, it will keep that state even if you stop pressing that key. This bug exists because of the fix for keeping gauss charge through changelevels. It's not critical because you can just press some other key to avoid that from happening, and you won't notice it if you're bhopping because you're pressing A/D to keep strafing, which cancels the bug as you're pressing and releasing different keys. So, if you notice that this is happening, just press some other key that you weren't pressing during the load. This issue will continue to exist, probably until we find a fix for the issue related to keeping gauss charge during loads.
-- The scientist at the start of Lambda Core, where you kill 4 alien grunts, will not cancel his scanner reading animation when shot. This might be fixed in the future, but at least you can throw a grenade right when he finishes reading the first scanner, so he runs towards the door and opens it without having to wait for the sequence in the second scanner.
+- The scientist at the start of Lambda Core, where you kill 4 alien grunts, hardly ever will cancel his scanner reading animation when shot. This might be fixed in the future, but at least you can throw a grenade right when he finishes reading the first scanner, so he runs towards the door and opens it without having to wait for the sequence in the second scanner.
 - If you go walking close to the side of the pipe right before starting Residue Processing, you'll get stuck, this is because the first map of RP has different clipping to fix getting stuck after going down at high speed, so you can always keep the a lot of speed no matter where you land. The solution is to go through the middle of the pipe, or to prestrafe and start the bhop chain right after falling into the pipe, before the first map of RP is loaded, so you are in the air (jumping) at the moment you go through the changelevel trigger. This issue will probably not be fixed, as it requires too much work for the low chances of happening (even if you don't consciously try to avoid it).
-- When going upstairs in QE for the gauss, the first bullsquid is too close to the stairs and you might collide with it as it's not expected to be there. You just position yourself near the left or right wall a bit sooner and bhop around it, and after some runs you'll get used to it. This issue will be fixed.
 - Some voices in TC overlap, I don't like them overlapping, but it's not that important. This will probably be fixed.
-- Some texts are wrong, like the text that appears when you save and chapter titles. This will probably be fixed.
 - Banners in the 3rd map of AM don't rotate, like the banner where you can see "PLAY AG - PLAY IT NOW". This will probably not be fixed.
