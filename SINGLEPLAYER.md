@@ -30,6 +30,7 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 - Made it harder for scientists to get scared of enemies while following you, even with high HP (>50).
 - Now it's possible to hold the gauss charge between maps (not on saveloads though).
 - Removed Game Over triggered by damaging a scientist (at c3a2 and c3a2d).
+- Added transparency to the fade in effect at the start of UC.
 - Moved further the scientist that may get into your path when finishing the first map of AM (at c1a0).
 - Removed some scripted sequences for the scientist at the start of the 2nd map of AM (c1a0d), so it doesn't get in your way.
 - Removed glass on the doors at the end of the second map of AM (c1a0d), as starting with HEV suit disables doing that part normally.
@@ -65,6 +66,7 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 ## Known issues
 Some of these are specific to the HL campaign.
 - Prestrafing is slower, leading to harder TC skip and harder object boosting at 100 fps. This is because in AG we use `sv_maxspeed 300` by default. This won't change, as this is AG after all, not HL.
+- Ladder physics is different, it's a bit harder to stop climbing ladders, but it's a matter of getting used to it. This won't change, as this is AG after all, not HL.
 - It's harder to get stuck in doors, which you may want to do in case the door deals negative damage (heals you). This issue will probably not be fixed, as it's hard to debug what is causing it, seems like in HL WON there's some kind of attraction towards the door.
 - For some people, the game doesn't receive mouse input and most keyboard input after a load, until you go through some changelevel trigger. This makes it almost unplayable, but there's a workaround that is replacing the client with the old AG 6.6 client, which can be found [here](https://www.moddb.com/mods/adrenaline-gamer/downloads/adrenaline-gamer-v66). This issue will be fixed.
 - Gauss charging sound makes an annoying noise after loads. This will probably be fixed.
