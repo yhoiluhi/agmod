@@ -4711,6 +4711,13 @@ void CBasePlayer :: UpdateClientData( void )
 	}
 #endif
 //-- Martin Webrant
+
+	if (singleplayer.value >= 0.0f && m_fLoading == 2) {
+		// FIXME: HACK to avoid a bug on saveloads, where mouse input does nothing ingame,
+		// apparently because an invisible menu pops up. Only happens to a few speedrunners...
+		// Credits to h0boken for figuring out that it was the spec menu disabling the inputs
+		CLIENT_COMMAND(edict(), "spec_menu 0\n");
+	}
 }
 
 
