@@ -1,20 +1,20 @@
 # Singleplayer mode
 AG 6.7 introduces a command to enable playing singleplayer maps/campaigns, but in a different way to vanilla HL.
-In previous versions, you could only play singleplayer maps by modifying _liblist.gam_.
-From AG 6.7 on, you can just type `sv_singleplayer 1`, reload a map with `map <name>` and there you go: triggers and other entities will work as in HL Steam.
+You can just type `sv_singleplayer 1`, reload a map with `map <name>` and there you go: triggers and other entities will work as in HL Steam.
 You have to be in a map (ingame) when setting `sv_singleplayer` for it to work, and then reload the map. Alternatively, you can also set it in `ag/startup_server.cfg`
-which is automatically executed right before the first map loads.
+which is automatically executed right before the first map loads, thus you don't have to reload it.
 
 Singleplayer in AG has some quirks. It uses most of the multiplayer features, like vertical gauss boosting, constant 10hp falldamage...
-and some more stuff, like dead corpses being non-solid, scientists and barneys having some more health... you can find the changes below.
+and some more stuff not related to multiplayer, like dead corpses being non-solid, fixes for some common crashes... you can find the changes below.
 
-Also some singleplayer maps of HL1 have been modified to fit these changes. The maps are included in the AG package,
-not here in this repo. You can find a download link for AG in the README, and with it you can run the AG% category extension of HL speedrunning. If you're going to do singleplayer speedruns in AG, you'll also need BunnymodXT, [this one](https://drive.google.com/open?id=1fJTl5TG9H2pGBVdUs7lOFzkrwqQUcuO8) works with AG; it's not merged yet with the [official BunnymodXT](https://github.com/YaLTeR/BunnymodXT), but it will be in the future.
-
-If you already have AG, then you can download the minimal files to speedrun AG% from [here](https://drive.google.com/open?id=1hSErqgUqDmbJCYJZLAHsrfC6NziW1494).
+Also some singleplayer maps of HL1 have been modified to fit these changes and have nicer speedruns.
+The maps are included in the [AG speedrunning package](https://drive.google.com/open?id=1hSErqgUqDmbJCYJZLAHsrfC6NziW1494),
+and with it you can run the AG% category extension of HL speedrunning. If you're going to do singleplayer speedruns in AG,
+you'll also need to inject the BunnymodXT included in the speedrunning package, which is not
+merged yet with the [official BunnymodXT](https://github.com/YaLTeR/BunnymodXT), but it will be in the future.
 
 ## Changelog
-These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and some are specific to the HL campaign.
+These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and some are specific to the HL campaign in the speedrunning package.
 - Fixed hornet-related crash.
 - Fixed weapon-drop-related crash.
 - Fixed satchel softlock.
@@ -65,11 +65,9 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 ## Known issues
 Some of these are specific to the HL campaign.
 - Prestrafing is slower, leading to harder TC skip and harder object boosting at 100 fps. This is because in AG we use `sv_maxspeed 300` by default. This won't change, as this is AG after all, not HL.
-- It's harder to get stuck in doors, which you may want to do in case the door deals negative damage (heals you). This issue will probably not be fixed, as it's hard to debug what is causing it, seems like in HL WON there's some kind of attraction towards the door.
 - Gauss charging sound makes an annoying noise after loads. This will probably be fixed.
 - Gauss charge (secondary fire) is always released on saveload, so remember to not save or load a save while charging, unless you want to quickgauss (I don't really know if that's working properly or is worthy here), because the charge will be released potentially making you lose time and some ammo. This issue can't be fixed, unless you come up with a solution, of course.
 - If you go through a load pressing some key and you keep holding the same key after the load, it will keep that state even if you stop pressing that key. This bug exists because of the fix for keeping gauss charge through changelevels. It's not critical because you can just press some other key to avoid that from happening, and you won't notice it if you're bhopping because you're pressing A/D to keep strafing, which cancels the bug as you're pressing and releasing different keys. So, if you notice that this is happening, just press some other key that you weren't pressing during the load. This issue will continue to exist, probably until we find a fix for the issue related to keeping gauss charge during loads.
-- The scientist at the start of Lambda Core, where you kill 4 alien grunts, hardly ever will cancel his scanner reading animation when shot. This might be fixed in the future, but at least you can throw a grenade right when he finishes reading the first scanner, so he runs towards the door and opens it without having to wait for the sequence in the second scanner.
-- If you go walking close to the side of the pipe right before starting Residue Processing, you'll get stuck, this is because the first map of RP has different clipping to fix getting stuck after going down at high speed, so you can always keep the a lot of speed no matter where you land. The solution is to go through the middle of the pipe, or to prestrafe and start the bhop chain right after falling into the pipe, before the first map of RP is loaded, so you are in the air (jumping) at the moment you go through the changelevel trigger. This issue will probably not be fixed, as it requires too much work for the low chances of happening (even if you don't consciously try to avoid it).
+- The scientist at the start of Lambda Core, where you kill 4 alien grunts, hardly ever will cancel his scanner reading animation when shot. This might be fixed in the future, or a consistent way of getting it right might be found, but at least you can throw a grenade right when he finishes reading the first scanner, so he runs towards the door and opens it without having to wait for the sequence in the second scanner.
 - Some voices in TC overlap, I don't like them overlapping, but it's not that important. This will probably be fixed.
 - Banners in the 3rd map of AM don't rotate, like the banner where you can see "PLAY AG - PLAY IT NOW". This will probably not be fixed.
