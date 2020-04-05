@@ -30,6 +30,7 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 - Made it harder for scientists to get scared of enemies while following you, even with high HP (>50).
 - Now it's possible to hold the gauss charge between maps (not on saveloads though).
 - Removed Game Over triggered by damaging a scientist (at c3a2 and c3a2d).
+- Added transparency to the fade in effect at the start of UC.
 - Moved further the scientist that may get into your path when finishing the first map of AM (at c1a0).
 - Removed some scripted sequences for the scientist at the start of the 2nd map of AM (c1a0d), so it doesn't get in your way.
 - Removed glass on the doors at the end of the second map of AM (c1a0d), as starting with HEV suit disables doing that part normally.
@@ -65,6 +66,7 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 ## Known issues
 Some of these are specific to the HL campaign.
 - Prestrafing is slower, leading to harder TC skip and harder object boosting at 100 fps. This is because in AG we use `sv_maxspeed 300` by default. This won't change, as this is AG after all, not HL.
+- Ladder physics is different, it's a bit harder to stop climbing ladders, but it's a matter of getting used to it. This won't change, as this is AG after all, not HL.
 - Gauss charging sound makes an annoying noise after loads. This will probably be fixed.
 - Gauss charge (secondary fire) is always released on saveload, so remember to not save or load a save while charging, unless you want to quickgauss (I don't really know if that's working properly or is worthy here), because the charge will be released potentially making you lose time and some ammo. This issue can't be fixed, unless you come up with a solution, of course.
 - If you go through a load pressing some key and you keep holding the same key after the load, it will keep that state even if you stop pressing that key. This bug exists because of the fix for keeping gauss charge through changelevels. It's not critical because you can just press some other key to avoid that from happening, and you won't notice it if you're bhopping because you're pressing A/D to keep strafing, which cancels the bug as you're pressing and releasing different keys. So, if you notice that this is happening, just press some other key that you weren't pressing during the load. This issue will continue to exist, probably until we find a fix for the issue related to keeping gauss charge during loads.
