@@ -1,17 +1,15 @@
 # Singleplayer mode
-AG 6.7 introduces a command to enable playing singleplayer maps/campaigns, but in a different way to vanilla HL.
-You can just type `sv_singleplayer 1`, reload a map with `map <name>` and there you go: triggers and other entities will work as in HL Steam.
+AG 6.7 introduces a command to enable playing singleplayer maps/campaigns. It's not enabled by default, so those that are not speedrunners don't get confused or unexpected behaviours in their listenserver.
+So now you can just type `sv_singleplayer 1`, reload a map with `map <name>` and there you go: triggers and other entities will work as in HL Steam.
 You have to be in a map (ingame) when setting `sv_singleplayer` for it to work, and then reload the map. Alternatively, you can also set it in `ag/startup_server.cfg`
 which is automatically executed right before the first map loads, thus you don't have to reload it.
 
 Singleplayer in AG has some quirks. It uses most of the multiplayer features, like vertical gauss boosting, constant 10hp falldamage...
 and some more stuff not related to multiplayer, like dead corpses being non-solid, fixes for some common crashes... you can find the changes below.
 
-Also some singleplayer maps of HL1 have been modified to fit these changes and have nicer speedruns.
-The maps are included in the [AG speedrunning package](https://drive.google.com/open?id=1hSErqgUqDmbJCYJZLAHsrfC6NziW1494),
-and with it you can run the AG% category extension of HL speedrunning. If you're going to do singleplayer speedruns in AG,
-you'll also need to inject the BunnymodXT included in the speedrunning package, which is not
+If you want to run the AG% speedrunning category, there's this [AG speedrunning package](https://drive.google.com/open?id=1hSErqgUqDmbJCYJZLAHsrfC6NziW1494) that includes some fixes to the HL1 campaign maps to make them more compatible with AG and have nicer speedruns. You need AG installed, and then replace the files in your installation with the ones from the package, but make sure you backup your files just in case. You'll also need to inject the BunnymodXT included in the speedrunning package (backup your current one or put this somewhere else), which is not
 merged yet with the [official BunnymodXT](https://github.com/YaLTeR/BunnymodXT), but it will be in the future.
+You inject it the same way we do for HL1 speedrunning. There's a `speedrun.cfg` in there for the required cvars to run AG%, an `example.cfg` to check some useful cvars and aliases, and some demos to learn the first chapter of the game, that you can replay with `startdemos start_1 start_2 start_3 start_4 start_5 start_6`.
 
 ## Changelog
 These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and some are specific to the HL campaign in the speedrunning package.
