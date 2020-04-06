@@ -241,8 +241,10 @@ void CGauss::SecondaryAttack()
 		}
 
 		int pitch = ( gpGlobals->time - m_pPlayer->m_flStartCharge ) * ( 150 / GetFullChargeTime() ) + 100;
-		if ( pitch > 250 ) 
-			 pitch = 250;
+		if (pitch > 250)
+			pitch = 250;
+		else if (pitch < 100)
+			pitch = 100;
 		
 		// ALERT( at_console, "%d %d %d\n", m_fInAttack, m_iSoundState, pitch );
 
