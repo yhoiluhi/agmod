@@ -26,7 +26,8 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 - Fixed grunt on QE going downstairs and scaring the scientist (at c2a4f).
 - Fixed WGH door getting closed.
 - Made it harder for scientists to get scared of enemies while following you, even with high HP (>50).
-- Now it's possible to hold the gauss charge between maps (not on saveloads though).
+- Made it possible to hold the gauss charge when going through changelevel triggers.
+- Made it possible to hold the gauss charge through saveloads, in a tricky way that takes some practice to perform correctly, but works.
 - Removed Game Over triggered by damaging a scientist (at c3a2 and c3a2d).
 - Added transparency to the fade in effect at the start of UC.
 - Moved further the scientist that may get into your path when finishing the first map of AM (at c1a0).
@@ -65,8 +66,8 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 Some of these are specific to the HL campaign.
 - Prestrafing is slower. This is because in AG we use `sv_maxspeed 300` by default. This won't change, as this is AG after all, not HL.
 - Ladder physics is different, it's a bit harder to stop climbing ladders, but it's a matter of getting used to it. This won't change, as this is AG after all, not HL.
-- Right click is not kept during saveloads, so you cannot hold a handgrenade cooked, pass through a load and keep it cooked; you'll have to cook it again. Also, gauss charge (secondary fire) is always released on saveload (not on changelevels, this is somewhat fixed), so remember to not save, or load a save, while charging, unless you want to quickgauss (I don't really know if that's working properly or is worthy here), because the charge will be released potentially making you lose time and some ammo. This issue can't be fixed, unless you come up with a solution, of course.
+- It's hard to keep the gauss charge after a saveload. You have to stop holding right click during the load and when it's done loading you start holding it again, and only then you can start moving or pressing any other key. This will probably not be fixed.
 - If you go through a load pressing some key and you keep holding the same key after the load, it will keep that state even if you stop pressing that key. This bug exists because of the fix for keeping gauss charge through changelevels. It's not critical because you can just press some other key to avoid that from happening, and you won't notice it if you're bhopping because you're pressing A/D to keep strafing, which cancels the bug as you're pressing and releasing different keys. So, if you notice that this is happening, just press some other key that you weren't pressing during the load. This issue will continue to exist, probably until we find a fix for the issue related to keeping gauss charge during loads.
-- The scientist at the start of Lambda Core, where you kill 4 alien grunts, hardly ever will cancel his scanner reading animation when shot. This might be fixed in the future, or a consistent way of getting it right might be found, but at least you can throw a grenade right when he finishes reading the first scanner, so he runs towards the door and opens it without having to wait for the sequence in the second scanner.
+- The scientist at the start of Lambda Core, where you kill 4 alien grunts, hardly ever will cancel his scanner reading animation when shot with gauss through the door. This might be fixed in the future, but for the moment you can avoid shooting the gauss, and instead shoot him with MP5 as soon as the door opens, so he cancels the animation and goes to open the back door, only losing 1-2 seconds compared to HL speedruns.
 - Some voices in TC overlap, I don't like them overlapping, but it's not that important. This will probably be fixed.
 - Banners in the 3rd map of AM don't rotate, like the banner where you can see "PLAY AG - PLAY IT NOW". This will probably not be fixed.
