@@ -1049,6 +1049,14 @@ void PlayerCustomization( edict_t *pEntity, customization_t *pCust )
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
 
+	if (singleplayer.value > 0.0f)
+	{
+		// HACK: This is called on map start, on saveload and changelevel, when the load frames
+		// are about to finish, so it's a good place to fix mouse input, just keep trying
+		// to fix it for a few frames
+		pPlayer->m_flInputFixReady = gpGlobals->time + (gpGlobals->frametime * (INPUT_FIX_FRAMES + 1));
+	}
+
 	if (!pPlayer)
 	{
 		ALERT(at_console, "PlayerCustomization:  Couldn't get player!\n");

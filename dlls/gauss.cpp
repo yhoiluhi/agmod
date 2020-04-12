@@ -24,6 +24,9 @@
 #include "soundent.h"
 #include "shake.h"
 #include "gamerules.h"
+#ifndef CLIENT_DLL
+	#include "game.h"
+#endif
 
 
 #define	GAUSS_PRIMARY_CHARGE_VOLUME	256// how loud gauss is while charging
@@ -127,6 +130,9 @@ void CGauss::Holster( int skiplocal /* = 0 */ )
 	
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	
+#ifndef CLIENT_DLL
+	spgausscharging.value = 0.0f;
+#endif
 	SendWeaponAnim( GAUSS_HOLSTER );
 	m_fInAttack = 0;
 }
@@ -158,6 +164,10 @@ void CGauss::PrimaryAttack()
 	m_fInAttack = 0;
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.2;
+
+#ifndef CLIENT_DLL
+	spgausscharging.value = 0.0f;
+#endif
 }
 
 void CGauss::SecondaryAttack()
@@ -177,8 +187,18 @@ void CGauss::SecondaryAttack()
 		}
 
 		m_flNextSecondaryAttack = m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
+#ifndef CLIENT_DLL
+		spgausscharging.value = 0.0f;
+#endif
 		return;
 	}
+
+#ifndef CLIENT_DLL
+	if (spgausscharging.value == 0.0f)
+	{
+		spgausscharging.value = 1.0f;
+	}
+#endif
 
 	if ( m_fInAttack == 0 )
 	{
@@ -231,6 +251,9 @@ void CGauss::SecondaryAttack()
 			m_fInAttack = 0;
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
 			m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1;
+#ifndef CLIENT_DLL
+			spgausscharging.value = 0.0f;
+#endif
 			return;
 		}
 		
@@ -269,10 +292,12 @@ void CGauss::SecondaryAttack()
 			m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 				
 #ifndef CLIENT_DLL
+			spgausscharging.value = 0.0f;
 			m_pPlayer->TakeDamage( VARS(eoNullEntity), VARS(eoNullEntity), 50, DMG_SHOCK );
 			UTIL_ScreenFade( m_pPlayer, Vector(255,128,0), 2, 0.5, 128, FFADE_IN );
 #endif
 			SendWeaponAnim( GAUSS_IDLE );
+
 			
 			// Player may have been killed and this weapon dropped, don't execute any more code after this!
 			return;
@@ -366,6 +391,9 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 
 	PLAYBACK_EVENT_FULL( FEV_NOTHOST | FEV_RELIABLE, m_pPlayer->edict(), m_usGaussFire, 0.01, (float *)&m_pPlayer->pev->origin, (float *)&m_pPlayer->pev->angles, 0.0, 0.0, 0, 0, 0, 1 );
 
+#ifndef CLIENT_DLL
+	spgausscharging.value = 0.0f;
+#endif
 	
 	/*ALERT( at_console, "%f %f %f\n%f %f %f\n", 
 		vecSrc.x, vecSrc.y, vecSrc.z, 

@@ -2743,6 +2743,7 @@ void CBasePlayer::PostThink()
 		if (m_fLoading == 1)
 		{
 			m_fLoading = 2;
+			sploading.value = 2;
 			// We skip the first frozen frame because on saveloads (not passing through changelevel triggers) the engine sends
 			// buttons info somehow, but it's just whatever you had pressed previously I believe
 			return;
@@ -2758,6 +2759,7 @@ void CBasePlayer::PostThink()
 		else if (m_afButtonOriginal != m_afButtonOnLoad)
 		{
 			m_fLoading = 0;
+			sploading.value = 0;
 		}
 	}
 
@@ -2773,6 +2775,16 @@ void CBasePlayer::PostThink()
 			m_pTank->Use( this, this, USE_OFF, 0 );
 			m_pTank = NULL;
 		}
+	}
+
+	if (gpGlobals->time < m_flInputFixReady && singleplayer.value > 0.0f && m_fLoading == 0.0f)
+	{
+		// HACK: Some players have an invisible menu popping up and preventing them from
+		// moving the mouse when they spawn in c1a0 for instance, so we fix it with this
+		// The fix for when m_fLoading > 0 follows other criteria and won't work here, so we're fixing that
+		// in another place (UpdateClientData()), which is basically in PreThink() instead of PostThink()
+		//ALERT(at_console, "[%.3f -> %.3f] Triggering -showscores\n", gpGlobals->time, m_flInputFixReady);
+		CLIENT_COMMAND(edict(), "-showscores\n");
 	}
 
 // do weapon stuff
@@ -3198,6 +3210,11 @@ void CBasePlayer::Spawn( void )
     Spectate_UpdatePosition();
   }
 //-- Martin Webrant
+
+  if (singleplayer.value > 0.0f)
+  {
+	  m_flInputFixReady = gpGlobals->time + (gpGlobals->frametime * INPUT_FIX_FRAMES);
+  }
 }
 
 
@@ -3252,6 +3269,11 @@ int CBasePlayer::Save( CSave &save )
 
 	m_afButtonOnLoad = m_afButtonOriginal;
 
+	if (spgausscharging.value == 1.0f)
+	{
+		spgausscharging.value = 2.0f;
+	}
+
 	return save.WriteFields( "PLAYER", this, m_playerSaveData, ARRAYSIZE(m_playerSaveData) );
 }
 
@@ -3270,8 +3292,8 @@ int CBasePlayer::Restore( CRestore &restore )
 	if ( !CBaseMonster::Restore(restore) )
 		return 0;
 
+	sploading.value	= 1;
 	m_fLoading		= 1;
-	m_flLoadTime	= 0;
 
 	int status = restore.ReadFields( "PLAYER", this, m_playerSaveData, ARRAYSIZE(m_playerSaveData) );
 
@@ -3686,7 +3708,6 @@ void CBasePlayer :: ForceClientDllUpdate( void )
   m_bInitLocation = true;
   m_iFlagStatus1Last = -1;
   m_iFlagStatus2Last = -1;
-  
 
 #ifndef AG_NO_CLIENT_DLL
   MESSAGE_BEGIN( MSG_ONE, gmsgGametype, NULL, edict() );
@@ -4716,7 +4737,10 @@ void CBasePlayer :: UpdateClientData( void )
 		// FIXME: HACK to avoid a bug on saveloads, where mouse input does nothing ingame,
 		// apparently because an invisible menu pops up. Only happens to a few speedrunners...
 		// Credits to h0boken for figuring out that it was the spec menu disabling the inputs
-		CLIENT_COMMAND(edict(), "spec_menu 0\n");
+		// Not triggering "spec_menu 0" anymore because it leaves some spam in the console
+		// only during startdemos apparently, so now using -showscores that fixes it too (thanks h0boken)
+		//ALERT(at_console, "[%.3f] Triggering -showscores\n", gpGlobals->time);
+		CLIENT_COMMAND(edict(), "-showscores\n");
 	}
 }
 

@@ -38,6 +38,8 @@ extern cvar_t	defaultteam;
 extern cvar_t	allowmonsters;
 
 extern cvar_t	singleplayer;
+extern cvar_t	sploading;
+extern cvar_t	spgausscharging;
 
 // Engine Cvars
 extern cvar_t	*g_psv_gravity;

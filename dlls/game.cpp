@@ -49,6 +49,12 @@ cvar_t  mp_chattime = {"mp_chattime","10", FCVAR_SERVER };
 // sv_singleplayer 1: enables entities and stuff that allows playing singleplayer campaigns properly
 cvar_t	singleplayer = { "sv_singleplayer", "0", FCVAR_SERVER };
 
+// These 2 cvars for loading and gauss charging are used to disable clientside prediction (cl_lw 0) when they're in a specific state,
+// which is necessary for weapons and specially gauss to work correctly through saveloads (e.g.: keep gaus charge)
+// Credits to h0boken for finding out that disabling clientside prediction kinda fixes the issue
+cvar_t	sploading = { "sv_sp_loading", "0", FCVAR_SERVER }; // only true when loading (changelevel)
+cvar_t	spgausscharging = { "sv_sp_gauss_charging", "0", FCVAR_SERVER }; // only true when gauss is charging (secondary fire)
+
 // Engine Cvars
 cvar_t 	*g_psv_gravity = NULL;
 cvar_t	*g_psv_aim = NULL;
@@ -491,6 +497,8 @@ void GameDLLInit( void )
 	CVAR_REGISTER (&mp_chattime);
 
 	CVAR_REGISTER(&singleplayer);
+	CVAR_REGISTER(&sploading);
+	CVAR_REGISTER(&spgausscharging);
 
 // REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt
