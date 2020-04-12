@@ -99,6 +99,14 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
         Say(pPlayer, Close);
         return true;
     }
+    else if (FStrEq(CMD_ARGV(0), "drop"))
+    {
+        if (ARENA != AgGametype() && ARCADE != AgGametype() && INSTAGIB != AgGametype())
+        {
+            // player is dropping an item.
+            pPlayer->DropPlayerItem((char*)CMD_ARGV(1));
+        }
+    }
     else if (FStrEq(CMD_ARGV(0), "spectate"))
     {
         if (pPlayer->IsProxy())
@@ -123,7 +131,7 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
         pPlayer->Spectate_Nextplayer(bReverse);
         return true;
     }
-    else if (FStrEq(CMD_ARGV(0), "spec_mode") && 2 == CMD_ARGC())
+    else if (FStrEq(CMD_ARGV(0), "specmode") && 2 == CMD_ARGC())
     {
         int iSpecMode = atoi(CMD_ARGV(1));
         pPlayer->Spectate_SetMode(iSpecMode);
@@ -360,11 +368,6 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
     {
 #define MENU_TEAM 					2
         pPlayer->ShowVGUI(MENU_TEAM);
-        return true;
-    }
-    else if (FStrEq(CMD_ARGV(0), "fullupdate"))
-    {
-        pPlayer->ForceClientDllUpdate();
         return true;
     }
     else if (FStrEq(CMD_ARGV(0), "agosinfo"))

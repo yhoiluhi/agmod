@@ -526,54 +526,10 @@ void ClientCommand( edict_t *pEntity )
 
 	entvars_t *pev = &pEntity->v;
 
-//++ BulliT
-  /*
-	if ( FStrEq(pcmd, "say" ) )
-	{
-		Host_Say( pEntity, 0 );
-	}
-	else if ( FStrEq(pcmd, "say_team" ) )
-	{
-		Host_Say( pEntity, 1 );
-	}
-	else if ( FStrEq(pcmd, "fullupdate" ) )
+	if ( FStrEq(pcmd, "fullupdate" ) )
 	{
 		GetClassPtr((CBasePlayer *)pev)->ForceClientDllUpdate(); 
 	}
-	else if ( FStrEq(pcmd, "give" ) )
-	{
-		if ( g_flWeaponCheat != 0.0)
-		{
-			int iszItem = ALLOC_STRING( CMD_ARGV(1) );	// Make a copy of the classname
-			GetClassPtr((CBasePlayer *)pev)->GiveNamedItem( STRING(iszItem) );
-		}
-	}
-	else 
-*/ 
-//-- Martin Webrant
-  if ( FStrEq(pcmd, "drop" ) )
-	{
-//++ BulliT
-    if (ARENA != AgGametype() && ARCADE != AgGametype() &&  INSTAGIB != AgGametype())
-//-- Martin Webrant
-		// player is dropping an item. 
-		GetClassPtr((CBasePlayer *)pev)->DropPlayerItem((char *)CMD_ARGV(1));
-	}
-//++ BulliT
-/*
-	else if ( FStrEq(pcmd, "fov" ) )
-	{
-		if ( g_flWeaponCheat && CMD_ARGC() > 1)
-		{
-			GetClassPtr((CBasePlayer *)pev)->m_iFOV = atoi( CMD_ARGV(1) );
-		}
-		else
-		{
-			CLIENT_PRINTF( pEntity, print_console, UTIL_VarArgs( "\"fov\" is \"%d\"\n", (int)GetClassPtr((CBasePlayer *)pev)->m_iFOV ) );
-		}
-	}
-*/ 
-//-- Martin Webrant
 	else if ( FStrEq(pcmd, "use" ) )
 	{
 		GetClassPtr((CBasePlayer *)pev)->SelectItem((char *)CMD_ARGV(1));
@@ -586,44 +542,13 @@ void ClientCommand( edict_t *pEntity )
 	{
 		GetClassPtr((CBasePlayer *)pev)->SelectLastItem();
 	}
-	// naz: Commented out as it conflicts with AG's spectator mode, which was implemented before HL got it
-	/*
-	else if ( FStrEq( pcmd, "spectate" ) )	// clients wants to become a spectator
-	{
-			// always allow proxies to become a spectator
-		if ( (pev->flags & FL_PROXY) || allow_spectators.value  )
-		{
-			CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
-
-			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot( pPlayer );
-			pPlayer->StartObserver( pev->origin, VARS(pentSpawnSpot)->angles);
-
-			// notify other clients of player switching to spectator mode
-			UTIL_ClientPrintAll( HUD_PRINTNOTIFY, UTIL_VarArgs( "%s switched to spectator mode\n", 
-			 	( pev->netname && STRING(pev->netname)[0] != 0 ) ? STRING(pev->netname) : "unconnected" ) );
-		}
-		else
-			ClientPrint( pev, HUD_PRINTCONSOLE, "Spectator mode is disabled.\n" );
-			
-	}	
-	else if ( FStrEq( pcmd, "specmode" )  )	// new spectator mode
-	{
-		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
-
-		if ( pPlayer->IsObserver() )
-			pPlayer->Observer_SetMode( atoi( CMD_ARGV(1) ) );
-	}
-	*/
-	else if ( FStrEq(pcmd, "closemenus" ) )
+	else if (FStrEq(pcmd, "closemenus"))
 	{
 		// just ignore it
 	}
-	else if ( FStrEq( pcmd, "follownext" )  )	// follow next player
+	else if (FStrEq(pcmd, "VModEnable"))
 	{
-		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
-
-		if ( pPlayer->IsObserver() )
-			pPlayer->Observer_FindNextPlayer( atoi( CMD_ARGV(1) )?true:false );
+		// ignore, handled by the voice manager
 	}
 	else if ( g_pGameRules->ClientCommand( GetClassPtr((CBasePlayer *)pev), pcmd ) )
 	{
