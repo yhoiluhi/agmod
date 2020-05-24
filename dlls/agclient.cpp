@@ -131,7 +131,7 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
         pPlayer->Spectate_Nextplayer(bReverse);
         return true;
     }
-    else if (FStrEq(CMD_ARGV(0), "specmode") && 2 == CMD_ARGC())
+    else if ((FStrEq(CMD_ARGV(0), "specmode") || FStrEq(CMD_ARGV(0), "spec_mode")) && 2 == CMD_ARGC())
     {
         int iSpecMode = atoi(CMD_ARGV(1));
         pPlayer->Spectate_SetMode(iSpecMode);
