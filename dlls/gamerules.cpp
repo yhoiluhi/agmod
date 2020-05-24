@@ -29,9 +29,14 @@
 
 extern edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
 
+#ifdef _WIN32
 //++ BulliT
 extern "C" _declspec(dllexport) DLL_GLOBAL AgGameRules* g_pGameRules = NULL;
 //-- Martin Webrant
+#else
+extern AgGameRules* g_pGameRules = NULL;
+#endif
+
 extern DLL_GLOBAL BOOL	g_fGameOver;
 extern int gmsgDeathMsg;	// client dll messages
 extern int gmsgMOTD;

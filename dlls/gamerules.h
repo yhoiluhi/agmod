@@ -170,7 +170,12 @@ public:
 //++ BulliT
 #include "aggamerules.h"
 extern AgGameRules* InstallGameRules(void);
-extern "C" _declspec(dllexport) DLL_GLOBAL AgGameRules* g_pGameRules;
 //-- Martin Webrant
+
+#ifdef _WIN32
+extern "C" _declspec(dllexport) DLL_GLOBAL AgGameRules* g_pGameRules;
+#else
+extern AgGameRules* g_pGameRules;
+#endif
 
 #endif //_GAMERULES_H_
