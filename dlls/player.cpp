@@ -1519,7 +1519,8 @@ void CBasePlayer::StartDeathCam( void )
 	pev->movetype = MOVETYPE_NONE;
 	pev->modelindex = 0;
 }
-
+/*
+// Commented out as this is from a newer HLSDK and it doesn't work properly in AG
 void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 {
 	// clear any clientside entities attached to this player
@@ -1589,6 +1590,7 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 	m_flNextObserverInput = 0;
 	Observer_SetMode( m_iObserverLastMode );
 }
+*/
 
 // 
 // PlayerUse - handles USE keypress
@@ -1597,8 +1599,8 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 
 void CBasePlayer::PlayerUse ( void )
 {
-	if ( IsObserver() )
-		return;
+	//if ( IsObserver() )
+	//	return;
 
 	// Was use pressed or released?
 	if ( ! ((pev->button | m_afButtonPressed | m_afButtonReleased) & IN_USE) )
@@ -2033,7 +2035,8 @@ void CBasePlayer::PreThink(void)
 	CheckTimeBasedDamage();
 
 	CheckSuitUpdate();
-
+	/*
+	// Commented out as this is from a newer HLSDK and it doesn't work properly in AG
 	// Observer Button Handling
 	if ( IsObserver() )
 	{
@@ -2043,7 +2046,7 @@ void CBasePlayer::PreThink(void)
 		pev->impulse = 0;
 		return;
 	}
-
+	*/
 	if (pev->deadflag >= DEAD_DYING)
 	{
 		PlayerDeathThink();
@@ -4347,7 +4350,7 @@ void CBasePlayer :: UpdateClientData( void )
 			g_pGameRules->InitHUD( this );
 			m_fGameHUDInitialized = TRUE;
 			
-			m_iObserverLastMode = OBS_ROAMING;
+			//m_iObserverLastMode = OBS_ROAMING;
 			
 			if ( g_pGameRules->IsMultiplayer() )
 			{
