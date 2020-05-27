@@ -2074,12 +2074,6 @@ void PM_LadderMove( physent_t *pLadder )
 
 	if ( pmove->movetype == MOVETYPE_NOCLIP )
 		return;
-	
-#if defined( _TFC )
-	// this is how TFC freezes players, so we don't want them climbing ladders
-	if ( pmove->maxspeed <= 1.0 )
-		return;
-#endif
 
 	pmove->PM_GetModelBounds( pLadder->model, modelmins, modelmaxs );
 
@@ -2104,37 +2098,16 @@ void PM_LadderMove( physent_t *pLadder )
 	{
 		float forward = 0, right = 0;
 		vec3_t vpn, v_right;
-		float flSpeed = MAX_CLIMB_SPEED;
-
-		// they shouldn't be able to move faster than their maxspeed
-		if ( flSpeed > pmove->maxspeed )
-		{
-			flSpeed = pmove->maxspeed;
-		}
 
 		AngleVectors( pmove->angles, vpn, v_right, NULL );
-
-		if ( pmove->flags & FL_DUCKING )
-		{
-			flSpeed *= PLAYER_DUCKING_MULTIPLIER;
-		}
-
 		if ( pmove->cmd.buttons & IN_BACK )
-		{
-			forward -= flSpeed;
-		}
+			forward -= MAX_CLIMB_SPEED;
 		if ( pmove->cmd.buttons & IN_FORWARD )
-		{
-			forward += flSpeed;
-		}
+			forward += MAX_CLIMB_SPEED;
 		if ( pmove->cmd.buttons & IN_MOVELEFT )
-		{
-			right -= flSpeed;
-		}
+			right -= MAX_CLIMB_SPEED;
 		if ( pmove->cmd.buttons & IN_MOVERIGHT )
-		{
-			right += flSpeed;
-		}
+			right += MAX_CLIMB_SPEED;
 
 		if ( pmove->cmd.buttons & IN_JUMP )
 		{
@@ -2482,9 +2455,14 @@ PM_Jump
 void PM_Jump (void)
 {
 	int i;
-	qboolean tfc = false;
+//++ BulliT
+	//qboolean tfc = false;
+//-- BulliT
 
 	qboolean cansuperjump = false;
+//++ BulliT
+	qboolean bBunnyJump = false;
+//-- BulliT
 
 	if (pmove->dead)
 	{
@@ -2492,14 +2470,20 @@ void PM_Jump (void)
 		return;
 	}
 
-	tfc = atoi( pmove->PM_Info_ValueForKey( pmove->physinfo, "tfc" ) ) == 1 ? true : false;
+//++ BulliT
+//	tfc = atoi( pmove->PM_Info_ValueForKey( pmove->physinfo, "tfc" ) ) == 1 ? true : false;
+//-- BulliT
 
 	// Spy that's feigning death cannot jump
+//++ BulliT
+/*
 	if ( tfc && 
 		( pmove->deadflag == ( DEAD_DISCARDBODY + 1 ) ) )
 	{
 		return;
 	}
+*/
+//-- BulliT
 
 	// See if we are waterjumping.  If so, decrement count and return.
 	if ( pmove->waterjumptime )
@@ -2565,13 +2549,21 @@ void PM_Jump (void)
 	// In the air now.
     pmove->onground = -1;
 
-	//PM_PreventMegaBunnyJumping();
+//++ BulliT
+	bBunnyJump = atoi( pmove->PM_Info_ValueForKey( pmove->physinfo, "bj" ) ) == 1 ? true : false;
+    if (!bBunnyJump)
+        PM_PreventMegaBunnyJumping();
+//-- BulliT
 
+//++ BulliT
+  /*
 	if ( tfc )
 	{
 		pmove->PM_PlaySound( CHAN_BODY, "player/plyrjmp8.wav", 0.5, ATTN_NORM, 0, PITCH_NORM );
 	}
 	else
+  */
+//-- BulliT
 	{
 		PM_PlayStepSound( PM_MapTextureTypeStepType( pmove->chtexturetype ), 1.0 );
 	}
@@ -2714,6 +2706,8 @@ void PM_CheckFalling( void )
 		}
 		else if ( pmove->flFallVelocity > PLAYER_MAX_SAFE_FALL_SPEED / 2 )
 		{
+//++ BulliT
+      /*
 			qboolean tfc = false;
 			tfc = atoi( pmove->PM_Info_ValueForKey( pmove->physinfo, "tfc" ) ) == 1 ? true : false;
 
@@ -2721,6 +2715,8 @@ void PM_CheckFalling( void )
 			{
 				pmove->PM_PlaySound( CHAN_VOICE, "player/pl_fallpain3.wav", 1, ATTN_NORM, 0, PITCH_NORM );
 			}
+      */
+//-- BulliT
 
 			fvol = 0.85;
 		}
