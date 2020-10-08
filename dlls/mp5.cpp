@@ -22,6 +22,11 @@
 #include "player.h"
 #include "soundent.h"
 #include "gamerules.h"
+//++ BulliT
+#ifdef AGSTATS
+#include "agstats.h"
+#endif
+//-- Martin Webrant
 
 enum mp5_e
 {
@@ -50,12 +55,28 @@ int CMP5::SecondaryAmmoIndex( void )
 
 void CMP5::Spawn( )
 {
+//++ BulliT
+#ifndef CLIENT_DLL
+	if (SGBOW == AgGametype())
+	{
+		//Spawn shotgun instead.
+		CBaseEntity *pNewWeapon = CBaseEntity::Create( "weapon_shotgun", g_pGameRules->VecWeaponRespawnSpot( this ), pev->angles, pev->owner );
+		return;
+	}
+#endif
+//-- Martin Webrant
 	pev->classname = MAKE_STRING("weapon_9mmAR"); // hack to allow for old names
 	Precache( );
 	SET_MODEL(ENT(pev), "models/w_9mmAR.mdl");
 	m_iId = WEAPON_MP5;
 
 	m_iDefaultAmmo = MP5_DEFAULT_GIVE;
+  //++ BulliT
+#ifndef CLIENT_DLL
+  if (ARENA == AgGametype() || ARCADE == AgGametype() || LMS == AgGametype())
+	  m_iDefaultAmmo = MP5_MAX_CLIP;
+#endif 
+//-- Martin Webrant
 
 	FallInit();// get ready to fall down.
 }
@@ -146,7 +167,9 @@ void CMP5::PrimaryAttack()
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	m_iClip--;
-
+#ifdef AGSTATS
+	Stats.FireShot(m_pPlayer,STRING(pev->classname));
+#endif
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 
@@ -209,6 +232,22 @@ void CMP5::SecondaryAttack( void )
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
+#ifndef CLIENT_WEAPONS
+	SendWeaponAnim( MP5_LAUNCH );
+
+	if ( RANDOM_LONG(0,1) )
+	{
+		// play this sound through BODY channel so we can hear it if player didn't stop firing MP3
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/glauncher.wav", 0.8, ATTN_NORM);
+	}
+	else
+	{
+		// play this sound through BODY channel so we can hear it if player didn't stop firing MP3
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/glauncher2.wav", 0.8, ATTN_NORM);
+	}
+#endif
+
+
  	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 
 	// we don't add in player velocity anymore.
@@ -232,6 +271,10 @@ void CMP5::SecondaryAttack( void )
 	if (!m_pPlayer->m_rgAmmo[m_iSecondaryAmmoType])
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	
+#ifndef CLIENT_WEAPONS
+	m_pPlayer->pev->punchangle.x -= 10;
+#endif
 }
 
 void CMP5::Reload( void )

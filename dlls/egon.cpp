@@ -24,6 +24,11 @@
 #include "effects.h"
 #include "customentity.h"
 #include "gamerules.h"
+//++ BulliT
+#ifdef AGSTATS
+#include "agstats.h"
+#endif
+//-- Martin Webrant
 
 #define	EGON_PRIMARY_VOLUME		450
 #define EGON_BEAM_SPRITE		"sprites/xbeam1.spr"
@@ -51,8 +56,23 @@ enum egon_e {
 
 LINK_ENTITY_TO_CLASS( weapon_egon, CEgon );
 
+#ifndef CLIENT_WEAPONS
+static int g_fireAnims1[] = { EGON_FIRE1, EGON_FIRE2, EGON_FIRE3, EGON_FIRE4 };
+static int g_fireAnims2[] = { EGON_ALTFIRECYCLE };
+#endif
+
 void CEgon::Spawn( )
 {
+	//++ BulliT
+#ifndef CLIENT_DLL
+	if (SGBOW == AgGametype())
+	{
+		//Spawn shotgun instead.
+		CBaseEntity* pNewWeapon = CBaseEntity::Create("weapon_gauss", g_pGameRules->VecWeaponRespawnSpot(this), pev->angles, pev->owner);
+		return;
+	}
+#endif
+	//-- Martin Webrant
 	Precache( );
 	m_iId = WEAPON_EGON;
 	SET_MODEL(ENT(pev), "models/w_egon.mdl");
@@ -202,13 +222,27 @@ void CEgon::Attack( void )
 
 			m_flAmmoUseTime = gpGlobals->time;// start using ammo ASAP.
 
+#ifndef CLIENT_WEAPONS
+			SendWeaponAnim( g_fireAnims1[ RANDOM_LONG(0,ARRAYSIZE(g_fireAnims1)-1) ] );
+#else
 			PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usEgonFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, m_fireState, m_fireMode, 1, 0 );
-						
+#endif						
 			m_shakeTime = 0;
 
 			m_pPlayer->m_iWeaponVolume = EGON_PRIMARY_VOLUME;
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.1;
 			pev->fuser1	= UTIL_WeaponTimeBase() + 2;
+
+#ifndef CLIENT_WEAPONS
+			if (m_fireMode == FIRE_WIDE)
+			{
+				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, EGON_SOUND_STARTUP, 0.98, ATTN_NORM, 0, 125);
+			}
+			else
+			{
+				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, EGON_SOUND_STARTUP, 0.9, ATTN_NORM, 0, 100);
+			}
+#endif
 
 			pev->dmgtime = gpGlobals->time + GetPulseInterval();
 			m_fireState = FIRE_CHARGE;
@@ -222,7 +256,18 @@ void CEgon::Attack( void )
 		
 			if ( pev->fuser1 <= UTIL_WeaponTimeBase() )
 			{
-				PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usEgonFire, 0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, m_fireState, m_fireMode, 0, 0 );
+#ifndef CLIENT_WEAPONS
+				if (m_fireMode == FIRE_WIDE)
+				{
+					EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_STATIC, EGON_SOUND_RUN, 0.98, ATTN_NORM, 0, 125);
+				}
+				else
+				{
+					EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_STATIC, EGON_SOUND_RUN, 0.9, ATTN_NORM, 0, 100);
+				}
+#else
+				PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usEgonFire, 0, (float*)&g_vecZero, (float*)&g_vecZero, 0.0, 0.0, m_fireState, m_fireMode, 0, 0);
+#endif
 				pev->fuser1 = 1000;
 			}
 
@@ -396,8 +441,10 @@ void CEgon::CreateEffect( void )
 	m_pBeam->SetFlags( BEAM_FSINE );
 	m_pBeam->SetEndAttachment( 1 );
 	m_pBeam->pev->spawnflags |= SF_BEAM_TEMPORARY;	// Flag these to be destroyed on save/restore or level transition
+#ifdef CLIENT_WEAPONS
 	m_pBeam->pev->flags |= FL_SKIPLOCALHOST;
 	m_pBeam->pev->owner = m_pPlayer->edict();
+#endif
 
 	m_pNoise = CBeam::BeamCreate( EGON_BEAM_SPRITE, 55 );
 	m_pNoise->PointEntInit( pev->origin, m_pPlayer->entindex() );
@@ -405,15 +452,19 @@ void CEgon::CreateEffect( void )
 	m_pNoise->SetBrightness( 100 );
 	m_pNoise->SetEndAttachment( 1 );
 	m_pNoise->pev->spawnflags |= SF_BEAM_TEMPORARY;
+#ifdef CLIENT_WEAPONS
 	m_pNoise->pev->flags |= FL_SKIPLOCALHOST;
 	m_pNoise->pev->owner = m_pPlayer->edict();
+#endif
 
 	m_pSprite = CSprite::SpriteCreate( EGON_FLARE_SPRITE, pev->origin, FALSE );
 	m_pSprite->pev->scale = 1.0;
 	m_pSprite->SetTransparency( kRenderGlow, 255, 255, 255, 255, kRenderFxNoDissipation );
 	m_pSprite->pev->spawnflags |= SF_SPRITE_TEMPORARY;
+#ifdef CLIENT_WEAPONS
 	m_pSprite->pev->flags |= FL_SKIPLOCALHOST;
 	m_pSprite->pev->owner = m_pPlayer->edict();
+#endif
 
 	if ( m_fireMode == FIRE_WIDE )
 	{
@@ -495,17 +546,29 @@ void CEgon::WeaponIdle( void )
 
 void CEgon::EndAttack( void )
 {
+#ifndef CLIENT_WEAPONS
+	STOP_SOUND(ENT(m_pPlayer->pev), CHAN_STATIC, EGON_SOUND_RUN);
+	if (m_fireState != FIRE_OFF) //Checking the button just in case!.
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, EGON_SOUND_OFF, 0.98, ATTN_NORM, 0, 100);
+#else
 	bool bMakeNoise = false;
 		
 	if ( m_fireState != FIRE_OFF ) //Checking the button just in case!.
 		 bMakeNoise = true;
 
 	PLAYBACK_EVENT_FULL( FEV_GLOBAL | FEV_RELIABLE, m_pPlayer->edict(), m_usEgonStop, 0, (float *)&m_pPlayer->pev->origin, (float *)&m_pPlayer->pev->angles, 0.0, 0.0, bMakeNoise, 0, 0, 0 );
+#endif
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 
 	m_fireState = FIRE_OFF;
+
+	//++ BulliT
+#ifdef AGSTATS
+	Stats.FireShot(m_pPlayer, STRING(pev->classname));
+#endif
+	//-- Martin Webrant
 
 	DestroyEffect();
 }

@@ -21,6 +21,11 @@
 #include "monsters.h"
 #include "player.h"
 #include "gamerules.h"
+//++ BulliT
+#ifdef AGSTATS
+#include "agstats.h"
+#endif
+//-- Martin Webrant
 
 #define USE_SCOPE	TRUE
 
@@ -122,6 +127,18 @@ void CPython::Holster( int skiplocal /* = 0 */ )
 
 void CPython::SecondaryAttack( void )
 {
+#ifndef CLIENT_WEAPONS
+	if ( m_fInZoom )
+ 	{
+		m_fInZoom = FALSE;
+		m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
+	}
+	else
+	{
+		m_fInZoom = TRUE;
+		m_pPlayer->m_iFOV = 40;
+	}
+#else
 	if ( m_pPlayer->pev->fov != 0 )
 	{
 		m_fInZoom = FALSE;
@@ -132,6 +149,7 @@ void CPython::SecondaryAttack( void )
 		m_fInZoom = TRUE;
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 40;
 	}
+#endif
 
 	m_flNextSecondaryAttack = 0.5;
 }
@@ -159,10 +177,17 @@ void CPython::PrimaryAttack()
 		return;
 	}
 
+#ifndef CLIENT_WEAPONS
+	PLAYBACK_EVENT( 0, m_pPlayer->edict(), m_usFirePython );
+#endif
+
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
 
 	m_iClip--;
+#ifdef AGSTATS
+  Stats.FireShot(m_pPlayer,STRING(pev->classname));
+#endif
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 
@@ -175,8 +200,12 @@ void CPython::PrimaryAttack()
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
+#ifndef CLIENT_WEAPONS
+	m_pPlayer->FireBullets( 1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_357, 0 );
+#else
 	Vector vecDir;
 	vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+#endif
 
     int flags;
 #if defined( CLIENT_WEAPONS )
@@ -198,6 +227,13 @@ void CPython::PrimaryAttack()
 
 void CPython::Reload( void )
 {
+#ifndef CLIENT_WEAPONS
+	if ( m_fInZoom )
+	{
+		m_fInZoom = FALSE;
+		m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
+	}
+#else
 	if ( m_pPlayer->ammo_357 <= 0 )
 		return;
 
@@ -206,6 +242,7 @@ void CPython::Reload( void )
 		m_fInZoom = FALSE;
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
 	}
+#endif
 
 	DefaultReload( 6, PYTHON_RELOAD, 2.0, USE_SCOPE );
 }
@@ -216,6 +253,13 @@ void CPython::WeaponIdle( void )
 	ResetEmptySound( );
 
 	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
+
+	// ALERT( at_console, "%.2f\n", gpGlobals->time - m_flSoundDelay );
+	if (m_flSoundDelay != 0 && m_flSoundDelay <= UTIL_WeaponTimeBase() )
+	{
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_reload1.wav", RANDOM_FLOAT(0.8, 0.9), ATTN_NORM);
+		m_flSoundDelay = 0;
+	}
 
 	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;

@@ -22,6 +22,11 @@
 #include "nodes.h"
 #include "player.h"
 #include "gamerules.h"
+//++ BulliT
+#ifdef AGSTATS
+#include "agstats.h"
+#endif
+//-- Martin Webrant
 
 #ifndef CLIENT_DLL
 #define BOLT_AIR_VELOCITY	2000
@@ -339,6 +344,12 @@ void CCrossbow::FireSniperBolt()
 	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
 	m_iClip--;
 
+	//++ BulliT
+#ifdef AGSTATS
+	Stats.FireShot(m_pPlayer, STRING(pev->classname));
+#endif
+	//-- Martin Webrant
+
 	int flags;
 #if defined( CLIENT_WEAPONS )
 	flags = FEV_NOTHOST;
@@ -346,7 +357,22 @@ void CCrossbow::FireSniperBolt()
 	flags = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usCrossbow2, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0, 0, m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType], 0, 0 );
+#ifndef CLIENT_WEAPONS
+	// make twang sound
+	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/xbow_fire1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 93 + RANDOM_LONG(0, 0xF));
+
+	if (m_iClip)
+	{
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/xbow_reload1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 93 + RANDOM_LONG(0, 0xF));
+		SendWeaponAnim(CROSSBOW_FIRE1);
+	}
+	else if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] == 0)
+	{
+		SendWeaponAnim(CROSSBOW_FIRE3);
+	}
+#else
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usCrossbow2, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, 0, 0, m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType], 0, 0);
+#endif
 
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -361,10 +387,49 @@ void CCrossbow::FireSniperBolt()
 #ifndef CLIENT_DLL
 	if ( tr.pHit->v.takedamage )
 	{
+#ifndef CLIENT_WEAPONS
+		switch (RANDOM_LONG(0, 1))
+		{
+		case 0:
+			EMIT_SOUND(tr.pHit, CHAN_BODY, "weapons/xbow_hitbod1.wav", 1, ATTN_NORM); break;
+		case 1:
+			EMIT_SOUND(tr.pHit, CHAN_BODY, "weapons/xbow_hitbod2.wav", 1, ATTN_NORM); break;
+		}
+#endif
+
 		ClearMultiDamage( );
 		CBaseEntity::Instance(tr.pHit)->TraceAttack(m_pPlayer->pev, 120, vecDir, &tr, DMG_BULLET | DMG_NEVERGIB ); 
 		ApplyMultiDamage( pev, m_pPlayer->pev );
 	}
+#ifndef CLIENT_WEAPONS
+	else
+	{
+		// create a bolt
+		CCrossbowBolt* pBolt = CCrossbowBolt::BoltCreate();
+		pBolt->pev->origin = tr.vecEndPos - vecDir * 10;
+		pBolt->pev->angles = UTIL_VecToAngles(vecDir);
+		pBolt->pev->solid = SOLID_NOT;
+		pBolt->SetTouch(NULL);
+		pBolt->SetThink(SUB_Remove);
+
+		EMIT_SOUND(pBolt->edict(), CHAN_WEAPON, "weapons/xbow_hit1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM);
+
+		if (UTIL_PointContents(tr.vecEndPos) != CONTENTS_WATER)
+		{
+			UTIL_Sparks(tr.vecEndPos);
+		}
+
+		if (FClassnameIs(tr.pHit, "worldspawn"))
+		{
+			// let the bolt sit around for a while if it hit static architecture
+			pBolt->pev->nextthink = gpGlobals->time + 5.0;
+		}
+		else
+		{
+			pBolt->pev->nextthink = gpGlobals->time;
+		}
+	}
+#endif
 #endif
 }
 
@@ -382,6 +447,12 @@ void CCrossbow::FireBolt()
 
 	m_iClip--;
 
+	//++ BulliT
+#ifdef AGSTATS
+	Stats.FireShot(m_pPlayer, STRING(pev->classname));
+#endif
+	//-- Martin Webrant
+
 	int flags;
 #if defined( CLIENT_WEAPONS )
 	flags = FEV_NOTHOST;
@@ -389,7 +460,22 @@ void CCrossbow::FireBolt()
 	flags = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usCrossbow, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0, 0, m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType], 0, 0 );
+#ifndef CLIENT_WEAPONS
+	// make twang sound
+	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/xbow_fire1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 93 + RANDOM_LONG(0, 0xF));
+
+	if (m_iClip)
+	{
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/xbow_reload1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 93 + RANDOM_LONG(0, 0xF));
+		SendWeaponAnim(CROSSBOW_FIRE1);
+	}
+	else if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] == 0)
+	{
+		SendWeaponAnim(CROSSBOW_FIRE3);
+	}
+#else
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usCrossbow, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, 0, 0, m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType], 0, 0);
+#endif
 
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -432,11 +518,28 @@ void CCrossbow::FireBolt()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5.0;
 	else
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75;
+
+#ifndef CLIENT_WEAPONS
+	m_pPlayer->pev->punchangle.x -= 2;
+#endif
 }
 
 
 void CCrossbow::SecondaryAttack()
 {
+#ifndef CLIENT_WEAPONS
+	if (m_fInZoom)
+	{
+		m_pPlayer->m_iFOV = 0; // 0 means reset to default fov
+		m_fInZoom = 0;
+	}
+	else
+	{
+		m_pPlayer->m_iFOV = 20;
+		m_fInZoom = 1;
+	}
+#else
+
 	if ( m_pPlayer->pev->fov != 0 )
 	{
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0; // 0 means reset to default fov
@@ -447,6 +550,7 @@ void CCrossbow::SecondaryAttack()
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 20;
 		m_fInZoom = 1;
 	}
+#endif
 	
 	pev->nextthink = UTIL_WeaponTimeBase() + 0.1;
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
@@ -455,10 +559,16 @@ void CCrossbow::SecondaryAttack()
 
 void CCrossbow::Reload( void )
 {
+#ifdef CLIENT_WEAPONS
 	if ( m_pPlayer->ammo_bolts <= 0 )
 		return;
+#endif
 
+#ifndef CLIENT_WEAPONS
+	if ( m_fInZoom)
+#else
 	if ( m_pPlayer->pev->fov != 0 )
+#endif
 	{
 		SecondaryAttack();
 	}

@@ -411,6 +411,16 @@ LINK_ENTITY_TO_CLASS( weapon_snark, CSqueak );
 
 void CSqueak::Spawn( )
 {
+//++ BulliT
+#ifndef CLIENT_DLL
+  if (SGBOW == AgGametype())
+  {
+    //Spawn crossbow instead.
+	  CBaseEntity *pNewWeapon = CBaseEntity::Create( "weapon_crossbow", g_pGameRules->VecWeaponRespawnSpot( this ), pev->angles, pev->owner );
+    return;
+  }
+#endif
+//-- Martin Webrant
 	Precache( );
 	m_iId = WEAPON_SNARK;
 	SET_MODEL(ENT(pev), "models/w_sqknest.mdl");

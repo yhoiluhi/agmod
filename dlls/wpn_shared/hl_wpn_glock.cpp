@@ -20,6 +20,11 @@
 #include "weapons.h"
 #include "nodes.h"
 #include "player.h"
+//++ BulliT
+#ifdef AGSTATS
+#include "agstats.h"
+#endif
+//-- Martin Webrant
 
 enum glock_e {
 	GLOCK_IDLE1 = 0,
@@ -117,6 +122,9 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 	}
 
 	m_iClip--;
+#ifdef AGSTATS
+  Stats.FireShot(m_pPlayer,STRING(pev->classname));
+#endif
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 

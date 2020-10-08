@@ -22,7 +22,11 @@
 #include "nodes.h"
 #include "player.h"
 #include "gamerules.h"
-
+//++ BulliT
+#ifdef AGSTATS
+#include "agstats.h"
+#endif
+//-- Martin Webrant
 
 
 
@@ -272,6 +276,14 @@ void CRpgRocket :: FollowThink( void  )
 		if (pev->waterlevel == 0 && pev->velocity.Length() < 1500)
 		{
 			Detonate( );
+			//++ BulliT
+			//Fixes the bug where it won't auto reload when it explodes coming out of the water
+			if (m_pLauncher)
+			{
+				// my launcher is still around, tell it I'm dead.
+				m_pLauncher->m_cActiveRockets--;
+			}
+			//-- Martin Webrant
 		}
 	}
 	// ALERT( at_console, "%.0f\n", flSpeed );
@@ -332,6 +344,16 @@ void CRpg::Reload( void )
 
 void CRpg::Spawn( )
 {
+	//++ BulliT
+#ifndef CLIENT_DLL
+	if (SGBOW == AgGametype())
+	{
+		//Spawn crossbow instead.
+		CBaseEntity* pNewWeapon = CBaseEntity::Create("weapon_crossbow", g_pGameRules->VecWeaponRespawnSpot(this), pev->angles, pev->owner);
+		return;
+	}
+#endif
+	//-- Martin Webrant
 	Precache( );
 	m_iId = WEAPON_RPG;
 
@@ -439,6 +461,10 @@ void CRpg::PrimaryAttack()
 		m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 		m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
 
+#ifndef CLIENT_WEAPONS
+		SendWeaponAnim(RPG_FIRE2);
+#endif
+
 #ifndef CLIENT_DLL
 		// player "shoot" animation
 		m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -449,6 +475,19 @@ void CRpg::PrimaryAttack()
 		CRpgRocket *pRocket = CRpgRocket::CreateRpgRocket( vecSrc, m_pPlayer->pev->v_angle, m_pPlayer, this );
 
 		UTIL_MakeVectors( m_pPlayer->pev->v_angle );// RpgRocket::Create stomps on globals, so remake.
+
+		//++ BulliT
+		if (ag_rpg_fix.value > 0)
+		{
+			//Fixes the RPG wall bug just a little bit - I dont want to remove it all. (You jump back and get the RPG in back of your head)
+			if ((pRocket->pev->velocity.x >= 0 && m_pPlayer->pev->velocity.x < 0) || (pRocket->pev->velocity.x < 0 && m_pPlayer->pev->velocity.x > 0))
+				pRocket->pev->velocity = pRocket->pev->velocity + 0.5 * gpGlobals->v_forward * DotProduct(m_pPlayer->pev->velocity, gpGlobals->v_forward); //Only use 50% of the velocity when the player are moving backwards.
+			else
+				pRocket->pev->velocity = pRocket->pev->velocity + gpGlobals->v_forward * DotProduct(m_pPlayer->pev->velocity, gpGlobals->v_forward);
+		}
+		else
+			//-- Martin Webrant
+
 		pRocket->pev->velocity = pRocket->pev->velocity + gpGlobals->v_forward * DotProduct( m_pPlayer->pev->velocity, gpGlobals->v_forward );
 #endif
 
@@ -457,14 +496,26 @@ void CRpg::PrimaryAttack()
 
 		int flags;
 #if defined( CLIENT_WEAPONS )
-	flags = FEV_NOTHOST;
+		flags = FEV_NOTHOST;
 #else
-	flags = 0;
+		flags = 0;
 #endif
 
-		PLAYBACK_EVENT( flags, m_pPlayer->edict(), m_usRpg );
+#ifndef CLIENT_WEAPONS
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/rocketfire1.wav", 0.9, ATTN_NORM);
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/glauncher.wav", 0.7, ATTN_NORM);
+		m_pPlayer->pev->punchangle.x -= 5;
+#else
+		PLAYBACK_EVENT(flags, m_pPlayer->edict(), m_usRpg);
+#endif
 
-		m_iClip--; 
+		m_iClip--;
+
+		//++ BulliT
+#ifdef AGSTATS
+		Stats.FireShot(m_pPlayer, STRING(pev->classname));
+#endif
+		//-- Martin Webrant
 				
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
@@ -472,6 +523,10 @@ void CRpg::PrimaryAttack()
 	else
 	{
 		PlayEmptySound( );
+		//++ BulliT
+			//fixes the fast-clicking bug
+		m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
+		//-- Martin Webrant
 	}
 	UpdateSpot( );
 }
