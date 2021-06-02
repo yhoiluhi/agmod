@@ -66,7 +66,7 @@ public:
 			if (pListener->IsSpectator() || pTalker->IsSpectator())
 				return false;
 			//-- Martin Webrant
-			if ( g_pGameRules->PlayerRelationship( pListener, pTalker ) != GR_TEAMMATE )
+			if ( !pListener->IsTeammate(pTalker) )
 			{
 				return false;
 			}

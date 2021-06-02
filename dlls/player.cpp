@@ -1837,7 +1837,7 @@ void CBasePlayer::AddPointsToTeam( int score, BOOL bAllowNegativeScore )
 
 		if ( pPlayer && i != index )
 		{
-			if ( g_pGameRules->PlayerRelationship( this, pPlayer ) == GR_TEAMMATE )
+			if ( IsTeammate(pPlayer) )
 			{
 				pPlayer->AddPoints( score, bAllowNegativeScore );
 			}
@@ -1881,7 +1881,7 @@ void CBasePlayer::UpdateStatusBar()
 				strcpy( sbuf1, "1 %p1\n2 Health: %i2%%\n3 Armor: %i3%%" );
 
 				// allies and medics get to see the targets health
-				if ( g_pGameRules->PlayerRelationship( this, pEntity ) == GR_TEAMMATE )
+				if ( IsTeammate(pEntity) )
 				{
 					newSBarState[ SBAR_ID_TARGETHEALTH ] = 100 * (pEntity->pev->health / pEntity->pev->max_health);
 					newSBarState[ SBAR_ID_TARGETARMOR ] = pEntity->pev->armorvalue; //No need to get it % based since 100 it's the max.
@@ -5497,7 +5497,7 @@ void CBasePlayer::UpdatePlayerId()
         m_iLastPlayerId = pPlayer->entindex();
         m_fNextPlayerId = gpGlobals->time + 2; 
 
-        if (IsSpectator() || GR_TEAMMATE == g_pGameRules->PlayerRelationship(this, pPlayer))
+        if (IsSpectator() || IsTeammate(pPlayer))
         {
           MESSAGE_BEGIN( MSG_ONE_UNRELIABLE, gmsgPlayerId, NULL, pev );
             WRITE_BYTE(pPlayer->entindex());

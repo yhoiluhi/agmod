@@ -473,6 +473,7 @@ public:
 	void InitWeaponWeight();
 	*/
 	//-- Martin Webrant
+	bool IsTeammate(CBaseEntity* pPlayer);
 };
 //++ BulliT
 inline void CBasePlayer::Init()
@@ -651,6 +652,11 @@ inline bool CBasePlayer::GetSpawnFull()
 inline bool CBasePlayer::DisableSpecs()
 {
 	return 0 != m_iDisableSpecs;
+}
+
+inline bool CBasePlayer::IsTeammate(CBaseEntity* pTarget)
+{
+	return g_pGameRules->PlayerRelationship(this, pTarget) == GR_TEAMMATE;
 }
 
 // Spectator Movement modes (stored in pev->iuser1, so the physics code can get at them)

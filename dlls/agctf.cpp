@@ -398,7 +398,7 @@ void AgCTF::PlayerKilled(CBasePlayer* pPlayer, entvars_t* pKiller)
 
 void AgCTF::AddPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKilled)
 {
-    if (pAttacker != pKilled && g_pGameRules->PlayerRelationship(pAttacker, pKilled) == GR_TEAMMATE)
+    if (pAttacker != pKilled && pAttacker->IsTeammate(pKilled))
         return; //Killed his team m8.
 
     if (FStrEq(CTF_TEAM1_NAME, pKilled->m_szTeamName) && pKilled->m_bFlagTeam2
