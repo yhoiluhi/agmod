@@ -390,7 +390,6 @@ void CGauss::StartFire( void )
 		//ALERT ( at_console, "Time:%f Damage:%f\n", gpGlobals->time - m_pPlayer->m_flStartCharge, flDamage );
 
 #ifndef CLIENT_DLL
-
 		if ( !m_fPrimaryFire )
 		{
 			m_pPlayer->pev->velocity = m_pPlayer->pev->velocity - gpGlobals->v_forward * flDamage * 5;
@@ -589,11 +588,6 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 							nTotal += 53;
 
 							vecSrc = beam_tr.vecEndPos + vecDir;
-						}
-						else
-						{
-							// Self-gauss fix by Lev (https://github.com/LevShisterov/BugfixedHL/commit/adb616153729102975800edbbdcc8ed8a50ed8ad):
-							flDamage = 0;
 						}
 					}
 					else
