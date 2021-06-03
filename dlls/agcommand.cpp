@@ -239,6 +239,7 @@ FILE_GLOBAL char* s_szVars[] =
   "sv_ag_wallgauss <0/1> - Wallgauss on/off. On is for the weak :)",
   "sv_ag_headshot <1-3> - Set power of headshot. Normally 3.",
   "sv_ag_blastradius <1> - Blast radius for explosions. Normally 1",
+  // TODO: update this
   "sv_ag_allowed_gamemodes <ffa;tdm> - Allowed gamemodes, could be any off ffa;tdm;arena;arcade;sgbow;instagib",
 };
 
@@ -316,7 +317,6 @@ bool AgCommand::HandleCommand(CBasePlayer* pPlayer)
         }
 
         // TODO: Refactor this, it's getting huge and unmaintainable
-
         if (0 < CMD_ARGC() &&
             (0 == strnicmp(CMD_ARGV(0), "ag_spectalk", 11)
                 || 0 == strnicmp(CMD_ARGV(0), "mp_timelimit", 12)

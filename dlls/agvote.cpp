@@ -286,6 +286,7 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                 return true;
             }
             //Check setting
+            // TODO: either remove or support `mp_friendlyfire` and `mp_weaponstay`, as they're being silently rejected in `AgSettings::AdminSetting()`
             // TODO: refactor this, it's getting huge and unmaintainable
             else if ((
                 0 == strncmp(m_sVote.c_str(), "ag_gauss_fix", 12) ||
@@ -340,6 +341,7 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                 CallVote(pPlayer);
                 return true;
             }
+            // TODO: remove sv_maxspeed as it's silently rejected in `AgSettings::AdminSetting()` anyways
             else if (0 == strncmp(m_sVote.c_str(), "sv_maxspeed", 11))
             {
                 if (!ag_vote_setting.value)

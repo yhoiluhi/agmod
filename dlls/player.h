@@ -489,6 +489,9 @@ inline void CBasePlayer::Init()
 	m_bIngame = 1 > ag_match_running.value;
 	m_bDoneFirstSpawn = false;
 
+	// TODO: review this. There's a `ag_player_id cvar` defaulted to 5, but its value is not
+	// being used here. There's this `5.0` hardcoded here and then a `2` in CBasePlayer::Spawn(),
+	// and the check is done every 0.5 in CBasePlayer::UpdatePlayerId()
 	m_fPlayerIdCheck = gpGlobals->time + 5.0;
 
 	m_fDisplayGamemode = 0.0;

@@ -46,6 +46,7 @@ cvar_t  allow_spectators = { "allow_spectators", "1.0", FCVAR_SERVER };		// 0 pr
 
 cvar_t  mp_chattime = {"mp_chattime","10", FCVAR_SERVER };
 
+
 // sv_singleplayer 1: enables entities and stuff that allows playing singleplayer campaigns properly
 cvar_t	singleplayer = { "sv_singleplayer", "0", FCVAR_SERVER };
 
@@ -54,6 +55,7 @@ cvar_t	singleplayer = { "sv_singleplayer", "0", FCVAR_SERVER };
 // Credits to h0boken for finding out that disabling clientside prediction kinda fixes the issue
 cvar_t	sploading = { "sv_sp_loading", "0", FCVAR_SERVER }; // only true when loading (changelevel)
 cvar_t	spgausscharging = { "sv_sp_gauss_charging", "0", FCVAR_SERVER }; // only true when gauss is charging (secondary fire)
+
 
 // Engine Cvars
 cvar_t 	*g_psv_gravity = NULL;
@@ -473,7 +475,7 @@ void GameDLLInit( void )
 	g_footsteps = CVAR_GET_POINTER( "mp_footsteps" );
 
 	CVAR_REGISTER (&displaysoundlist);
-	CVAR_REGISTER( &allow_spectators );
+	CVAR_REGISTER (&allow_spectators);
 
 	CVAR_REGISTER (&teamplay);
 	CVAR_REGISTER (&fraglimit);
@@ -496,9 +498,9 @@ void GameDLLInit( void )
 
 	CVAR_REGISTER (&mp_chattime);
 
-	CVAR_REGISTER(&singleplayer);
-	CVAR_REGISTER(&sploading);
-	CVAR_REGISTER(&spgausscharging);
+	CVAR_REGISTER (&singleplayer);
+	CVAR_REGISTER (&sploading);
+	CVAR_REGISTER (&spgausscharging);
 
 // REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

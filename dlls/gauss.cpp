@@ -390,7 +390,6 @@ void CGauss::StartFire( void )
 		//ALERT ( at_console, "Time:%f Damage:%f\n", gpGlobals->time - m_pPlayer->m_flStartCharge, flDamage );
 
 #ifndef CLIENT_DLL
-		float flZVel = m_pPlayer->pev->velocity.z;
 
 		if ( !m_fPrimaryFire )
 		{

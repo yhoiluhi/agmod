@@ -42,11 +42,12 @@ DLL_GLOBAL cvar_t	ag_oldphysics = { "sv_ag_oldphysics","1" };
 
 DLL_GLOBAL cvar_t	ag_allow_timeout = { "sv_ag_allow_timeout","1" };       //Allow timeout.
 
+// TODO: review if these should really be unlogged, I think it has some interest to log them and shouldn't be spammy
 DLL_GLOBAL cvar_t	ag_allow_vote = { "sv_ag_allow_vote","1", FCVAR_SERVER | FCVAR_UNLOGGED };       //Voting is enabled by default.
 DLL_GLOBAL cvar_t	ag_vote_start = { "sv_ag_vote_start","1", FCVAR_SERVER | FCVAR_UNLOGGED };                    //Start voting enabled by default
 DLL_GLOBAL cvar_t	ag_vote_setting = { "sv_ag_vote_setting","1" };                  //Setting voting enabled by default
 DLL_GLOBAL cvar_t	ag_vote_gamemode = { "sv_ag_vote_gamemode","1", FCVAR_SERVER | FCVAR_UNLOGGED };                 //Gamemode voting is enabled by default.
-DLL_GLOBAL cvar_t	ag_vote_kick = { "sv_ag_vote_kick","0" };                     //Kick voting is disabled by default.
+DLL_GLOBAL cvar_t	ag_vote_kick = { "sv_ag_vote_kick","0" };                     //Kick voting is disabled by default. // TODO: review if this should be defaulted to 1
 DLL_GLOBAL cvar_t	ag_vote_allow = { "sv_ag_vote_allow","1" };                    //All voting is enabled by default.
 DLL_GLOBAL cvar_t	ag_vote_admin = { "sv_ag_vote_admin","0" };                    //Admin voting is disabled by default.
 DLL_GLOBAL cvar_t	ag_vote_map = { "sv_ag_vote_map","1", FCVAR_SERVER | FCVAR_UNLOGGED };                      //Map voting is enabled by default.
@@ -351,6 +352,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_spawn_pa_visible_chance);
     CVAR_REGISTER(&ag_spawn_pa_audible_chance);
     CVAR_REGISTER(&ag_spawn_pa_safe_chance);
+
     CVAR_REGISTER(&mm_agsay);
 
     Command.Init();
