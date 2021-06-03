@@ -37,6 +37,7 @@ extern int gmsgSpectator;
 #define PLAYER_FALL_PUNCH_THRESHHOLD (float)350 // won't punch player's screen/make scrape noise unless player falling at least this fast.
 
 constexpr float BARELY_AUDIBLE_DIST = 1280.0;
+
 //
 // Player PHYSICS FLAGS bits
 //
@@ -474,6 +475,7 @@ public:
 	void InitWeaponWeight();
 	*/
 	//-- Martin Webrant
+
 	void GetInventoryInfo();
 	bool IsTeammate(CBaseEntity* pPlayer);
 	std::vector<CBasePlayer*> GetPlayingEnemies();
@@ -510,7 +512,7 @@ inline void CBasePlayer::Init()
 	m_fFloodLockTill = AgTime();
 	for (int i = 0; i < sizeof(m_afFloodWhen) / sizeof(m_afFloodWhen[0]); i++)
 	{
-		m_afFloodWhen[i] = AgTime();
+		m_afFloodWhen[i] = AgTime() - ag_floodpersecond.value;
 	}
 	m_iFloodWhenHead = 0;
 
