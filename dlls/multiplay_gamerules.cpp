@@ -15,6 +15,8 @@
 //
 // teamplay_gamerules.cpp
 //
+#include	<vector>
+
 #include	"extdll.h"
 #include	"util.h"
 #include	"cbase.h"
@@ -47,6 +49,7 @@ extern int gmsgMOTD;
 extern int gmsgServerName;
 
 extern int g_teamplay;
+extern std::vector<CBaseEntity*> g_spawnPoints;
 
 float g_flIntermissionStartTime = 0;
 
@@ -1206,6 +1209,12 @@ int CHalfLifeMultiplay::DeadPlayerAmmo( CBasePlayer *pPlayer )
 
 edict_t *CHalfLifeMultiplay::GetPlayerSpawnSpot( CBasePlayer *pPlayer )
 {
+	if (g_spawnPoints.empty())
+	{
+		// Load these first time this is called and reuse them afterwards
+		LoadSpawnPoints();
+	}
+
 	edict_t *pentSpawnSpot = CGameRules::GetPlayerSpawnSpot( pPlayer );	
 	if ( IsMultiplayer() && pentSpawnSpot->v.target )
 	{
@@ -1813,4 +1822,14 @@ void CHalfLifeMultiplay :: SendMOTDToClient( edict_t *client )
 	FREE_FILE( aFileList );
 }
 	
+void CHalfLifeMultiplay::LoadSpawnPoints()
+{
+	g_spawnPoints.clear(); // just to make sure
 
+	CBaseEntity* pSpot = NULL;
+	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_deathmatch")) != NULL)
+	{
+		g_spawnPoints.push_back(pSpot);
+	}
+	ALERT(at_aiconsole, "Deathmatch spawnpoints: %d\n", g_spawnPoints.size());
+}

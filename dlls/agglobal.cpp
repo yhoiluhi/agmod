@@ -166,13 +166,29 @@ DLL_GLOBAL cvar_t	ag_ctf_roundbased = { "sv_ag_ctf_roundbased","0" };  //1 for r
 
 //++ muphicks
 DLL_GLOBAL cvar_t	ag_dom_mincontroltime = { "sv_ag_dom_mincontroltime","5" }; // number of seconds team must control point to score
-DLL_GLOBAL cvar_t ag_dom_controlpoints = { "sv_ag_dom_controlpoints", "1" }; // number of points scored when under teams control
-DLL_GLOBAL cvar_t ag_dom_resetscorelimit = { "sv_ag_dom_resetscorelimit", "6" }; // max time under 1 teams control 5*6 = 30 seconds
-DLL_GLOBAL cvar_t ag_dom_scorelimit = { "sv_ag_dom_scorelimit", "200" }; // max points a team needs to get to win the game
+DLL_GLOBAL cvar_t	ag_dom_controlpoints = { "sv_ag_dom_controlpoints", "1" }; // number of points scored when under teams control
+DLL_GLOBAL cvar_t	ag_dom_resetscorelimit = { "sv_ag_dom_resetscorelimit", "6" }; // max time under 1 teams control 5*6 = 30 seconds
+DLL_GLOBAL cvar_t	ag_dom_scorelimit = { "sv_ag_dom_scorelimit", "200" }; // max points a team needs to get to win the game
 //-- muphicks
 
-DLL_GLOBAL cvar_t ag_gauss_fix = { "ag_gauss_fix","0" };            //Default 0 - no fix.
-DLL_GLOBAL cvar_t ag_rpg_fix = { "ag_rpg_fix","0" };            //Default 0 - no fix.
+DLL_GLOBAL cvar_t	ag_gauss_fix = { "ag_gauss_fix","0" };            //Default 0 - no fix.
+DLL_GLOBAL cvar_t	ag_rpg_fix = { "ag_rpg_fix","0" };            //Default 0 - no fix.
+
+DLL_GLOBAL cvar_t	ag_spawn_system = { "ag_spawn_system", "0", FCVAR_SERVER };  // Default 0 - classic mode (select a random spawn from the next 5)
+DLL_GLOBAL cvar_t	ag_spawn_history_entries = { "ag_spawn_history_entries", "25", FCVAR_SERVER };  // Default 25 - remember all of these spawnpoints that were last used
+
+// This is to avoid repeating the last used spawnpoints, 0.25 means avoid the 25% of total spawns that were last used,
+// so in crossfire there rare 17 spawns, the 25% of that is 4.25, it's rounded to 4, so it will avoid the last 4 spots where you spawned in crossfire
+// It can be capped by `ag_spawn_history_entries`, so if its value is 3 (less than 4), it would avoid the last 3 instead
+DLL_GLOBAL cvar_t	ag_spawn_avoid_last_spots = { "ag_spawn_avoid_last_spots", "0.25", FCVAR_SERVER };
+
+// A fraction of the total spawnpoints, that will be used for the Far spawn system to choose a spawnpoint randomly
+DLL_GLOBAL cvar_t	ag_spawn_far_spots = { "ag_spawn_far_spots", "0.25", FCVAR_SERVER };
+
+// Probabilities for the Position-aware Spawn System to pick these spot categories for the next spawn
+DLL_GLOBAL cvar_t	ag_spawn_pa_visible_chance = { "ag_spawn_pa_visible_chance", "10", FCVAR_SERVER }; // Default 10 - means 10%
+DLL_GLOBAL cvar_t	ag_spawn_pa_audible_chance = { "ag_spawn_pa_audible_chance", "25", FCVAR_SERVER }; // Default 25 - means 25%
+DLL_GLOBAL cvar_t	ag_spawn_pa_safe_chance    = { "ag_spawn_pa_safe_chance",    "65", FCVAR_SERVER }; // Default 65 - means 65%
 
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
@@ -328,6 +344,13 @@ void AgInitGame()
     CVAR_REGISTER(&ag_gauss_fix);
     CVAR_REGISTER(&ag_rpg_fix);
 
+    CVAR_REGISTER(&ag_spawn_system);
+    CVAR_REGISTER(&ag_spawn_history_entries);
+    CVAR_REGISTER(&ag_spawn_avoid_last_spots);
+    CVAR_REGISTER(&ag_spawn_far_spots);
+    CVAR_REGISTER(&ag_spawn_pa_visible_chance);
+    CVAR_REGISTER(&ag_spawn_pa_audible_chance);
+    CVAR_REGISTER(&ag_spawn_pa_safe_chance);
     CVAR_REGISTER(&mm_agsay);
 
     Command.Init();

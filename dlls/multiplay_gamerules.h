@@ -136,6 +136,8 @@ public:
 	// Immediately end a multiplayer game
 	virtual void EndMultiplayerGame(void) { GoToIntermission(); }
 
+	virtual void LoadSpawnPoints();
+
 protected:
 	virtual void ChangeLevel(void);
 	virtual void GoToIntermission(void);

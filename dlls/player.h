@@ -36,6 +36,7 @@ extern int gmsgSpectator;
 #define PLAYER_MIN_BOUNCE_SPEED		200
 #define PLAYER_FALL_PUNCH_THRESHHOLD (float)350 // won't punch player's screen/make scrape noise unless player falling at least this fast.
 
+constexpr float BARELY_AUDIBLE_DIST = 1280.0;
 //
 // Player PHYSICS FLAGS bits
 //
@@ -473,7 +474,10 @@ public:
 	void InitWeaponWeight();
 	*/
 	//-- Martin Webrant
+	void GetInventoryInfo();
 	bool IsTeammate(CBaseEntity* pPlayer);
+	std::vector<CBasePlayer*> GetPlayingEnemies();
+	float GetSpawnkillingPotential();
 };
 //++ BulliT
 inline void CBasePlayer::Init()
