@@ -41,6 +41,8 @@ class CHalfLifeMultiplay : public AgGameRules
 	//class CHalfLifeMultiplay : public CGameRules
 	//-- Martin Webrant
 {
+private:
+	void CHalfLifeMultiplay::ClampIntermissionTime();
 public:
 	CHalfLifeMultiplay();
 
