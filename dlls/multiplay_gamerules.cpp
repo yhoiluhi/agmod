@@ -634,6 +634,11 @@ void CHalfLifeMultiplay :: PlayerThink( CBasePlayer *pPlayer )
 //=========================================================
 void CHalfLifeMultiplay :: PlayerSpawn( CBasePlayer *pPlayer )
 {
+	//++ BulliT
+	AgGameRules::PlayerSpawn(pPlayer);
+	return;
+	//-- Martin Webrant
+
 	BOOL		addDefault;
 	CBaseEntity	*pWeaponEntity = NULL;
 
