@@ -135,7 +135,7 @@ CBaseEntity* CSpawnChooser::GetFarSpawnPoint()
 
 		idx++;
 	}
-	const auto numberOfFarSpawns = max((unsigned long)std::lround(filteredSpawnPoints.size() * ag_spawn_far_spots.value), min(filteredSpawnPoints.size(), 3));
+	const auto numberOfFarSpawns = V_max((unsigned long)std::lround(filteredSpawnPoints.size() * ag_spawn_far_spots.value), V_min(filteredSpawnPoints.size(), 3));
 
 	ALERT(at_aiconsole, "Number of far spawns to choose a random one from: %d\n", numberOfFarSpawns);
 
@@ -418,7 +418,7 @@ std::vector<int> CSpawnChooser::GetRecentlyUsedSpots()
 {
 	// We don't want to spawn in one of the last used spots, so we'll calculate how many of the
 	// last ones we have to discard, and then simply not put them in any list so they can't be chosen
-	const auto totalToDiscard = static_cast<int>(min(g_spawnHistory.size(), ag_spawn_avoid_last_spots.value * g_spawnPoints.size()));
+	const auto totalToDiscard = static_cast<int>(V_min(g_spawnHistory.size(), ag_spawn_avoid_last_spots.value * g_spawnPoints.size()));
 	std::vector<int> result;
 
 	ALERT(at_aiconsole, "Number of spots to ignore: %d\n", totalToDiscard);
