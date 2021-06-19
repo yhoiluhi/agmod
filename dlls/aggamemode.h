@@ -19,6 +19,9 @@ class AgGameMode
     void LoadGames();
     AgGame* pCurrent;
     float  m_fNextCheck;
+    float  m_fNextFpsLimitCheck;
+
+    static constexpr float MIN_FPS_LIMIT_CHECK_INTERVAL = 0.001;
 
 public:
     AgGameMode();

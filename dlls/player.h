@@ -96,6 +96,11 @@ enum sbar_data
 	SBAR_END,
 };
 
+enum request_ids
+{
+	REQUEST_ID_FPS_MAX = 1,
+};
+
 #define CHAT_INTERVAL 1.0f
 
 class CBasePlayer : public CBaseMonster
@@ -342,6 +347,12 @@ public:
 	char m_SbarString1[ SBAR_STRING_SIZE ];
 	
 	float m_flNextChatTime;
+
+	// Used for framerate limitation
+	static constexpr float MIN_FPS_LIMIT = 20.0; // reasonable limit in case someone limits it to 1 thinking that 1 means just to enable the limiter
+	int m_iFpsWarnings;
+	float m_flNextFpsWarning;
+	float m_flNextSlap;
 	
 	//++ BulliT
 protected:
@@ -404,6 +415,9 @@ public:
 
 	//Maps
 	int m_iMapListSent;
+
+	// Used for framerate limitation
+	float m_flFpsMax;
 
 
 	void          Init();     //Init all extra variables.
@@ -480,6 +494,9 @@ public:
 	bool IsTeammate(CBaseEntity* pPlayer);
 	std::vector<CBasePlayer*> GetPlayingEnemies();
 	float GetSpawnkillingPotential();
+	void Slap(float intensity);
+	bool ShouldLimitFps();
+	void LimitFps();
 };
 //++ BulliT
 inline void CBasePlayer::Init()
@@ -581,6 +598,10 @@ inline void CBasePlayer::Init()
 	m_fNextPlayerId = 0.0;
 	m_bSentCheatCheck = false;
 
+	m_flFpsMax = 0.0;
+	m_iFpsWarnings = 0;
+	m_flNextFpsWarning = gpGlobals->time + ag_fps_limit_warnings_interval.value;
+	m_flNextSlap = gpGlobals->time;
 #ifdef _DEBUG
 	if (0 == strcmp(GetAuthID(), "237555"))
 		m_bAdmin = true;

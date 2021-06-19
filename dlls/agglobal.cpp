@@ -191,12 +191,50 @@ DLL_GLOBAL cvar_t	ag_spawn_pa_visible_chance = { "ag_spawn_pa_visible_chance", "
 DLL_GLOBAL cvar_t	ag_spawn_pa_audible_chance = { "ag_spawn_pa_audible_chance", "25", FCVAR_SERVER }; // Default 25 - means 25%
 DLL_GLOBAL cvar_t	ag_spawn_pa_safe_chance    = { "ag_spawn_pa_safe_chance",    "65", FCVAR_SERVER }; // Default 65 - means 65%
 
+// Some of these should be prefixed sv_ag_* instead of just ag_*, because it seems the convention
+// was to have the non-votable ones with sv_ag_* and the votable ones with ag_*. But it might be
+// quite confusing for actual usage, as you have to remember which ones are votable and which not.
+// So I've decided to break the convention here to make it easier for players and admins to use these,
+// as you can just type ag_fps_limit and tab or press down arrow to see all the different cvars, instead
+// of having to do this with both sv_ag_fps_limit and ag_fps_limit. We'll see if it's the right decision
+DLL_GLOBAL cvar_t	ag_fps_limit = { "ag_fps_limit", "144", FCVAR_SERVER };  // Default: 144 - Cap players' fps_max. Standard in 2021 is 144 (125 and 100 before; 250 for bhop)
+DLL_GLOBAL cvar_t	ag_fps_limit_auto = { "ag_fps_limit_auto", "0", FCVAR_SERVER };  // Default: 0 - Whether to limit the fps to the most common fps among players
+DLL_GLOBAL cvar_t	ag_fps_limit_auto_check_interval = { "ag_fps_limit_auto_check_interval", "10.0", FCVAR_SERVER };  // Default: 10 seconds - How often to check for changing the limit
+DLL_GLOBAL cvar_t	ag_fps_limit_match_only = { "ag_fps_limit_match_only", "0", FCVAR_SERVER };  // Default: 0 - Whether to limit it only for players in a match
+DLL_GLOBAL cvar_t	ag_fps_limit_steampipe = { "ag_fps_limit_steampipe", "1", FCVAR_SERVER };  // Default: 1 - Whether to account for the 0.5 fps added by the engine (steampipe)
+DLL_GLOBAL cvar_t	ag_fps_limit_warnings = { "ag_fps_limit_warnings", "3", FCVAR_SERVER };  // Default: 3 - How many warnings before applying the punishment
+DLL_GLOBAL cvar_t	ag_fps_limit_warnings_interval = { "ag_fps_limit_warnings_interval", "5.0", FCVAR_SERVER };  // Default: 5 seconds - Time between warnings
+DLL_GLOBAL cvar_t	ag_fps_limit_punishment = { "ag_fps_limit_punishment", "kick", FCVAR_SERVER };  // Default: kick - Options: slap, kick, ban (3 mins)
+DLL_GLOBAL cvar_t	ag_fps_limit_punishment_slap_intensity = { "ag_fps_limit_punishment_slap_intensity", "1.0", FCVAR_SERVER };  // Default: 1.0 - Multiplier for slap damage & punch
+DLL_GLOBAL cvar_t	ag_fps_limit_punishment_slap_interval = { "ag_fps_limit_punishment_slap_interval", "1.0", FCVAR_SERVER };  // Default: 1 second - Time between slaps
+DLL_GLOBAL cvar_t	ag_fps_limit_punishment_ban_time = { "ag_fps_limit_punishment_ban_time", "3", FCVAR_SERVER };  // Default: 3 minutes - How much time to ban them for
+
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
 
 DLL_GLOBAL bool g_bLangame = false;
 DLL_GLOBAL bool g_bUseTeamColors = false;
 extern AgString g_sGamemode;
+
+// Keep this sorted
+std::vector<std::string> g_votableSettings = {
+    "ag_fps_limit",
+    "ag_fps_limit_auto",
+    "ag_fps_limit_auto_check_interval",
+    "ag_gauss_fix",
+    "ag_rpg_fix",
+    "ag_spawn_avoid_last_spots",
+    "ag_spawn_far_spots",
+    "ag_spawn_history_entries",
+    "ag_spawn_pa_audible_chance",
+    "ag_spawn_pa_safe_chance",
+    "ag_spawn_pa_visible_chance",
+    "ag_spawn_system",
+    "mp_fraglimit",
+    "mp_friendlyfire",
+    "mp_timelimit",
+    "mp_weaponstay",
+};
 
 void LoadGreetingMessages();
 
@@ -352,6 +390,18 @@ void AgInitGame()
     CVAR_REGISTER(&ag_spawn_pa_visible_chance);
     CVAR_REGISTER(&ag_spawn_pa_audible_chance);
     CVAR_REGISTER(&ag_spawn_pa_safe_chance);
+
+    CVAR_REGISTER(&ag_fps_limit);
+    CVAR_REGISTER(&ag_fps_limit_auto);
+    CVAR_REGISTER(&ag_fps_limit_auto_check_interval);
+    CVAR_REGISTER(&ag_fps_limit_match_only);
+    CVAR_REGISTER(&ag_fps_limit_steampipe);
+    CVAR_REGISTER(&ag_fps_limit_warnings);
+    CVAR_REGISTER(&ag_fps_limit_warnings_interval);
+    CVAR_REGISTER(&ag_fps_limit_punishment);
+    CVAR_REGISTER(&ag_fps_limit_punishment_slap_intensity);
+    CVAR_REGISTER(&ag_fps_limit_punishment_slap_interval);
+    CVAR_REGISTER(&ag_fps_limit_punishment_ban_time);
 
     CVAR_REGISTER(&mm_agsay);
 

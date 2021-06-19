@@ -1974,6 +1974,8 @@ void CBasePlayer::PreThink(void)
 	if ( g_fGameOver )
 		return;         // intermission or finale
 
+	g_engfuncs.pfnQueryClientCvarValue2(edict(), "fps_max", request_ids::REQUEST_ID_FPS_MAX);
+
   //++ BulliT
   if (IsSpectator() || ARENA == AgGametype() || LMS == AgGametype())
     EnableControl(TRUE);
@@ -2021,7 +2023,7 @@ void CBasePlayer::PreThink(void)
 #endif  
 
     m_fDisplayGamemode = 0;
-  } 
+  }
   //-- Martin Webrant
 	UTIL_MakeVectors(pev->v_angle);             // is this still used?
 	
@@ -2869,7 +2871,15 @@ void CBasePlayer::PostThink()
 //++ BulliT
 //  // Track button info so we can detect 'pressed' and 'released' buttons next frame
 //  m_afButtonLast = pev->button;
-  
+
+	if (ag_fps_limit_auto.value == 0.0f && ShouldLimitFps())
+	{
+		// When the fps limiter is set to auto, it handles the limitation in another place at a different interval (not every frame),
+		// so to simplify this and leave some room for the limit to change, we call `LimitFps()` in 2 different places depending on auto...
+		// TODO: when set to auto, the warning interval should probably still work as expected, but it won't
+		// for now since instead it will be every `ag_fps_limit_auto_check_interval` seconds most of the time
+		LimitFps();
+	}
   
   //Remove observe mode if using attack or use.
   if ((pev->button & IN_ATTACK) && (pev->effects == EF_NODRAW) 
@@ -5996,3 +6006,97 @@ std::vector<CBasePlayer*> CBasePlayer::GetPlayingEnemies()
 	return result;
 }
 
+void CBasePlayer::Slap(float intensity)
+{
+	// Change their movement speed chaotically + some punch
+	edict()->v.velocity.x += RANDOM_FLOAT(-500, 500) * intensity;
+	edict()->v.velocity.y += RANDOM_FLOAT(-500, 500) * intensity;
+	edict()->v.velocity.z += RANDOM_FLOAT(-100, 300) * intensity;
+
+	edict()->v.punchangle.x = RANDOM_FLOAT(-10, 10) * intensity;
+	edict()->v.punchangle.y = RANDOM_FLOAT(-10, 10) * intensity;
+	edict()->v.punchangle.z = RANDOM_FLOAT(-5, 5) * intensity;
+
+	TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), RANDOM_FLOAT(5, 15) * intensity, DMG_GENERIC);
+
+}
+
+// Can the fps limit be applied on this player?
+bool CBasePlayer::ShouldLimitFps()
+{
+	if (IsSpectator() || IsProxy() || (pev->flags & FL_FAKECLIENT))
+		return false;
+
+	if (ag_fps_limit_match_only.value == 0)
+		return true;
+	else
+	{
+		if (ag_match_running.value > 0)
+		{
+			// It's set to limit fps during a match, and you're playing in the match so we gotta limit your fps
+			return true;
+		}
+	}
+
+	return false;
+}
+
+// TODO: get the actual fps of the player? maybe they don't reach their fps_max,
+// but having a higher fps_max helps them have a higher average fps; kinda edge case
+void CBasePlayer::LimitFps()
+{
+	auto fpsLimit = ag_fps_limit.value;
+
+	if (fpsLimit == 0)
+		return;
+
+	if (fpsLimit < MIN_FPS_LIMIT)
+	{
+		fpsLimit = MIN_FPS_LIMIT;
+		CVAR_SET_FLOAT("ag_fps_limit", MIN_FPS_LIMIT);
+	}
+
+	if (ag_fps_limit_steampipe.value > 0)
+		fpsLimit -= 0.5;
+
+	if (fpsLimit >= m_flFpsMax)
+		return;
+	
+	CLIENT_COMMAND(edict(), "fps_max %.6f\n", fpsLimit);
+
+	if (m_flNextFpsWarning < gpGlobals->time)
+	{
+		m_flNextFpsWarning = gpGlobals->time + ag_fps_limit_warnings_interval.value;
+		m_iFpsWarnings++;
+
+		char text[80];
+		sprintf(text, "Warning #%d: Please, set your fps_max to %.2f or less!\n", m_iFpsWarnings, fpsLimit);
+		UTIL_SayText(text, this);
+	}
+
+	if (m_iFpsWarnings > ag_fps_limit_warnings.value)
+	{
+		const auto punishment = ag_fps_limit_punishment.string;
+		
+		if (FStrEq(punishment, "slap"))
+		{
+			if (m_flNextSlap < gpGlobals->time)
+			{
+				m_flNextSlap = gpGlobals->time + ag_fps_limit_punishment_slap_interval.value;
+				Slap(ag_fps_limit_punishment_slap_intensity.value);
+			}
+		}
+		else if (FStrEq(punishment, "ban"))
+		{
+			char szCommand[96];
+			sprintf(szCommand, "banid %d #%d kick\n", static_cast<int>(ag_fps_limit_punishment_ban_time.value), GETPLAYERUSERID(edict()));
+			SERVER_COMMAND(szCommand);
+		}
+		else
+		{
+			char szCommand[64];
+			sprintf(szCommand, "kick #%d\n", GETPLAYERUSERID(edict()));
+			SERVER_COMMAND(szCommand);
+		}
+	}
+}

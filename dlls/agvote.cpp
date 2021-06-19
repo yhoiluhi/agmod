@@ -285,32 +285,6 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                 }
                 return true;
             }
-            //Check setting
-            // TODO: either remove or support `mp_friendlyfire` and `mp_weaponstay`, as they're being silently rejected in `AgSettings::AdminSetting()`
-            // TODO: refactor this, it's getting huge and unmaintainable
-            else if ((
-                0 == strncmp(m_sVote.c_str(), "ag_gauss_fix", 12) ||
-                0 == strncmp(m_sVote.c_str(), "ag_rpg_fix", 10) ||
-                0 == strncmp(m_sVote.c_str(), "ag_spectalk", 11) ||
-                0 == strncmp(m_sVote.c_str(), "mp_friendlyfire", 15) ||
-                0 == strncmp(m_sVote.c_str(), "mp_weaponstay", 13) ||
-                0 == strncmp(m_sVote.c_str(), "ag_spawn_system", 15) ||
-                0 == strncmp(m_sVote.c_str(), "ag_spawn_history_entries", 24) ||
-                0 == strncmp(m_sVote.c_str(), "ag_spawn_avoid_last_spots", 25) ||
-                0 == strncmp(m_sVote.c_str(), "ag_spawn_pa_visible_chance", 26) ||
-                0 == strncmp(m_sVote.c_str(), "ag_spawn_pa_audible_chance", 26) ||
-                0 == strncmp(m_sVote.c_str(), "ag_spawn_pa_safe_chance", 23))
-                && m_sValue.size())
-            {
-                if (!ag_vote_setting.value)
-                {
-                    AgConsole("Vote is not allowed by server admin.", pPlayer);
-                    return true;
-                }
-
-                CallVote(pPlayer);
-                return true;
-            }
             else if (0 == strncmp(m_sVote.c_str(), "mp_timelimit", 12))
             {
                 if (!ag_vote_setting.value)
@@ -341,19 +315,17 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                 CallVote(pPlayer);
                 return true;
             }
-            // TODO: remove sv_maxspeed as it's silently rejected in `AgSettings::AdminSetting()` anyways
-            else if (0 == strncmp(m_sVote.c_str(), "sv_maxspeed", 11))
+            // Other settings like ag_* and mp_*
+            else if (m_sValue.size()
+                && std::find(std::begin(g_votableSettings), std::end(g_votableSettings), m_sVote.c_str()) != std::end(g_votableSettings)
+                )
             {
                 if (!ag_vote_setting.value)
                 {
                     AgConsole("Vote is not allowed by server admin.", pPlayer);
                     return true;
                 }
-                if (atoi(m_sValue.c_str()) < 270 || atoi(m_sValue.c_str()) > 350)
-                {
-                    AgConsole("Maxpeed should be between 270 and 350.", pPlayer);
-                    return true;
-                }
+
                 CallVote(pPlayer);
                 return true;
             }

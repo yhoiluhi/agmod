@@ -7,6 +7,7 @@
 #include	"gamerules.h"
 #include  "aggamemode.h"
 #include  "agglobal.h"
+#include <algorithm>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -18,6 +19,8 @@ DLL_GLOBAL AgGame* g_pGame = NULL;
 DLL_GLOBAL AgString g_sGamemode;
 DLL_GLOBAL AgString g_sNextmode;
 DLL_GLOBAL BYTE g_GameType = STANDARD;
+
+static constexpr float STANDARD_FPS_VALUES[] = {30.0, 60.0, 72.0, 100.0, 125.0, 144.0, 200.0, 250.0, 500.0, 1000.0};
 
 void SetupGametype()
 {
@@ -76,6 +79,7 @@ void  nextmode(void)
 AgGameMode::AgGameMode()
 {
     m_fNextCheck = 0;
+    m_fNextFpsLimitCheck = 0;
 }
 
 AgGameMode::~AgGameMode()
@@ -146,11 +150,7 @@ void AgGameMode::Help(CBasePlayer* pPlayer)
 
 void AgGameMode::Think()
 {
-    if (m_fNextCheck > gpGlobals->time)
-        return;
-    m_fNextCheck = gpGlobals->time + 1; //Check every second.
-
-    if (g_sGamemode != CVAR_GET_STRING("sv_ag_gamemode"))
+    if (m_fNextCheck <= gpGlobals->time && g_sGamemode != CVAR_GET_STRING("sv_ag_gamemode"))
     {
         //Gamemode has changed. Save the new one and changelevel. The new settings will be set just before allocating the new gamerules.
         g_sGamemode = CVAR_GET_STRING("sv_ag_gamemode");
@@ -158,6 +158,82 @@ void AgGameMode::Think()
         CVAR_SET_FLOAT("ag_spectalk", 1);
         CVAR_SET_FLOAT("sv_ag_show_gibs", 1);
         g_pGameRules->m_Settings.Changelevel(STRING(gpGlobals->mapname));
+
+        m_fNextCheck = gpGlobals->time + 1; //Check every second.
+    }
+
+    if (m_fNextFpsLimitCheck <= gpGlobals->time && ag_fps_limit_auto.value > 0.0f)
+    {
+        // Automatic fps limiter. We gather players' fps_max and limit, classify them into
+        // a set of predefined standard-ish fps_max values and take the mode number as the limit
+        std::map<float, int> classifiedFpsMaxValues;
+
+        const auto isSteampipe = ag_fps_limit_steampipe.value > 0;
+
+        // Initialize the classification
+        for (const auto standardValue : STANDARD_FPS_VALUES)
+            classifiedFpsMaxValues.emplace(standardValue, 0);
+
+        // Check where the player fps can be classified (in 125, 144, etc. fps)
+        // depending on how close to those standard fps values their fps_max is
+        auto players = 0;
+        for (int i = 1; i <= gpGlobals->maxClients; i++)
+        {
+            CBasePlayer* player = AgPlayerByIndex(i);
+            if (!player || !player->ShouldLimitFps())
+                continue;
+
+            players++;
+
+            float closestDiff  = 999999.0;
+            float closestValue = 0.0;
+
+            for (const auto &pair : classifiedFpsMaxValues)
+            {
+                auto playerFpsMax = player->m_flFpsMax;
+
+                if (isSteampipe)
+                    playerFpsMax += 0.5;
+
+                auto diff = fabs(playerFpsMax - pair.first);
+                if (closestDiff > diff)
+                {
+                    closestDiff  = diff;
+                    closestValue = pair.first;
+                }
+            }
+            classifiedFpsMaxValues[closestValue]++;
+        }
+
+        if (ag_fps_limit_auto_check_interval.value < MIN_FPS_LIMIT_CHECK_INTERVAL)
+            CVAR_SET_FLOAT("ag_fps_limit_auto_check_interval", MIN_FPS_LIMIT_CHECK_INTERVAL);
+
+        m_fNextFpsLimitCheck = gpGlobals->time + ag_fps_limit_auto_check_interval.value;
+
+        if (players == 0)
+            return;
+
+        // Get the mode, aka the most used value (or the one most players are closer to)
+        std::map<float, int>::iterator modeFps = std::max_element(classifiedFpsMaxValues.begin(), classifiedFpsMaxValues.end(),
+            [](const std::pair<float, int>& a, const std::pair<float, int>& b)->bool{ return a.second < b.second; } );
+
+        auto newFpsLimit = modeFps->first;
+
+        if (ag_fps_limit.value == newFpsLimit)
+            return;
+
+        CVAR_SET_FLOAT("ag_fps_limit", newFpsLimit);
+
+        // Enforce the limitation here, because it's just easier than doing it in player's
+        // PostThink(), with all the things it involves (more checks, avoid race conditions, etc.)
+        for (int i = 1; i <= gpGlobals->maxClients; i++)
+        {
+            CBasePlayer* player = AgPlayerByIndex(i);
+            if (!player || !player->ShouldLimitFps())
+                continue;
+
+            player->LimitFps();
+        }
     }
 }
 
@@ -191,6 +267,7 @@ void AgGameMode::NextGamemode(const AgString& sGamemode, CBasePlayer* pPlayer)
 void AgGameMode::ExecConfig()
 {
     m_fNextCheck = 0;
+    m_fNextFpsLimitCheck = 0;
 
     if (g_sNextmode.size())
     {
