@@ -602,10 +602,6 @@ inline void CBasePlayer::Init()
 	m_iFpsWarnings = 0;
 	m_flNextFpsWarning = gpGlobals->time + ag_fps_limit_warnings_interval.value;
 	m_flNextSlap = gpGlobals->time;
-#ifdef _DEBUG
-	if (0 == strcmp(GetAuthID(), "237555"))
-		m_bAdmin = true;
-#endif
 };
 
 
