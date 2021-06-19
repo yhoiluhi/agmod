@@ -197,7 +197,7 @@ DLL_GLOBAL cvar_t	ag_spawn_pa_safe_chance    = { "ag_spawn_pa_safe_chance",    "
 // So I've decided to break the convention here to make it easier for players and admins to use these,
 // as you can just type ag_fps_limit and tab or press down arrow to see all the different cvars, instead
 // of having to do this with both sv_ag_fps_limit and ag_fps_limit. We'll see if it's the right decision
-DLL_GLOBAL cvar_t	ag_fps_limit = { "ag_fps_limit", "144", FCVAR_SERVER };  // Default: 144 - Cap players' fps_max. Standard in 2021 is 144 (125 and 100 before; 250 for bhop)
+DLL_GLOBAL cvar_t	ag_fps_limit = { "ag_fps_limit", "0", FCVAR_SERVER };  // Default: 0 - Cap players' fps_max. Standard in 2021 is 144 (125 and 100 before; 250 for bhop)
 DLL_GLOBAL cvar_t	ag_fps_limit_auto = { "ag_fps_limit_auto", "0", FCVAR_SERVER };  // Default: 0 - Whether to limit the fps to the most common fps among players
 DLL_GLOBAL cvar_t	ag_fps_limit_auto_check_interval = { "ag_fps_limit_auto_check_interval", "10.0", FCVAR_SERVER };  // Default: 10 seconds - How often to check for changing the limit
 DLL_GLOBAL cvar_t	ag_fps_limit_match_only = { "ag_fps_limit_match_only", "0", FCVAR_SERVER };  // Default: 0 - Whether to limit it only for players in a match
