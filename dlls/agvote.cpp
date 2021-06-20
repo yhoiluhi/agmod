@@ -41,6 +41,9 @@ FILE_GLOBAL char* s_szVotes[] =
   "ag_spawn_pa_visible_chance <number> - Probability of a visible spawnpoint being chosen in the PA system",
   "ag_spawn_pa_audible_chance <number> - Probability of an audible spawnpoint being chosen in the PA system",
   "ag_spawn_pa_safe_chance <number> - Probability of a safe spawnpoint being chosen in the PA system",
+  "ag_fps_limit <number> - 0 to disable, any other number to cap everyones' fps to that number",
+  "ag_fps_limit_auto <number> - 0 to disable, 1 to limit automatically based on most used fps at that moment",
+  "ag_fps_limit_auto_check_interval <number> - How often to recalculate the fps limit when it's auto (in seconds)",
 };
 
 AgVote::AgVote()
