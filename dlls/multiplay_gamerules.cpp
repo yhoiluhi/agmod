@@ -243,7 +243,7 @@ void CHalfLifeMultiplay :: Think ( void )
 			playerCount++;
 		}
 
-		if (mp_intermission_skip_auto.value > 0.0f && playerCount <= 1)
+		if (mp_intermission_skip_auto.value >= 2.0f && playerCount <= 1)
 			m_flIntermissionEndTime = g_flIntermissionStartTime + MIN_INTERMISSION_TIME;
 		else
 			m_flIntermissionEndTime = g_flIntermissionStartTime + mp_chattime.value;
@@ -251,7 +251,7 @@ void CHalfLifeMultiplay :: Think ( void )
 		// check to see if we should change levels now
 		if ( m_flIntermissionEndTime < gpGlobals->time )
 		{
-			if (mp_intermission_skip_auto.value == 2.0f && playerCount <= 1)
+			if (mp_intermission_skip_auto.value >= 1.0f && playerCount <= 1)
 			{
 				ChangeNextLevel();
 				return;
