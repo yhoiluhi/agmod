@@ -313,6 +313,16 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                     AgConsole("Voting for extra timelimit is not allowed here.", pPlayer);
                     return true;
                 }
+
+                // Don't allow extending the timelimit too quickly... maybe someone wanted to add days of timelimit by spamming this
+                auto remainingMinutes = CVAR_GET_FLOAT("mp_timeleft") / 60.0f;
+                auto cooldown = remainingMinutes - (ag_vote_extra_timelimit.value / 2.0f);
+                if (cooldown > 0.0f)
+                {
+                    AgConsole(UTIL_VarArgs("Can't vote for extended timelimit yet. Please, try again in %d minutes",
+                        static_cast<int>(std::ceil(cooldown))), pPlayer);
+                    return true;
+                }
                 CallVote(pPlayer);
 
                 return true;
