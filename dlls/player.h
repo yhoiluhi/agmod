@@ -419,6 +419,8 @@ public:
 	// Used for framerate limitation
 	float m_flFpsMax;
 
+	std::string m_UserInfoName;
+
 
 	void          Init();     //Init all extra variables.
 	const char* GetAuthID(); //Get steam ID
@@ -602,6 +604,9 @@ inline void CBasePlayer::Init()
 	m_iFpsWarnings = 0;
 	m_flNextFpsWarning = gpGlobals->time + ag_fps_limit_warnings_interval.value;
 	m_flNextSlap = gpGlobals->time;
+
+	// Game reuses player instances, so at least in the case of bots, this is still populated with the last disconnected bot's name
+	m_UserInfoName.clear();
 };
 
 
@@ -614,7 +619,10 @@ inline const char* CBasePlayer::GetAuthID()
 
 inline const char* CBasePlayer::GetName()
 {
-	return pev->netname ? STRING(pev->netname)[0] ? STRING(pev->netname) : "" : "";
+	if (pev->netname && STRING(pev->netname)[0])
+		return STRING(pev->netname);
+	
+	return m_UserInfoName.c_str();
 };
 
 inline bool CBasePlayer::IsAdmin()
