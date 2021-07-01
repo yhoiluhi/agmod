@@ -32,6 +32,7 @@ DLL_GLOBAL cvar_t	ag_version = { "sv_ag_version","6.7", FCVAR_SERVER };
 #endif
 
 DLL_GLOBAL cvar_t	ag_gamemode = { "sv_ag_gamemode","ffa", FCVAR_SERVER }; //The current gamemode
+DLL_GLOBAL cvar_t	ag_gamemode_auto = { "sv_ag_gamemode_auto","1", FCVAR_SERVER }; // Detect the gamemode based on the map and switch gamemode automatically
 DLL_GLOBAL cvar_t	ag_allowed_gamemodes = { "sv_ag_allowed_gamemodes","" };
 
 DLL_GLOBAL cvar_t	ag_pure = { "sv_ag_pure","0",FCVAR_SERVER };     //Default off.
@@ -245,6 +246,7 @@ void AgInitGame()
 
     CVAR_REGISTER(&ag_version);
     CVAR_REGISTER(&ag_gamemode);
+    CVAR_REGISTER(&ag_gamemode_auto);
     CVAR_REGISTER(&ag_allowed_gamemodes);
 
     CVAR_REGISTER(&ag_allow_vote);
