@@ -228,9 +228,6 @@ void ClientPutInServer( edict_t *pEntity )
 
 	// Reset interpolation during first frame
 	pPlayer->pev->effects |= EF_NOINTERP;
-
-	pPlayer->pev->iuser1 = 0;	// disable any spec modes
-	pPlayer->pev->iuser2 = 0; 
 }
 
 #include "voice_gamemgr.h"
