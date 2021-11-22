@@ -187,6 +187,10 @@ extern cvar_t ag_fps_limit_punishment_slap_intensity;
 extern cvar_t ag_fps_limit_punishment_slap_interval;
 extern cvar_t ag_fps_limit_punishment_ban_time;
 
+extern cvar_t ag_satchel_destroyable;
+extern cvar_t ag_satchel_health;
+extern cvar_t ag_satchel_solid;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 

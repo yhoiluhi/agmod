@@ -495,6 +495,7 @@ public:
 	//-- Martin Webrant
 
 	void GetInventoryInfo();
+	CBasePlayerItem* GetWeapon(std::string className);
 	bool IsTeammate(CBaseEntity* pPlayer);
 	std::vector<CBasePlayer*> GetPlayingEnemies();
 	float GetSpawnkillingPotential();
