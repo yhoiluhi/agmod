@@ -387,8 +387,18 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
 
 bool AgVote::CallVote(CBasePlayer* pPlayer)
 {
+    if (pPlayer->IsBot() && ag_bots_allow_vote.value == 0)
+    {
+        // Bots cannot start votes when sv_ag_bots_allow_vote is 0
+        return false;
+    }
+
     m_fMaxTime = AgTime() + 30.0;  //30 seconds is enough.
     m_fNextCount = AgTime();       //Next count directly
+
+    // FIXME: when you do e.g. `callvote agmap crossfire` in a listenserver, the votation
+    // starts with your vote being against, in the first Think() m_iVote is already 0 somehow
+
     pPlayer->m_iVote = 1;          //Voter voted yes
 #ifdef _DEBUG
     pPlayer->m_iVote = 0;
@@ -403,7 +413,7 @@ bool AgVote::CallVote(CBasePlayer* pPlayer)
     );
     //-- muphicks
 
-    return false;
+    return true;
 }
 
 
@@ -424,6 +434,12 @@ void AgVote::Think()
             CBasePlayer* pPlayerLoop = AgPlayerByIndex(i);
             if (pPlayerLoop && !pPlayerLoop->IsProxy())
             {
+                if (pPlayerLoop->IsBot() && ag_bots_allow_vote.value == 0)
+                {
+                    // Bots do not take part in votes when sv_ag_bots_allow_vote is 0
+                    continue;
+                }
+
                 iPlayers++;
 
                 if (1 == pPlayerLoop->m_iVote)

@@ -502,6 +502,8 @@ public:
 	void Slap(float intensity);
 	bool ShouldLimitFps();
 	void LimitFps();
+
+	bool IsBot();
 };
 //++ BulliT
 inline void CBasePlayer::Init()
@@ -697,6 +699,11 @@ inline bool CBasePlayer::IsTeammate(CBaseEntity* pTarget)
 {
 	return g_pGameRules->PlayerRelationship(this, pTarget) == GR_TEAMMATE;
 }
+
+inline bool CBasePlayer::IsBot()
+{
+	return pev->flags & FL_FAKECLIENT;
+};
 
 // Spectator Movement modes (stored in pev->iuser1, so the physics code can get at them)
 #define OBS_NONE				0

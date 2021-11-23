@@ -191,6 +191,8 @@ extern cvar_t ag_satchel_destroyable;
 extern cvar_t ag_satchel_health;
 extern cvar_t ag_satchel_solid;
 
+extern cvar_t ag_bots_allow_vote;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 
