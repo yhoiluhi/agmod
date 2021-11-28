@@ -24,6 +24,9 @@
 #ifndef ENGINECALLBACK_H
 #include "enginecallback.h"
 #endif
+
+#include <string>
+
 inline void MESSAGE_BEGIN( int msg_dest, int msg_type, const float *pOrigin, entvars_t *ent );  // implementation later in this file
 
 extern globalvars_t				*gpGlobals;
@@ -166,6 +169,12 @@ inline BOOL FStringNull(int iString)			{ return iString == iStringNull; }
 #define		BLOOD_COLOR_RED		(BYTE)247
 #define		BLOOD_COLOR_YELLOW	(BYTE)195
 #define		BLOOD_COLOR_GREEN	BLOOD_COLOR_YELLOW
+
+enum class ChatType
+{
+	SPAWN,
+	DAMAGE,
+};
 
 typedef enum 
 {
@@ -341,6 +350,8 @@ extern void			UTIL_LogPrintf( char *fmt, ... );
 extern float UTIL_DotPoints ( const Vector &vecSrc, const Vector &vecCheck, const Vector &vecDir );
 
 extern void UTIL_StripToken( const char *pKey, char *pDest );// for redundant keynames
+
+extern void UTIL_DispatchChat(CBasePlayer* dstPlayer, ChatType type, std::string msg);
 
 // Misc functions
 extern void SetMovedir(entvars_t* pev);

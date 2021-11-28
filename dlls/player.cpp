@@ -232,6 +232,7 @@ int gmsgCTFFlag = 0;
 int gmsgCRC32 = 0;
 
 extern int g_teamplay;
+extern std::vector<CBaseEntity*> g_spawnPoints;
 #ifdef AGSTATS
 #include "agstats.h"
 #endif
@@ -532,7 +533,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	if (!IsAlive())
 		return 0;
 
-	CBaseEntity* pAttacker = CBaseEntity::Instance(pevAttacker);
+	CBasePlayer* pAttacker = static_cast<CBasePlayer*>(CBaseEntity::Instance(pevAttacker));
 
 	if (!g_pGameRules->FPlayerCanTakeDamage(this, pAttacker))
 	{
@@ -564,6 +565,12 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 
 	// keep track of amount of damage last sustained
 	m_lastDamageAmount = flDamage;
+
+	if (pAttacker && IsBot() && ag_match_running.value == 0)
+	{
+		if (pAttacker->pev->flags & FL_CLIENT)
+			UTIL_DispatchChat(pAttacker, ChatType::DAMAGE, UTIL_VarArgs("%s received %.1f damage from %s\n", GetName(), flDamage, pAttacker->GetName()));
+	}
 
 	// Armor. 
 	if (pev->armorvalue && !(bitsDamageType & (DMG_FALL | DMG_DROWN)) )// armor doesn't protect against fall or drown damage!
@@ -3154,6 +3161,22 @@ void CBasePlayer::Spawn( void )
 
 	g_pGameRules->SetDefaultPlayerTeam( this );
 	g_pGameRules->GetPlayerSpawnSpot( this );
+
+	if (IsBot() && ag_match_running.value == 0)
+	{
+		const auto lastSpawn = g_spawnHistory[g_spawnHistory.size() - 1];
+		short spotNumber = -1;
+
+		std::vector<CBaseEntity*>::iterator iter = std::find(g_spawnPoints.begin(), g_spawnPoints.end(), lastSpawn);
+
+		if (iter != g_spawnPoints.end())
+		{
+			int index = std::distance(g_spawnPoints.begin(), iter);
+			spotNumber = index + 1;
+		}
+		ASSERT(spotNumber > 0);
+		UTIL_DispatchChat(nullptr, ChatType::SPAWN, UTIL_VarArgs("%s spawned at #%d\n", GetName(), spotNumber));
+	}
 
     SET_MODEL(ENT(pev), "models/player.mdl");
     g_ulModelIndexPlayer = pev->modelindex;

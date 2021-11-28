@@ -839,7 +839,7 @@ void UTIL_HudMessageAll( const hudtextparms_t &textparms, const char *pMessage )
 
 					 
 extern int gmsgTextMsg, gmsgSayText;
-void UTIL_ClientPrintAll( int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4 )
+void UTIL_ClientPrintAll( int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4, int type )
 {
 	MESSAGE_BEGIN( MSG_ALL, gmsgTextMsg );
 		WRITE_BYTE( msg_dest );
@@ -854,10 +854,17 @@ void UTIL_ClientPrintAll( int msg_dest, const char *msg_name, const char *param1
 		if ( param4 )
 			WRITE_STRING( param4 );
 
+		WRITE_BYTE( type );
+
 	MESSAGE_END();
 }
 
-void ClientPrint( entvars_t *client, int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4 )
+void UTIL_ClientPrintAll( int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4)
+{
+	UTIL_ClientPrintAll(msg_dest, msg_name, param1, param2, param3, param4, -1);
+}
+
+void ClientPrint( entvars_t *client, int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4, int type )
 {
 	MESSAGE_BEGIN( MSG_ONE, gmsgTextMsg, NULL, client );
 		WRITE_BYTE( msg_dest );
@@ -872,7 +879,14 @@ void ClientPrint( entvars_t *client, int msg_dest, const char *msg_name, const c
 		if ( param4 )
 			WRITE_STRING( param4 );
 
+		WRITE_BYTE( type );
+
 	MESSAGE_END();
+}
+
+void ClientPrint( entvars_t *client, int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4 )
+{
+	ClientPrint(client, msg_dest, msg_name, param1, param2, param3, param4, -1);
 }
 
 void UTIL_SayText( const char *pText, CBaseEntity *pEntity )
@@ -1637,6 +1651,19 @@ void UTIL_StripToken( const char *pKey, char *pDest )
 		i++;
 	}
 	pDest[i] = 0;
+}
+
+void UTIL_DispatchChat(CBasePlayer* dstPlayer, ChatType type, std::string msg)
+{
+	// The blank strings in these params are necessary so that the client can READ_STRING() those
+	// and get to the last READ_BYTE() correctly to read the chat type, otherwise the READ_STRING()
+	// will try to read the chat type and when it reaches that READ_BYTE() there won't be anything
+	// left to be read, so it wouldn't work
+	if (dstPlayer)
+		ClientPrint(dstPlayer->pev, HUD_PRINTTALK, msg.c_str(), "", "", "", "", static_cast<int>(type));
+	else
+		UTIL_ClientPrintAll(HUD_PRINTTALK, msg.c_str(), "", "", "", "", static_cast<int>(type));
+
 }
 
 
