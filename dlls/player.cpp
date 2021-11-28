@@ -5798,6 +5798,51 @@ bool CBasePlayer::FloodText()
   return false;
 }
 
+bool CBasePlayer::HasNameFlooded()
+{
+	if (IsAdmin())
+		return false;
+
+	if (IsBot())
+		return false;
+
+	double interval = 0;
+	if (IsSpectator())
+		interval = ag_flood_name_spec_cooldown.value;
+	else
+		interval = ag_flood_name_cooldown.value;
+
+	if (m_flLastNameChange + interval > AgTime())
+		return true;
+
+	return false;
+}
+
+bool CBasePlayer::HasModelFlooded()
+{
+	if (IsAdmin())
+		return false;
+
+	if (IsBot())
+		return false;
+
+	double interval = 0;
+	if (IsSpectator())
+		interval = ag_flood_model_spec_cooldown.value;
+	else
+		interval = ag_flood_model_cooldown.value;
+
+	if (m_flLastModelChange + interval > AgTime())
+	{
+		char text[128];
+		sprintf( text, "Flood protection: You can't change your model for %.1f more seconds\n", m_flLastModelChange + interval - AgTime() );
+		UTIL_SayText( text, this );
+		return true;
+	}
+
+	return false;
+}
+
 #include "agwallhack.h"
 void CBasePlayer::SendWallhackInfo()
 {

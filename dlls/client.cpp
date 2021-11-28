@@ -151,7 +151,7 @@ void respawn(entvars_t* pev, BOOL fCopyCorpse)
 	if (gpGlobals->coop || gpGlobals->deathmatch)
 	{
 //++ BulliT
-    if ( fCopyCorpse && pev->movetype != MOVETYPE_NOCLIP && 0 < ag_show_gibs.value)
+		if ( fCopyCorpse && pev->movetype != MOVETYPE_NOCLIP && 0 < ag_show_gibs.value)
 //		if ( fCopyCorpse )
 //-- Martin Webrant
 		{
@@ -643,7 +643,7 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 		g_engfuncs.pfnSetClientKeyValue(ENTINDEX(pEntity), infobuffer, "name", sName);
 		player->m_UserInfoName = sName;
 
-		if (!hasJustJoinedGame)
+		if (!hasJustJoinedGame && !player->HasNameFlooded())
 		{
 			if (gpGlobals->maxClients > 1)
 			{
@@ -674,6 +674,7 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 					GETPLAYERUSERID( pEntity ),
 					sName );
 			}
+			player->m_flLastNameChange = AgTime();
 		}
 	}
 

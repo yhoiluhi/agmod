@@ -196,6 +196,11 @@ extern cvar_t ag_satchel_solid;
 extern cvar_t ag_bot_allow_vote;
 extern cvar_t ag_bot_limit;
 
+extern cvar_t ag_flood_name_cooldown;
+extern cvar_t ag_flood_name_spec_cooldown;
+extern cvar_t ag_flood_model_cooldown;
+extern cvar_t ag_flood_model_spec_cooldown;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 

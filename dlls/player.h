@@ -423,6 +423,9 @@ public:
 
 	std::string m_UserInfoName;
 
+	double m_flLastNameChange;
+	double m_flLastModelChange;
+
 	float m_flMsecDelay;
 	float m_flMsecValue;
 	float m_flLastThinkTime;
@@ -509,6 +512,9 @@ public:
 
 	bool IsBot();
 
+	bool HasNameFlooded();
+	bool HasModelFlooded();
+
 	void BotThink();
 	void CalculateMsecValue();
 };
@@ -531,7 +537,6 @@ inline void CBasePlayer::Init()
 
 	m_fLongjumpTimer = 0.0;
 
-
 	m_iVote = -1;
 
 	m_iStatus = Invalid;
@@ -551,6 +556,9 @@ inline void CBasePlayer::Init()
 
 	m_fPrevSoundFlood = AgTime();
 	m_fPrevTextFlood = AgTime();
+
+	m_flLastNameChange  = AgTime() - V_max(ag_flood_name_spec_cooldown.value, ag_flood_name_cooldown.value);
+	m_flLastModelChange = AgTime() - V_max(ag_flood_model_spec_cooldown.value, ag_flood_model_cooldown.value);
 
 	m_bSpawnFull = false;
 

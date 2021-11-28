@@ -457,6 +457,15 @@ void CHalfLifeTeamplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infob
 		}
 		return;
 	}
+
+	if (pPlayer->HasModelFlooded())
+	{
+		// Restore the model they had before changing
+		g_engfuncs.pfnSetClientKeyValue( clientIndex, g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "model", pPlayer->m_szTeamName );
+		g_engfuncs.pfnSetClientKeyValue( clientIndex, g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "team", pPlayer->m_szTeamName );
+		return;
+	}
+
 	// notify everyone of the team change
 	// TODO: investigate why this only gets executed sometimes when a player joins,
 	// between the "... connected, address ..." and "... STEAM USERID validated" log messages
@@ -471,6 +480,9 @@ void CHalfLifeTeamplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infob
 		mdls );
 
 	ChangePlayerTeam( pPlayer, mdls, TRUE, TRUE );
+
+	pPlayer->m_flLastModelChange = AgTime();
+
 	// recount stuff
 //++ BulliT
 	//RecountTeams( TRUE );

@@ -220,6 +220,11 @@ DLL_GLOBAL cvar_t	ag_satchel_solid       = { "sv_ag_satchel_solid",       "1", F
 DLL_GLOBAL cvar_t	ag_bot_allow_vote = { "sv_ag_bot_allow_vote", "0", FCVAR_SERVER }; // Default: 0 - Bots don't take part in votes
 DLL_GLOBAL cvar_t	ag_bot_limit      = { "sv_ag_bot_limit",      "5", FCVAR_SERVER }; // Default: 5 - How many AG bots at max.
 
+DLL_GLOBAL cvar_t	ag_flood_name_cooldown       = { "sv_ag_flood_name_cooldown",  "2" }; // Default: 2 - Seconds to wait before changing their name again
+DLL_GLOBAL cvar_t	ag_flood_name_spec_cooldown  = { "sv_ag_flood_name_spec_cooldown",  "60" }; // Default: 60 - Seconds to wait before changing their name again when on spec
+DLL_GLOBAL cvar_t	ag_flood_model_cooldown      = { "sv_ag_flood_model_cooldown", "2" }; // Default: 2 - Seconds to wait before changing their model again
+DLL_GLOBAL cvar_t	ag_flood_model_spec_cooldown = { "sv_ag_flood_model_spec_cooldown", "60" }; // Default: 60 - Seconds to wait before changing their model again when on spec
+
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
 
@@ -424,6 +429,11 @@ void AgInitGame()
 
     CVAR_REGISTER(&ag_bot_allow_vote);
     CVAR_REGISTER(&ag_bot_limit);
+
+    CVAR_REGISTER(&ag_flood_name_cooldown);
+    CVAR_REGISTER(&ag_flood_name_spec_cooldown);
+    CVAR_REGISTER(&ag_flood_model_cooldown);
+    CVAR_REGISTER(&ag_flood_model_spec_cooldown);
 
     CVAR_REGISTER(&mm_agsay);
 
