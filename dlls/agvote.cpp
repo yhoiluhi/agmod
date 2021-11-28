@@ -327,6 +327,40 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
 
                 return true;
             }
+            else if (FStrEq(m_sVote.c_str(), "spawnbot"))
+            {
+                if (ag_vote_bot.value == 0.0f)
+                {
+                    AgConsole("Adding bots by vote is not allowed by server admin.", pPlayer);
+                    return true;
+                }
+                if (ag_match_running.value != 0.0f)
+                {
+                    AgConsole("Sorry, can't add a bot during a match.", pPlayer);
+                    return true;
+                }
+
+                auto botsCount = 0;
+                for (int i = 1; i <= gpGlobals->maxClients; i++)
+                {
+                    CBasePlayer* player = AgPlayerByIndex(i);
+
+                    if (!player)
+                        continue;
+
+                    if (player->IsBot())
+                        botsCount++;
+                }
+
+                if (botsCount >= ag_bot_limit.value)
+                {
+                    AgConsole(UTIL_VarArgs("The limit of %d bots has been reached", ag_bot_limit.value), pPlayer);
+                    return true;
+                }
+
+                CallVote(pPlayer);
+                return true;
+            }
             else if (0 == strncmp(m_sVote.c_str(), "mp_timelimit", 12))
             {
                 if (!ag_vote_setting.value)
@@ -507,6 +541,9 @@ void AgVote::Think()
             }
             else if (GameMode.IsAllowedGamemode(m_sVote))
             {
+                // TODO: move this down in the else-if chain, because i guess
+                // you could name your gamemode "agkick" and then agkick would
+                // no longer work, it would try to load that gamemode instead
                 GameMode.Gamemode(m_sVote);
             }
             else if (FStrEq(m_sVote.c_str(), "agnextmode"))
@@ -524,6 +561,10 @@ void AgVote::Think()
             else if (FStrEq(m_sVote.c_str(), "agmoretime"))
             {
                 Command.MoreTime();
+            }
+            else if (FStrEq(m_sVote.c_str(), "spawnbot"))
+            {
+                Command.AddRespawningStaticBot();
             }
             else
             {

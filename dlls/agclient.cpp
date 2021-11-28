@@ -392,24 +392,6 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
     }
 #endif
 
-    /*
-    else if (FStrEq(CMD_ARGV(0), "botme"))
-    {
-          edict_t* pEntity = g_engfuncs.pfnCreateFakeClient( "botme" );
-          entvars_t *pev = &pEntity->v;
-          CBasePlayer* pBot = GetClassPtr((CBasePlayer*)pev); //Link bot object to the edict
-
-        pBot->Init();
-        pev->flags |= FL_FAKECLIENT; // bot is fakeclient
-          pBot->Spawn();
-          pev->flags |= FL_FAKECLIENT; // bot is fakeclient
-        pBot = (CBasePlayer *)CBasePlayer::Instance(pEntity);
-        g_pGameRules->PlayerThink( pBot);
-      g_engfuncs.pfnSetClientKeyValue( pPlayer->entindex(),
-          g_engfuncs.pfnGetInfoKeyBuffer(pEntity), "model", "xxx");
-    }
-    */
-
     return false;
 }
 

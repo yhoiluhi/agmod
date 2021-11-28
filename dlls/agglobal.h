@@ -143,6 +143,8 @@ extern cvar_t	ag_vote_mp_fraglimit_low;
 extern cvar_t	ag_vote_mp_fraglimit_high;
 extern cvar_t	ag_vote_extra_timelimit;
 
+extern cvar_t	ag_vote_bot;
+
 extern cvar_t	ag_floodmsgs;
 extern cvar_t	ag_floodpersecond;
 extern cvar_t	ag_floodwaitdelay;
@@ -192,6 +194,7 @@ extern cvar_t ag_satchel_health;
 extern cvar_t ag_satchel_solid;
 
 extern cvar_t ag_bot_allow_vote;
+extern cvar_t ag_bot_limit;
 
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;

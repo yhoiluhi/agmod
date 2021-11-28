@@ -423,6 +423,10 @@ public:
 
 	std::string m_UserInfoName;
 
+	float m_flMsecDelay;
+	float m_flMsecValue;
+	float m_flLastThinkTime;
+	bool m_bRespawning;
 
 	void          Init();     //Init all extra variables.
 	const char* GetAuthID(); //Get steam ID
@@ -504,6 +508,9 @@ public:
 	void LimitFps();
 
 	bool IsBot();
+
+	void BotThink();
+	void CalculateMsecValue();
 };
 //++ BulliT
 inline void CBasePlayer::Init()

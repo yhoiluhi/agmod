@@ -250,7 +250,9 @@ FILE_GLOBAL char* s_szVars[] =
   "sv_ag_vote_mp_fraglimit_low <0-999> - Lowest fraglimit to vote on.",
   "sv_ag_vote_mp_fraglimit_high <0-999> - Highest fraglimit to vote on.",
   "sv_ag_vote_extra_timelimit <number> - How many minutes to allow extending the timelimit by.",
+  "sv_ag_vote_bot <0/1> - Allow adding bots",
   "sv_ag_bot_allow_vote <0/1> - Make bots count towards the votes",
+  "sv_ag_bot_limit <number> - How many AG bots at max",
   "sv_ag_floodmsgs <4> - Flood messages to tolerate. 0 will deactive it.",
   "sv_ag_floodpersecond <4> - Flood messages per second.",
   "sv_ag_floodwaitdelay <10> - Flood penalty timer.",
@@ -596,6 +598,31 @@ void AgCommand::MoreTime()
     }
 
     CVAR_SET_FLOAT("mp_timelimit", timelimit + ag_vote_extra_timelimit.value);
+}
+
+void AgCommand::AddRespawningStaticBot()
+{
+    ASSERT(NULL != g_pGameRules);
+    if (!g_pGameRules)
+        return;
+
+    edict_t* pEntity = g_engfuncs.pfnCreateFakeClient("Static Bot");
+    if (!pEntity)
+        return;
+
+    entvars_t *pev = &pEntity->v;
+    CBasePlayer* pBot = GetClassPtr((CBasePlayer*)pev); //Link bot object to the edict
+
+    pBot->Init();
+    pBot->m_bRespawning = true;
+    pBot->m_flLastThinkTime = gpGlobals->time - 0.1;
+
+    pBot->Spawn();
+    pev->flags |= FL_FAKECLIENT; // bot is fakeclient
+    pBot = static_cast<CBasePlayer*>(CBasePlayer::Instance(pEntity));
+
+    g_pGameRules->PlayerThink(pBot);
+    g_engfuncs.pfnSetClientKeyValue(pBot->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pEntity), "model", "pink");
 }
 
 //-- Martin Webrant

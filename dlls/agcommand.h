@@ -45,6 +45,7 @@ public:
 
     static void MaxTime();
     static void MoreTime();
+    static void AddRespawningStaticBot();
 };
 
 extern DLL_GLOBAL AgCommand Command;

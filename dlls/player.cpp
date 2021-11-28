@@ -6150,3 +6150,70 @@ void CBasePlayer::LimitFps()
 		}
 	}
 }
+
+void CBasePlayer::BotThink()
+{
+	CalculateMsecValue();
+
+	if (!m_bRespawning && (pev->health < 1 || pev->deadflag != DEAD_NO))
+	{
+		// Do +use to respawn
+		edict()->v.button = IN_USE;
+		m_bRespawning = true;
+	}
+	else if (m_bRespawning)
+	{
+		// You actually have to stop pressing +use to finally respawn
+		edict()->v.button &= ~IN_USE;
+		m_bRespawning = false;
+	}
+
+	g_engfuncs.pfnRunPlayerMove(edict(), edict()->v.v_angle, 0, 0, 0, edict()->v.button, 0, (byte) m_flMsecValue);
+}
+
+// Credits to Jussi Kivilinna
+// https://github.com/Bots-United/jk_botti/blob/cccc549329d9656909bea700787a4471968ccb14/bot.cpp#L2507
+void CBasePlayer::CalculateMsecValue()
+{
+	auto frameTime = gpGlobals->time - m_flLastThinkTime;
+	m_flLastThinkTime = gpGlobals->time;
+
+	m_flMsecValue = (int)(frameTime * 1000.0);
+
+	// Count up difference that integer conversion caused
+	m_flMsecDelay += frameTime * 1000.0 - m_flMsecValue;
+
+	// Remove effect of integer conversion and lost msecs on previous frames
+	if(m_flMsecDelay > 1.625f)
+	{
+		auto diff = 1.625f;
+
+		if(m_flMsecDelay > 60.0f)
+			diff = 60.0f;
+		else if(m_flMsecDelay > 30.0f)
+			diff = 30.0f;
+		else if(m_flMsecDelay > 15.0f)
+			diff = 15.0f;
+		else if(m_flMsecDelay > 7.5f)
+			diff = 7.5f;
+		else if(m_flMsecDelay > 3.25f)
+			diff = 3.25f;
+
+		m_flMsecValue += diff - 0.5f;
+		m_flMsecDelay -= diff - 0.5f;
+	}
+
+	// Don't allow msec to be less than 1...
+	if (m_flMsecValue < 1)
+	{
+		// Adjust msecdel so we can correct lost msecs on following frames
+		m_flMsecDelay += m_flMsecValue - 1;
+		m_flMsecValue = 1;
+	}
+	else if (m_flMsecValue > 100)  // ...or greater than 100
+	{
+		// Adjust msecdel so we can correct lost msecs on following frames
+		m_flMsecDelay += m_flMsecValue - 100;
+		m_flMsecValue = 100;
+	}
+}

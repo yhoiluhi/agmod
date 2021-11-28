@@ -101,6 +101,20 @@ bool AgGameRules::AgThink()
 
     //Check gamemode
     GameMode.Think();
+
+    for (int i = 1; i <= gpGlobals->maxClients; i++)
+    {
+        CBasePlayer* player = AgPlayerByIndex(i);
+
+        if (!player)
+            continue;
+
+        if (!player->IsBot())
+            continue;
+
+        player->BotThink();
+    }
+
     return true;
 }
 

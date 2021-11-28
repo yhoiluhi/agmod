@@ -62,6 +62,8 @@ DLL_GLOBAL cvar_t	ag_vote_mp_fraglimit_low = { "sv_ag_vote_mp_fraglimit_low","0"
 DLL_GLOBAL cvar_t	ag_vote_mp_fraglimit_high = { "sv_ag_vote_mp_fraglimit_high","100" };
 DLL_GLOBAL cvar_t	ag_vote_extra_timelimit = { "sv_ag_vote_extra_timelimit","30" };
 
+DLL_GLOBAL cvar_t	ag_vote_bot = { "sv_ag_vote_bot", "1" }; // Allow adding bots
+
 DLL_GLOBAL cvar_t	ag_floodmsgs = { "sv_ag_floodmsgs","4" };
 DLL_GLOBAL cvar_t	ag_floodpersecond = { "sv_ag_floodpersecond","4" };
 DLL_GLOBAL cvar_t	ag_floodwaitdelay = { "sv_ag_floodwaitdelay","10" };
@@ -216,6 +218,7 @@ DLL_GLOBAL cvar_t	ag_satchel_health      = { "sv_ag_satchel_health",     "15", F
 DLL_GLOBAL cvar_t	ag_satchel_solid       = { "sv_ag_satchel_solid",       "1", FCVAR_SERVER }; // Default: 1 - Solid, players can collide with them
 
 DLL_GLOBAL cvar_t	ag_bot_allow_vote = { "sv_ag_bot_allow_vote", "0", FCVAR_SERVER }; // Default: 0 - Bots don't take part in votes
+DLL_GLOBAL cvar_t	ag_bot_limit      = { "sv_ag_bot_limit",      "5", FCVAR_SERVER }; // Default: 5 - How many AG bots at max.
 
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
@@ -360,6 +363,8 @@ void AgInitGame()
     CVAR_REGISTER(&ag_vote_mp_fraglimit_high);
     CVAR_REGISTER(&ag_vote_extra_timelimit);
 
+    CVAR_REGISTER(&ag_vote_bot);
+
     CVAR_REGISTER(&ag_floodmsgs);
     CVAR_REGISTER(&ag_floodpersecond);
     CVAR_REGISTER(&ag_floodwaitdelay);
@@ -418,6 +423,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_satchel_solid);
 
     CVAR_REGISTER(&ag_bot_allow_vote);
+    CVAR_REGISTER(&ag_bot_limit);
 
     CVAR_REGISTER(&mm_agsay);
 

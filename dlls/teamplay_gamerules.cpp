@@ -431,26 +431,30 @@ void CHalfLifeTeamplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infob
 	if ( !stricmp( mdls, pPlayer->m_szTeamName ) )
 		return;
 
+	int clientIndex = pPlayer->entindex();
+
 	if ( defaultteam.value )
 	{
-		int clientIndex = pPlayer->entindex();
-
 		g_engfuncs.pfnSetClientKeyValue( clientIndex, g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "model", pPlayer->m_szTeamName );
 		g_engfuncs.pfnSetClientKeyValue( clientIndex, g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "team", pPlayer->m_szTeamName );
-		sprintf( text, "* Not allowed to change teams in this game!\n" );
-		UTIL_SayText( text, pPlayer );
+		if (!pPlayer->IsBot())
+		{
+			sprintf( text, "* Not allowed to change teams in this game!\n" );
+			UTIL_SayText( text, pPlayer );
+		}
 		return;
 	}
 
 	if ( defaultteam.value || !IsValidTeam( mdls ) )
 	{
-		int clientIndex = pPlayer->entindex();
-
 		g_engfuncs.pfnSetClientKeyValue( clientIndex, g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "model", pPlayer->m_szTeamName );
-		sprintf( text, "* Can't change team to \'%s\'\n", mdls );
-		UTIL_SayText( text, pPlayer );
-		sprintf( text, "* Server limits teams to \'%s\'\n", m_szTeamList );
-		UTIL_SayText( text, pPlayer );
+		if (!pPlayer->IsBot())
+		{
+			sprintf( text, "* Can't change team to \'%s\'\n", mdls );
+			UTIL_SayText( text, pPlayer );
+			sprintf( text, "* Server limits teams to \'%s\'\n", m_szTeamList );
+			UTIL_SayText( text, pPlayer );
+		}
 		return;
 	}
 	// notify everyone of the team change
