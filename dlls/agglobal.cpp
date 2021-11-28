@@ -215,7 +215,7 @@ DLL_GLOBAL cvar_t	ag_satchel_destroyable = { "sv_ag_satchel_destroyable", "0", F
 DLL_GLOBAL cvar_t	ag_satchel_health      = { "sv_ag_satchel_health",     "15", FCVAR_SERVER }; // Default: 15 hp
 DLL_GLOBAL cvar_t	ag_satchel_solid       = { "sv_ag_satchel_solid",       "1", FCVAR_SERVER }; // Default: 1 - Solid, players can collide with them
 
-DLL_GLOBAL cvar_t	ag_bots_allow_vote     = { "sv_ag_bots_allow_vote",     "0", FCVAR_SERVER }; // Default: 0 - Bots don't take part in votes
+DLL_GLOBAL cvar_t	ag_bot_allow_vote = { "sv_ag_bot_allow_vote", "0", FCVAR_SERVER }; // Default: 0 - Bots don't take part in votes
 
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
@@ -417,7 +417,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_satchel_health);
     CVAR_REGISTER(&ag_satchel_solid);
 
-    CVAR_REGISTER(&ag_bots_allow_vote);
+    CVAR_REGISTER(&ag_bot_allow_vote);
 
     CVAR_REGISTER(&mm_agsay);
 

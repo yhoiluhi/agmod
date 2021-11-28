@@ -387,7 +387,7 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
 
 bool AgVote::CallVote(CBasePlayer* pPlayer)
 {
-    if (pPlayer->IsBot() && ag_bots_allow_vote.value == 0)
+    if (pPlayer->IsBot() && ag_bot_allow_vote.value == 0)
     {
         // Bots cannot start votes when sv_ag_bots_allow_vote is 0
         return false;
@@ -434,7 +434,7 @@ void AgVote::Think()
             CBasePlayer* pPlayerLoop = AgPlayerByIndex(i);
             if (pPlayerLoop && !pPlayerLoop->IsProxy())
             {
-                if (pPlayerLoop->IsBot() && ag_bots_allow_vote.value == 0)
+                if (pPlayerLoop->IsBot() && ag_bot_allow_vote.value == 0)
                 {
                     // Bots do not take part in votes when sv_ag_bots_allow_vote is 0
                     continue;

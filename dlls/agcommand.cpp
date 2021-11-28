@@ -250,6 +250,7 @@ FILE_GLOBAL char* s_szVars[] =
   "sv_ag_vote_mp_fraglimit_low <0-999> - Lowest fraglimit to vote on.",
   "sv_ag_vote_mp_fraglimit_high <0-999> - Highest fraglimit to vote on.",
   "sv_ag_vote_extra_timelimit <number> - How many minutes to allow extending the timelimit by.",
+  "sv_ag_bot_allow_vote <0/1> - Make bots count towards the votes",
   "sv_ag_floodmsgs <4> - Flood messages to tolerate. 0 will deactive it.",
   "sv_ag_floodpersecond <4> - Flood messages per second.",
   "sv_ag_floodwaitdelay <10> - Flood penalty timer.",
