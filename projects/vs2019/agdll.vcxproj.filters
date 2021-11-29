@@ -435,6 +435,9 @@
     <ClCompile Include="..\..\dlls\spawnchooser.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\agflood.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -660,6 +663,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dlls\spawnchooser.h">
+      <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\agflood.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
   </ItemGroup>

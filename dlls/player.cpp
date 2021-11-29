@@ -19,6 +19,7 @@
   functions dealing with the player
 
 */
+#include <algorithm>
 
 #include "extdll.h"
 #include "util.h"
@@ -37,6 +38,7 @@
 #include "pm_shared.h"
 #include "hltv.h"
 #include "spawnchooser.h"
+#include "agflood.h"
 
 // #define DUCKFIX
 
@@ -6262,3 +6264,117 @@ void CBasePlayer::CalculateMsecValue()
 		m_flMsecValue = 100;
 	}
 }
+
+void CBasePlayer::Init()
+{
+	m_bSentWallhackInfo = false;
+	m_bInSpawn = false;
+
+	m_bAdmin = false;
+	m_bIngame = 1 > ag_match_running.value;
+	m_bDoneFirstSpawn = false;
+
+	// TODO: review this. There's a `ag_player_id cvar` defaulted to 5, but its value is not
+	// being used here. There's this `5.0` hardcoded here and then a `2` in CBasePlayer::Spawn(),
+	// and the check is done every 0.5 in CBasePlayer::UpdatePlayerId()
+	m_fPlayerIdCheck = gpGlobals->time + 5.0;
+
+	m_fDisplayGamemode = 0.0;
+
+	m_fLongjumpTimer = 0.0;
+
+	m_iVote = -1;
+
+	m_iStatus = Invalid;
+
+	m_fDisplayGamemode = gpGlobals->time + 5;
+
+	m_fFpsMaxNextQuery = gpGlobals->time; // Check immediately if it's a new player
+
+	m_vKilled = g_vecZero;
+
+	m_fFloodLockTill = AgTime();
+	for (int i = 0; i < sizeof(m_afFloodWhen) / sizeof(m_afFloodWhen[0]); i++)
+	{
+		m_afFloodWhen[i] = AgTime() - ag_floodpersecond.value;
+	}
+	m_iFloodWhenHead = 0;
+
+	m_fPrevSoundFlood = AgTime();
+	m_fPrevTextFlood = AgTime();
+
+	m_flLastNameChange  = AgTime() - V_max(ag_flood_name_spec_cooldown.value, ag_flood_name_cooldown.value);
+	m_flLastModelChange = AgTime() - V_max(ag_flood_model_spec_cooldown.value, ag_flood_model_cooldown.value);
+
+	m_bSpawnFull = false;
+
+	Spectate_Init();
+	if (ARENA == AgGametype())
+	{
+		//Never allow new players in arena mode to spawn directly.
+		m_bIngame = false;
+		g_pGameRules->m_Arena.ClientConnected(this);
+	}
+	else if (LMS == AgGametype())
+	{
+		//Never allow new players in arena mode to spawn directly.
+		m_bIngame = false;
+		g_pGameRules->m_LMS.ClientConnected(this);
+	}
+	else if (CTF == AgGametype())
+	{
+		g_pGameRules->m_CTF.ClientConnected(this);
+
+		if (1 == ag_match_running.value)
+		{
+			//Check score cache if he was in the game.
+			g_pGameRules->m_ScoreCache.RestoreInGame(this);
+		}
+	}
+	else
+	{
+		if (1 == ag_match_running.value)
+		{
+			//Check score cache if he was in the game.
+			g_pGameRules->m_ScoreCache.RestoreInGame(this);
+		}
+	}
+
+	if (0 < ag_auto_admin.value)
+	{
+		//Autoadmin the player.
+		AdminCache.RestoreAdmin(this);
+	}
+
+	AgFlood::RestoreFlooding(this);
+
+	m_bFlagTeam1 = false;
+	m_bFlagTeam2 = false;
+	m_iFlagStatus1Last = Off;
+	m_iFlagStatus2Last = Off;
+
+	m_iAutoWepSwitch = 1;
+	m_iDisableSpecs = 0;
+
+	//InitWeaponWeight();
+
+	m_bReady = true;
+	m_iNumTeams = 0;
+
+	m_bInitLocation = true;
+	m_iMapListSent = -1;
+
+	m_szModel[0] = '\0';
+
+	m_iLastPlayerId = -1;
+	m_fNextPlayerId = 0.0;
+	m_bSentCheatCheck = false;
+
+	m_flFpsMax = 0.0;
+	m_iFpsWarnings = 0;
+	m_flNextFpsWarning = gpGlobals->time + ag_fps_limit_warnings_interval.value;
+	m_flNextSlap = gpGlobals->time;
+
+	// Game reuses player instances, so at least in the case of bots, this is still populated with the last disconnected bot's name
+	m_UserInfoName.clear();
+};

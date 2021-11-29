@@ -253,6 +253,7 @@
     <ClCompile Include="..\..\dlls\agtimer.cpp" />
     <ClCompile Include="..\..\dlls\agvote.cpp" />
     <ClCompile Include="..\..\dlls\agwallhack.cpp" />
+    <ClCompile Include="..\..\dlls\agflood.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\const.h" />
@@ -330,6 +331,7 @@
     <ClInclude Include="..\..\dlls\agvote.h" />
     <ClInclude Include="..\..\dlls\agwallhack.h" />
     <ClInclude Include="..\..\dlls\multiplay_gamerules.h" />
+    <ClInclude Include="..\..\dlls\agflood.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

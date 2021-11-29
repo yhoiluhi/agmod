@@ -463,6 +463,12 @@ void CHalfLifeTeamplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infob
 		// Restore the model they had before changing
 		g_engfuncs.pfnSetClientKeyValue( clientIndex, g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "model", pPlayer->m_szTeamName );
 		g_engfuncs.pfnSetClientKeyValue( clientIndex, g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "team", pPlayer->m_szTeamName );
+		// FIXME: when i do `setinfo` in the client, i can see the model that i set even though the server
+		// denies the change and restores the previous model. So it's not really restored and it makes it
+		// confusing on the client because when you have the model as red in the setinfo, but you're blue,
+		// and want to change it to red, it won't send anything to the server when you type `model red`,
+		// and you won't see it changing and you won't see any flood protection warning ('cos the server doesn't know).
+		// So you're typing in stuff and nothing happens, that's not a good user experience...
 		return;
 	}
 

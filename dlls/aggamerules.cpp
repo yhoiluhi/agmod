@@ -13,6 +13,7 @@
 #include "agvote.h"
 #include "agclient.h"
 #include "aggamerules.h"
+#include "agflood.h"
 #ifdef AGSTATS
 #include "agstats.h"
 #endif
@@ -590,6 +591,8 @@ void AgGameRules::ClientDisconnected(edict_t* pClient)
             ASSERT(NULL != pPlayer->pev);
             if (!pPlayer->pev)
                 return;
+
+            AgFlood::UpdateFlooding(pPlayer);
 
             UTIL_LogPrintf("\"%s<%d><%s><%s>\" disconnected (score \"%.0f\")\n",
                 pPlayer->GetName(), GETPLAYERUSERID(pPlayer->edict()), GETPLAYERAUTHID(pPlayer->edict()), pPlayer->TeamID(),
