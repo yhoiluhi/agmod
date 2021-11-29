@@ -354,7 +354,7 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
 
                 if (botsCount >= ag_bot_limit.value)
                 {
-                    AgConsole(UTIL_VarArgs("The limit of %d bots has been reached", ag_bot_limit.value), pPlayer);
+                    AgConsole(UTIL_VarArgs("The limit of %d bots has been reached", (int) ag_bot_limit.value), pPlayer);
                     return true;
                 }
 
