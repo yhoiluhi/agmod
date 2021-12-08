@@ -15,6 +15,7 @@ protected:
     AgString m_sValue2;
     AgString m_sFullValue;
     AgString m_sCalled;
+    AgString m_sCallerID;
     AgString m_sAuthID;
 
     double m_fMaxTime;

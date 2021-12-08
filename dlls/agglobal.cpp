@@ -572,6 +572,20 @@ CBasePlayer* AgPlayerByName(const AgString& sNameOrPlayerNumber)
     return NULL;
 }
 
+CBasePlayer* AgPlayerByAuthID(const AgString& authID)
+{
+    for (int i = 1; i <= gpGlobals->maxClients; i++)
+    {
+        CBasePlayer* pPlayerLoop = AgPlayerByIndex(i);
+        if (pPlayerLoop)
+        {
+            if (FStrEq(pPlayerLoop->GetAuthID(), authID.c_str()))
+                return pPlayerLoop;
+        }
+    }
+    return NULL;
+}
+
 void AgChangelevel(const AgString& sLevelname)
 {
     if (32 < sLevelname.size() || 0 == sLevelname.size())

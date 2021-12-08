@@ -604,7 +604,7 @@ void AgCommand::MoreTime()
     CVAR_SET_FLOAT("mp_timelimit", timelimit + ag_vote_extra_timelimit.value);
 }
 
-void AgCommand::AddRespawningStaticBot()
+void AgCommand::AddRespawningStaticBot(CBasePlayer* pPlayer)
 {
     ASSERT(NULL != g_pGameRules);
     if (!g_pGameRules)
@@ -626,7 +626,11 @@ void AgCommand::AddRespawningStaticBot()
     pBot = static_cast<CBasePlayer*>(CBasePlayer::Instance(pEntity));
 
     g_pGameRules->PlayerThink(pBot);
-    g_engfuncs.pfnSetClientKeyValue(pBot->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pEntity), "model", "pink");
+
+    if (pPlayer && FStrEq(pPlayer->m_szTeamName, "red"))
+        g_engfuncs.pfnSetClientKeyValue(pBot->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pEntity), "model", "blue");
+    else
+        g_engfuncs.pfnSetClientKeyValue(pBot->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pEntity), "model", "red");
 }
 
 //-- Martin Webrant

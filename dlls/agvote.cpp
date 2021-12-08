@@ -447,14 +447,12 @@ bool AgVote::CallVote(CBasePlayer* pPlayer)
     m_fMaxTime = AgTime() + 30.0;  //30 seconds is enough.
     m_fNextCount = AgTime();       //Next count directly
 
-    // FIXME: when you do e.g. `callvote agmap crossfire` in a listenserver, the votation
-    // starts with your vote being against, in the first Think() m_iVote is already 0 somehow
-
     pPlayer->m_iVote = 1;          //Voter voted yes
 #ifdef _DEBUG
     pPlayer->m_iVote = 0;
 #endif
     m_sCalled = pPlayer->GetName();
+    m_sCallerID = pPlayer->GetAuthID();
     m_bRunning = true;
 
     //++ muphicks
@@ -581,7 +579,7 @@ void AgVote::Think()
             }
             else if (FStrEq(m_sVote.c_str(), "spawnbot"))
             {
-                Command.AddRespawningStaticBot();
+                Command.AddRespawningStaticBot(AgPlayerByAuthID(m_sCallerID));
             }
             else if (0 == strncmp(m_sVote.c_str(), "agforceteam", 11))
             {
@@ -655,6 +653,7 @@ bool AgVote::ResetVote()
     m_sValue2 = "";
     m_sFullValue = "";
     m_sCalled = "";
+    m_sCallerID = "";
     m_fNextCount = 0.0;
     m_fMaxTime = 0.0;
     m_sAuthID = "";

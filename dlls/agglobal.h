@@ -211,6 +211,7 @@ extern std::vector<std::string> g_votableSettings;
 void AgInitGame();
 CBasePlayer* AgPlayerByIndex(int iPlayerIndex);
 CBasePlayer* AgPlayerByName(const AgString& sNameOrPlayerNumber);
+CBasePlayer* AgPlayerByAuthID(const AgString& authID);
 
 void AgChangelevel(const AgString& sLevelname);
 
