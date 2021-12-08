@@ -174,6 +174,9 @@ enum class ChatType
 {
 	SPAWN,
 	DAMAGE,
+	NAME_CHANGE,
+	TEAM_CHANGE,
+	GAME_LEAVE,
 };
 
 typedef enum 

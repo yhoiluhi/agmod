@@ -476,7 +476,7 @@ void CHalfLifeTeamplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infob
 	// TODO: investigate why this only gets executed sometimes when a player joins,
 	// between the "... connected, address ..." and "... STEAM USERID validated" log messages
 	sprintf( text, "* %s has changed to team \'%s\'\n", pPlayer->GetName(), mdls );
-	UTIL_SayTextAll( text, pPlayer );
+	UTIL_DispatchChat(nullptr, ChatType::TEAM_CHANGE, text);
 
 	UTIL_LogPrintf( "\"%s<%i><%s><%s>\" joined team \"%s\"\n", 
 		pPlayer->GetName(),

@@ -116,10 +116,7 @@ void ClientDisconnect( edict_t *pEntity )
 	if ( pEntity->v.netname )
 		_snprintf( text, sizeof(text), "- %s has left the game\n", player->GetName() );
 	text[ sizeof(text) - 1 ] = 0;
-	MESSAGE_BEGIN( MSG_ALL, gmsgSayText, NULL );
-		WRITE_BYTE( ENTINDEX(pEntity) );
-		WRITE_STRING( text );
-	MESSAGE_END();
+	UTIL_DispatchChat(nullptr, ChatType::GAME_LEAVE, text);
 
 	CSound *pSound;
 	pSound = CSoundEnt::SoundPointerForIndex( CSoundEnt::ClientSoundIndex( pEntity ) );
@@ -649,10 +646,7 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 			{
 				char text[256];
 				sprintf( text, "* %s changed name to %s\n", STRING(pEntity->v.netname), sName );
-				MESSAGE_BEGIN( MSG_ALL, gmsgSayText, NULL );
-					WRITE_BYTE( ENTINDEX(pEntity) );
-					WRITE_STRING( text );
-				MESSAGE_END();
+				UTIL_DispatchChat(nullptr, ChatType::NAME_CHANGE, text);
 			}
 
 			// team match?
