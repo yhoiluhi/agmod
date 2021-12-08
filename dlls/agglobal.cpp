@@ -63,6 +63,8 @@ DLL_GLOBAL cvar_t	ag_vote_mp_fraglimit_high = { "sv_ag_vote_mp_fraglimit_high","
 DLL_GLOBAL cvar_t	ag_vote_extra_timelimit = { "sv_ag_vote_extra_timelimit","30" };
 
 DLL_GLOBAL cvar_t	ag_vote_bot = { "sv_ag_vote_bot", "1" }; // Allow adding bots
+DLL_GLOBAL cvar_t	ag_vote_team = { "sv_ag_vote_team", "1" }; // Allow vote to force someone to team up
+DLL_GLOBAL cvar_t	ag_vote_spectator = { "sv_ag_vote_spectator", "1" }; // Allow vote to force someone to spectate
 
 DLL_GLOBAL cvar_t	ag_floodmsgs = { "sv_ag_floodmsgs","4" };
 DLL_GLOBAL cvar_t	ag_floodpersecond = { "sv_ag_floodpersecond","4" };
@@ -369,6 +371,8 @@ void AgInitGame()
     CVAR_REGISTER(&ag_vote_extra_timelimit);
 
     CVAR_REGISTER(&ag_vote_bot);
+    CVAR_REGISTER(&ag_vote_team);
+    CVAR_REGISTER(&ag_vote_spectator);
 
     CVAR_REGISTER(&ag_floodmsgs);
     CVAR_REGISTER(&ag_floodpersecond);

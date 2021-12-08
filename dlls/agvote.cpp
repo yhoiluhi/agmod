@@ -141,14 +141,24 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
             if (2 <= CMD_ARGC())
                 m_sVote = CMD_ARGV(1);
             if (3 <= CMD_ARGC())
+            {
                 m_sValue = CMD_ARGV(2);
+                m_sFullValue = CMD_ARGS();
+            }
+            if (4 <= CMD_ARGC())
+                m_sValue2 = CMD_ARGV(3);
         }
         else
         {
             if (1 <= CMD_ARGC())
                 m_sVote = CMD_ARGV(0);
             if (2 <= CMD_ARGC())
-                m_sValue = CMD_ARGS();
+            {
+                m_sValue = CMD_ARGV(1);
+                m_sFullValue = CMD_ARGS();
+            }
+            if (3 <= CMD_ARGC())
+                m_sValue2 = CMD_ARGV(2);
         }
 
         if (m_sVote.size() && 32 > m_sVote.size() && 32 > m_sValue.size())
@@ -260,11 +270,16 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
             //Check command
             else if (FStrEq(m_sVote.c_str(), "agallow") ||
                 FStrEq(m_sVote.c_str(), "agkick") ||
-                FStrEq(m_sVote.c_str(), "agadmin"))
+                FStrEq(m_sVote.c_str(), "agadmin") ||
+                0 == strncmp(m_sVote.c_str(), "agforceteam", 11) ||
+                FStrEq(m_sVote.c_str(), "agforcespectator"))
             {
-                if (FStrEq(m_sVote.c_str(), "agkick") && 1 > ag_vote_kick.value
-                    || FStrEq(m_sVote.c_str(), "agadmin") && 1 > ag_vote_admin.value
-                    || FStrEq(m_sVote.c_str(), "agallow") && 1 > ag_vote_allow.value
+                // TODO: this is ugly, refactor
+                if ((FStrEq(m_sVote.c_str(), "agkick") && 1 > ag_vote_kick.value)
+                    || (FStrEq(m_sVote.c_str(), "agadmin") && 1 > ag_vote_admin.value)
+                    || (FStrEq(m_sVote.c_str(), "agallow") && 1 > ag_vote_allow.value)
+                    || (0 == strncmp(m_sVote.c_str(), "agforceteam", 11) && 1 > ag_vote_team.value)
+                    || (FStrEq(m_sVote.c_str(), "agforcespectator") && 1 > ag_vote_spectator.value)
                     )
                 {
                     AgConsole("Vote is not allowed by server admin.", pPlayer);
@@ -279,7 +294,9 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                 }
                 else
                 {
-                    if (!FStrEq(m_sVote.c_str(), "agkick"))
+                    if (!FStrEq(m_sVote.c_str(), "agkick")
+                        && 0 != strncmp(m_sVote.c_str(), "agforceteam", 11)
+                        && !FStrEq(m_sVote.c_str(), "agforcespectator"))
                     {
                         m_sValue = pPlayer->GetName();
                         m_sAuthID = pPlayer->GetAuthID();
@@ -470,7 +487,7 @@ void AgVote::Think()
             {
                 if (pPlayerLoop->IsBot() && ag_bot_allow_vote.value == 0)
                 {
-                    // Bots do not take part in votes when sv_ag_bots_allow_vote is 0
+                    // Bots do not take part in votes when sv_ag_bot_allow_vote is 0
                     continue;
                 }
 
@@ -497,7 +514,7 @@ void AgVote::Think()
             WRITE_BYTE(iAgainst);
             WRITE_BYTE(iUndecided);
             WRITE_STRING(m_sVote.c_str());
-            WRITE_STRING(m_sValue.c_str());
+            WRITE_STRING(UTIL_VarArgs("%s %s", m_sValue.c_str(), m_sValue2.c_str()));
             WRITE_STRING(m_sCalled.c_str());
             MESSAGE_END();
 #endif
@@ -529,7 +546,7 @@ void AgVote::Think()
             }
             else if (FStrEq(m_sVote.c_str(), "agstart"))
             {
-                Command.Start(m_sValue);
+                Command.Start(m_sFullValue);
             }
             else if (FStrEq(m_sVote.c_str(), "agpause"))
             {
@@ -566,6 +583,14 @@ void AgVote::Think()
             {
                 Command.AddRespawningStaticBot();
             }
+            else if (0 == strncmp(m_sVote.c_str(), "agforceteam", 11))
+            {
+                Command.TeamUp(nullptr, m_sValue, m_sValue2);
+            }
+            else if (FStrEq(m_sVote.c_str(), "agforcespectator"))
+            {
+                Command.Spectator(nullptr, m_sValue);
+            }
             else
             {
                 Command.Setting(m_sVote.c_str(), m_sValue);
@@ -586,7 +611,7 @@ void AgVote::Think()
                 WRITE_BYTE(iAgainst);
                 WRITE_BYTE(iUndecided);
                 WRITE_STRING(m_sVote.c_str());
-                WRITE_STRING(m_sValue.c_str());
+                WRITE_STRING(UTIL_VarArgs("%s %s", m_sValue.c_str(), m_sValue2.c_str()));
                 WRITE_STRING(m_sCalled.c_str());
                 MESSAGE_END();
 #endif
@@ -605,7 +630,7 @@ void AgVote::Think()
                 WRITE_BYTE(iAgainst);
                 WRITE_BYTE(iUndecided);
                 WRITE_STRING(m_sVote.c_str());
-                WRITE_STRING(m_sValue.c_str());
+                WRITE_STRING(UTIL_VarArgs("%s %s", m_sValue.c_str(), m_sValue2.c_str()));
                 WRITE_STRING(m_sCalled.c_str());
                 MESSAGE_END();
 #endif
@@ -627,6 +652,8 @@ bool AgVote::ResetVote()
 
     m_sVote = "";
     m_sValue = "";
+    m_sValue2 = "";
+    m_sFullValue = "";
     m_sCalled = "";
     m_fNextCount = 0.0;
     m_fMaxTime = 0.0;

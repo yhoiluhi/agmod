@@ -12,6 +12,8 @@ class AgVote
 protected:
     AgString m_sVote;
     AgString m_sValue;
+    AgString m_sValue2;
+    AgString m_sFullValue;
     AgString m_sCalled;
     AgString m_sAuthID;
 

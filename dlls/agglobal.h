@@ -144,6 +144,8 @@ extern cvar_t	ag_vote_mp_fraglimit_high;
 extern cvar_t	ag_vote_extra_timelimit;
 
 extern cvar_t	ag_vote_bot;
+extern cvar_t	ag_vote_team;
+extern cvar_t	ag_vote_spectator;
 
 extern cvar_t	ag_floodmsgs;
 extern cvar_t	ag_floodpersecond;
