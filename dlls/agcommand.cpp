@@ -253,6 +253,7 @@ FILE_GLOBAL char* s_szVars[] =
   "sv_ag_vote_bot <0/1> - Allow adding bots",
   "sv_ag_bot_allow_vote <0/1> - Make bots count towards the votes",
   "sv_ag_bot_limit <number> - How many AG bots at max",
+  "sv_ag_enforcement_cooldown <number> - Seconds to wait for the forced player to change model/specmode",
   "sv_ag_flood_name_cooldown <number> - Seconds to wait before changing name again",
   "sv_ag_flood_name_spec_cooldown <number> - Seconds to wait before changing name again in spec mode",
   "sv_ag_flood_model_cooldown <number> - Seconds to wait before changing name again",
@@ -541,7 +542,11 @@ void AgCommand::TeamUp(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName, co
 
     CBasePlayer* pTeamUpPlayer = AgPlayerByName(sPlayerIdOrName);
     if (pTeamUpPlayer)
+    {
         pTeamUpPlayer->ChangeTeam(sTeam.c_str(), true);
+        pTeamUpPlayer->m_flLastModelEnforcement = AgTime();
+        pTeamUpPlayer->m_enforcedModel = sTeam;
+    }
 }
 
 void AgCommand::Spectator(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName)
@@ -554,7 +559,10 @@ void AgCommand::Spectator(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName)
 
     CBasePlayer* pSpectatorPlayer = AgPlayerByName(sPlayerIdOrName);
     if (pSpectatorPlayer)
+    {
         pSpectatorPlayer->Spectate_Start();
+        pSpectatorPlayer->m_flLastSpecEnforcement = AgTime();
+    }
 }
 
 void AgCommand::Exec(const AgString& sExec, CBasePlayer* pPlayer)

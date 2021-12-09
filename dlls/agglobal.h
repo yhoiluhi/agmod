@@ -203,6 +203,8 @@ extern cvar_t ag_flood_name_spec_cooldown;
 extern cvar_t ag_flood_model_cooldown;
 extern cvar_t ag_flood_model_spec_cooldown;
 
+extern cvar_t ag_enforcement_cooldown;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 

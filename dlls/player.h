@@ -426,6 +426,11 @@ public:
 	double m_flLastNameChange;
 	double m_flLastModelChange;
 
+	double m_flLastModelEnforcement;
+	double m_flLastSpecEnforcement;
+
+	std::string m_enforcedModel;
+
 	float m_flMsecDelay;
 	float m_flMsecValue;
 	float m_flLastThinkTime;
@@ -514,6 +519,8 @@ public:
 
 	bool HasNameFlooded();
 	bool HasModelFlooded();
+	bool HasModelEnforced();
+	bool HasSpecEnforced();
 
 	void BotThink();
 	void CalculateMsecValue();

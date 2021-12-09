@@ -250,6 +250,12 @@ const char *CHalfLifeTeamplay::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 	  g_engfuncs.pfnSetClientKeyValue( pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "model", pPlayer->m_szTeamName );
 	  g_engfuncs.pfnSetClientKeyValue( pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "team", pPlayer->m_szTeamName );
   }
+  else if (pPlayer->HasModelEnforced())
+  {
+	  strcpy(pPlayer->m_szTeamName, pPlayer->m_enforcedModel.c_str());
+	  g_engfuncs.pfnSetClientKeyValue( pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "model", pPlayer->m_szTeamName );
+	  g_engfuncs.pfnSetClientKeyValue( pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "team", pPlayer->m_szTeamName );
+  }
   else if (0 == strlen(pPlayer->m_szTeamName))
   {
     strcpy(pPlayer->m_szTeamName,"gordon");
@@ -469,6 +475,12 @@ void CHalfLifeTeamplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infob
 		// and want to change it to red, it won't send anything to the server when you type `model red`,
 		// and you won't see it changing and you won't see any flood protection warning ('cos the server doesn't know).
 		// So you're typing in stuff and nothing happens, that's not a good user experience...
+		return;
+	}
+
+	if (pPlayer->HasModelEnforced())
+	{
+		pPlayer->ChangeTeam(pPlayer->m_enforcedModel.c_str(), true);
 		return;
 	}
 

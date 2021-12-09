@@ -18,10 +18,18 @@ namespace AgFlood
 			double timeSinceLastNameChange;
 			double timeSinceLastModelChange;
 
-			Flooder(const char* steamID, double timeSinceLastNameChange, double timeSinceLastModelChange)
+			std::string enforcedModel;
+			double timeSinceLastModelEnforcement;
+			double timeSinceLastSpecEnforcement;
+
+			Flooder(const char* steamID, double timeSinceLastNameChange, double timeSinceLastModelChange,
+				const char* enforcedModel, double timeSinceLastModelEnforcement, double timeSinceLastSpecEnforcement)
 				: steamID(steamID),
 				  timeSinceLastNameChange(timeSinceLastNameChange),
-				  timeSinceLastModelChange(timeSinceLastModelChange)
+				  timeSinceLastModelChange(timeSinceLastModelChange),
+				  enforcedModel(enforcedModel),
+				  timeSinceLastModelEnforcement(timeSinceLastModelEnforcement),
+				  timeSinceLastSpecEnforcement(timeSinceLastSpecEnforcement)
 			{}
 		};
 
@@ -32,8 +40,13 @@ namespace AgFlood
 	{
 		const char* playerSteamID = player->GetAuthID();
 
-		const auto timePassedForName  = AgTime() - player->m_flLastNameChange;
-		const auto timePassedForModel = AgTime() - player->m_flLastModelChange;
+		const auto timePassedNameChange  = AgTime() - player->m_flLastNameChange;
+		const auto timePassedModelChange = AgTime() - player->m_flLastModelChange;
+
+		const auto timePassedModelEnforcement = AgTime() - player->m_flLastModelEnforcement;
+		const auto timePassedSpecEnforcement  = AgTime() - player->m_flLastSpecEnforcement;
+
+		const char* enforcedModel = player->m_enforcedModel.c_str();
 
 		const auto it = std::find_if(
 			flooders.begin(),
@@ -44,11 +57,17 @@ namespace AgFlood
 
 		if (it != flooders.end())
 		{
-			it->timeSinceLastNameChange = timePassedForName;
-			it->timeSinceLastModelChange = timePassedForModel;
+			it->timeSinceLastNameChange  = timePassedNameChange;
+			it->timeSinceLastModelChange = timePassedModelChange;
+
+			it->enforcedModel = enforcedModel;
+			it->timeSinceLastModelEnforcement = timePassedModelEnforcement;
+			it->timeSinceLastSpecEnforcement  = timePassedSpecEnforcement;
 		}
 		else
-			flooders.emplace_back(playerSteamID, timePassedForName, timePassedForModel);
+			flooders.emplace_back(
+				playerSteamID, timePassedNameChange, timePassedModelChange,
+				enforcedModel, timePassedModelEnforcement, timePassedSpecEnforcement);
 	}
 
 	void RestoreFlooding(CBasePlayer* player)
@@ -64,6 +83,10 @@ namespace AgFlood
 		{
 			player->m_flLastNameChange  = AgTime() - it->timeSinceLastNameChange;
 			player->m_flLastModelChange = AgTime() - it->timeSinceLastModelChange;
+
+			player->m_enforcedModel = it->enforcedModel;
+			player->m_flLastModelEnforcement = AgTime() - it->timeSinceLastModelEnforcement;
+			player->m_flLastSpecEnforcement  = AgTime() - it->timeSinceLastSpecEnforcement;
 		}
 
 	}

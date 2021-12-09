@@ -227,6 +227,8 @@ DLL_GLOBAL cvar_t	ag_flood_name_spec_cooldown  = { "sv_ag_flood_name_spec_cooldo
 DLL_GLOBAL cvar_t	ag_flood_model_cooldown      = { "sv_ag_flood_model_cooldown", "2" }; // Default: 2 - Seconds to wait before changing their model again
 DLL_GLOBAL cvar_t	ag_flood_model_spec_cooldown = { "sv_ag_flood_model_spec_cooldown", "60" }; // Default: 60 - Seconds to wait before changing their model again when on spec
 
+DLL_GLOBAL cvar_t	ag_enforcement_cooldown = { "sv_agforce_cooldown",  "15" }; // Default: 15 - Seconds to wait before target can change their model or specmode again
+
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
 
@@ -438,6 +440,8 @@ void AgInitGame()
     CVAR_REGISTER(&ag_flood_name_spec_cooldown);
     CVAR_REGISTER(&ag_flood_model_cooldown);
     CVAR_REGISTER(&ag_flood_model_spec_cooldown);
+
+    CVAR_REGISTER(&ag_enforcement_cooldown);
 
     CVAR_REGISTER(&mm_agsay);
 

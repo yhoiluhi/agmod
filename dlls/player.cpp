@@ -5845,6 +5845,46 @@ bool CBasePlayer::HasModelFlooded()
 	return false;
 }
 
+bool CBasePlayer::HasModelEnforced()
+{
+	if (IsAdmin())
+		return false;
+
+	if (IsBot())
+		return false;
+
+	if (m_flLastModelEnforcement + ag_enforcement_cooldown.value > AgTime())
+	{
+		char text[128];
+		sprintf( text, "You can't change your model for %.1f more seconds due to model enforcement\n",
+			m_flLastModelEnforcement + ag_enforcement_cooldown.value - AgTime() );
+		UTIL_SayText( text, this );
+		return true;
+	}
+
+	return false;
+}
+
+bool CBasePlayer::HasSpecEnforced()
+{
+	if (IsAdmin())
+		return false;
+
+	if (IsBot())
+		return false;
+
+	if (m_flLastSpecEnforcement + ag_enforcement_cooldown.value > AgTime())
+	{
+		char text[128];
+		sprintf( text, "You can't change your spec mode for %.1f more seconds due to spec enforcement\n",
+			m_flLastSpecEnforcement + ag_enforcement_cooldown.value - AgTime() );
+		UTIL_SayText( text, this );
+		return true;
+	}
+
+	return false;
+}
+
 #include "agwallhack.h"
 void CBasePlayer::SendWallhackInfo()
 {
@@ -6303,8 +6343,11 @@ void CBasePlayer::Init()
 	m_fPrevSoundFlood = AgTime();
 	m_fPrevTextFlood = AgTime();
 
-	m_flLastNameChange  = AgTime() - V_max(ag_flood_name_spec_cooldown.value, ag_flood_name_cooldown.value);
-	m_flLastModelChange = AgTime() - V_max(ag_flood_model_spec_cooldown.value, ag_flood_model_cooldown.value);
+	m_flLastNameChange  = AgTime() - V_max(ag_flood_name_spec_cooldown.value, ag_flood_name_cooldown.value) - 0.001f;
+	m_flLastModelChange = AgTime() - V_max(ag_flood_model_spec_cooldown.value, ag_flood_model_cooldown.value) - 0.001f;
+
+	m_flLastModelEnforcement = AgTime() - ag_enforcement_cooldown.value - 0.001f;
+	m_flLastSpecEnforcement = AgTime() - ag_enforcement_cooldown.value - 0.001f;
 
 	m_bSpawnFull = false;
 

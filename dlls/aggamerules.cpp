@@ -185,7 +185,10 @@ BOOL AgGameRules::FPlayerCanRespawn(CBasePlayer* pPlayer)
     if (!pPlayer->pev)
         return FALSE;
 
-    return pPlayer->IsIngame();
+    if (!pPlayer->IsIngame())
+        return FALSE;
+
+    return !pPlayer->HasSpecEnforced();
 }
 
 
