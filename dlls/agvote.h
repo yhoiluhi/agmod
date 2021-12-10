@@ -14,6 +14,7 @@ protected:
     AgString m_sValue;
     AgString m_sValue2;
     AgString m_sFullValue;
+    CBasePlayer* m_sTarget;
     AgString m_sCalled;
     AgString m_sCallerID;
     AgString m_sAuthID;

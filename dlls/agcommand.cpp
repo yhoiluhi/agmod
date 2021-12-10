@@ -402,6 +402,20 @@ void AgCommand::Allow(const AgString& sPlayerIdOrName, CBasePlayer* pPlayer)
     }
 }
 
+void AgCommand::Allow(CBasePlayer* target, CBasePlayer* caller)
+{
+    if (!g_pGameRules)
+        return;
+
+    if (ARENA == AgGametype() || LMS == AgGametype())
+    {
+        AgConsole("Not allowed.", caller);
+        return;
+    }
+
+    g_pGameRules->m_Match.Allow(target);
+}
+
 void AgCommand::Abort(CBasePlayer* pPlayer)
 {
     ASSERT(NULL != g_pGameRules);
@@ -455,6 +469,13 @@ void AgCommand::Kick(const AgString& sPlayerIdOrName)
 
     char szCommand[128];
     sprintf(szCommand, "kick %s\n", sPlayerIdOrName.c_str());
+    SERVER_COMMAND(szCommand);
+}
+
+void AgCommand::Kick(CBasePlayer* target)
+{
+    char szCommand[128];
+    sprintf(szCommand, "kick #%d\n", GETPLAYERUSERID(target->edict()));
     SERVER_COMMAND(szCommand);
 }
 
@@ -549,6 +570,19 @@ void AgCommand::TeamUp(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName, co
     }
 }
 
+void AgCommand::TeamUp(CBasePlayer* pPlayer, CBasePlayer* target, const AgString& sTeam)
+{
+    ASSERT(NULL != g_pGameRules);
+    if (!g_pGameRules)
+        return;
+    if (!g_pGameRules->IsTeamplay())
+        return;
+
+    target->ChangeTeam(sTeam.c_str(), true);
+    target->m_flLastModelEnforcement = AgTime();
+    target->m_enforcedModel = sTeam;
+}
+
 void AgCommand::Spectator(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName)
 {
     ASSERT(NULL != g_pGameRules);
@@ -563,6 +597,18 @@ void AgCommand::Spectator(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName)
         pSpectatorPlayer->Spectate_Start();
         pSpectatorPlayer->m_flLastSpecEnforcement = AgTime();
     }
+}
+
+void AgCommand::Spectator(CBasePlayer* pPlayer, CBasePlayer* target)
+{
+    ASSERT(NULL != g_pGameRules);
+    if (!g_pGameRules)
+        return;
+    if (!g_pGameRules->IsTeamplay())
+        return;
+
+    target->Spectate_Start();
+    target->m_flLastSpecEnforcement = AgTime();
 }
 
 void AgCommand::Exec(const AgString& sExec, CBasePlayer* pPlayer)

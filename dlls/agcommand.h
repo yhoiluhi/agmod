@@ -26,10 +26,12 @@ public:
 
     static void Start(const AgString& sSpawn);
     static void Allow(const AgString& sPlayerIdOrName, CBasePlayer* pPlayer = NULL);
+    static void Allow(CBasePlayer* target, CBasePlayer* pPlayer = NULL);
     static void Abort(CBasePlayer* pPlayer);
     static void Pause(CBasePlayer* pPlayer);
 
     static void Kick(const AgString& sPlayerIdOrName);
+    static void Kick(CBasePlayer* target);
     static void Map(const AgString& sMap);
     static void NextMap(const AgString& sMap, CBasePlayer* pPlayer = NULL);
 
@@ -39,7 +41,9 @@ public:
     static void Variables(CBasePlayer* pPlayer);
 
     static void TeamUp(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName, const AgString& sTeam);
+    static void TeamUp(CBasePlayer* pPlayer, CBasePlayer* target, const AgString& sTeam);
     static void Spectator(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName);
+    static void Spectator(CBasePlayer* pPlayer, CBasePlayer* target);
 
     static void Exec(const AgString& sExec, CBasePlayer* pPlayer);
 

@@ -290,6 +290,7 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                 if (pPlayerLoop)
                 {
                     m_sAuthID = pPlayerLoop->GetAuthID();
+                    m_sTarget = pPlayerLoop;
                     CallVote(pPlayer);
                 }
                 else
@@ -298,8 +299,10 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                         && 0 != strncmp(m_sVote.c_str(), "agforceteam", 11)
                         && !FStrEq(m_sVote.c_str(), "agforcespectator"))
                     {
+                        // Target is the caller
                         m_sValue = pPlayer->GetName();
                         m_sAuthID = pPlayer->GetAuthID();
+                        m_sTarget = pPlayer;
                         CallVote(pPlayer);
                     }
                     else
@@ -520,19 +523,30 @@ void AgVote::Think()
             //Exec vote.
             if (FStrEq(m_sVote.c_str(), "agadmin"))
             {
-                for (int i = 1; i <= gpGlobals->maxClients; i++)
+                if (m_sTarget && m_sTarget->pev)
                 {
-                    CBasePlayer* pPlayerLoop = AgPlayerByIndex(i);
-                    if (pPlayerLoop && pPlayerLoop->GetAuthID() == m_sAuthID)
+                    m_sTarget->SetIsAdmin(true);
+                }
+                else
+                {
+                    for (int i = 1; i <= gpGlobals->maxClients; i++)
                     {
-                        pPlayerLoop->SetIsAdmin(true);
-                        break;
+                        CBasePlayer* pPlayerLoop = AgPlayerByIndex(i);
+                        if (pPlayerLoop && pPlayerLoop->GetAuthID() == m_sAuthID)
+                        {
+                            pPlayerLoop->SetIsAdmin(true);
+                            break;
+                        }
                     }
                 }
+
             }
             else if (FStrEq(m_sVote.c_str(), "agallow"))
             {
-                Command.Allow(m_sValue);
+                if (m_sTarget && m_sTarget->pev)
+                    Command.Allow(m_sTarget);
+                else
+                    Command.Allow(m_sValue);
             }
             else if (FStrEq(m_sVote.c_str(), "agmap"))
             {
@@ -567,7 +581,10 @@ void AgVote::Think()
             }
             else if (FStrEq(m_sVote.c_str(), "agkick"))
             {
-                Command.Kick(m_sValue);
+                if (m_sTarget && m_sTarget->pev)
+                    Command.Kick(m_sTarget);
+                else
+                    Command.Kick(m_sValue);
             }
             else if (FStrEq(m_sVote.c_str(), "agmaxtime"))
             {
@@ -583,11 +600,17 @@ void AgVote::Think()
             }
             else if (0 == strncmp(m_sVote.c_str(), "agforceteam", 11))
             {
-                Command.TeamUp(nullptr, m_sValue, m_sValue2);
+                if (m_sTarget && m_sTarget->pev)
+                    Command.TeamUp(nullptr, m_sTarget, m_sValue2);
+                else
+                    Command.TeamUp(nullptr, m_sValue, m_sValue2);
             }
             else if (FStrEq(m_sVote.c_str(), "agforcespectator"))
             {
-                Command.Spectator(nullptr, m_sValue);
+                if (m_sTarget && m_sTarget->pev)
+                    Command.Spectator(nullptr, m_sTarget);
+                else
+                    Command.Spectator(nullptr, m_sValue);
             }
             else
             {
@@ -652,6 +675,7 @@ bool AgVote::ResetVote()
     m_sValue = "";
     m_sValue2 = "";
     m_sFullValue = "";
+    m_sTarget = nullptr;
     m_sCalled = "";
     m_sCallerID = "";
     m_fNextCount = 0.0;
