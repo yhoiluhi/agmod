@@ -6351,6 +6351,8 @@ void CBasePlayer::Init()
 
 	m_bSpawnFull = false;
 
+	m_bRecording = false;
+
 	Spectate_Init();
 	if (ARENA == AgGametype())
 	{
@@ -6421,3 +6423,21 @@ void CBasePlayer::Init()
 	// Game reuses player instances, so at least in the case of bots, this is still populated with the last disconnected bot's name
 	m_UserInfoName.clear();
 };
+
+void CBasePlayer::RecordGame()
+{
+	if (m_bRecording)
+		return;
+
+	CLIENT_COMMAND(edict(), "stop; wait; agrecord \"match_%s\"\n", AgSanitizedShortGamename().c_str());
+	m_bRecording = true;
+}
+
+void CBasePlayer::StopGameRecording()
+{
+	if (!m_bRecording)
+		return;
+
+	CLIENT_COMMAND(edict(), "stop\n");
+	m_bRecording = false;
+}

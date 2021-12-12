@@ -271,6 +271,7 @@ FILE_GLOBAL char* s_szVars[] =
   "sv_ag_blastradius <1> - Blast radius for explosions. Normally 1",
   // TODO: update this
   "sv_ag_allowed_gamemodes <ffa;tdm> - Allowed gamemodes, could be any off ffa;tdm;arena;arcade;sgbow;instagib",
+  "sv_ag_force_match_recording <0/1> - Force clients to record matches",
 };
 
 AgCommand::AgCommand()

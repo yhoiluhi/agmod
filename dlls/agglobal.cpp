@@ -229,6 +229,8 @@ DLL_GLOBAL cvar_t	ag_flood_model_spec_cooldown = { "sv_ag_flood_model_spec_coold
 
 DLL_GLOBAL cvar_t	ag_enforcement_cooldown = { "sv_agforce_cooldown",  "15" }; // Default: 15 - Seconds to wait before target can change their model or specmode again
 
+DLL_GLOBAL cvar_t	ag_force_match_recording = { "sv_ag_force_match_recording",  "0" }; // Default: 0 - Don't force clients to record matches
+
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
 
@@ -442,6 +444,8 @@ void AgInitGame()
     CVAR_REGISTER(&ag_flood_model_spec_cooldown);
 
     CVAR_REGISTER(&ag_enforcement_cooldown);
+
+    CVAR_REGISTER(&ag_force_match_recording);
 
     CVAR_REGISTER(&mm_agsay);
 

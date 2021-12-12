@@ -436,6 +436,8 @@ public:
 	float m_flLastThinkTime;
 	bool m_bRespawning;
 
+	bool m_bRecording;
+
 	void          Init();     //Init all extra variables.
 	const char* GetAuthID(); //Get steam ID
 	const char* GetName();  //Get name
@@ -524,6 +526,9 @@ public:
 
 	void BotThink();
 	void CalculateMsecValue();
+
+	void RecordGame();
+	void StopGameRecording();
 };
 //++ BulliT
 inline const char* CBasePlayer::GetAuthID()

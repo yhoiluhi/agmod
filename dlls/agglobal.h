@@ -205,6 +205,8 @@ extern cvar_t ag_flood_model_spec_cooldown;
 
 extern cvar_t ag_enforcement_cooldown;
 
+extern cvar_t ag_force_match_recording;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 

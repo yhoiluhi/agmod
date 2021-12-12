@@ -70,6 +70,17 @@ AgString AgGamedescription()
     return "Half-Life";
 }
 
+AgString AgSanitizedShortGamename()
+{
+    std::string str = g_pGame->m_sCommandName;
+
+    // Remove special characters and make it lower case
+    replace_if(str.begin(), str.end(), ::ispunct, '_');
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+
+    return str;
+}
+
 void  gamemode(void)
 {
     GameMode.Gamemode(CMD_ARGV(0));

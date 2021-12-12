@@ -82,6 +82,9 @@ public:
     void SendMapListToClient(CBasePlayer* pPlayer, bool bStart);
 
     const char* GetIPAddress(edict_t* pEntity);
+
+    bool    ShouldRecordGame(CBasePlayer* pPlayer);
+
     bool    m_bProxyConnected;
     //Helper classes
     AgScoreCache        m_ScoreCache;

@@ -95,17 +95,20 @@ void AgMatch::Start(const AgString& sSpawn)
     if (m_fMatchStart > 0 || 0 == timelimit.value && 0 == fraglimit.value)
         return;
 
+    std::vector<CBasePlayer*> matchPlayers;
+
     //Count players
-    int iPlayers = 0;
     int i = 0;
     for (i = 1; i <= gpGlobals->maxClients; i++)
     {
         CBasePlayer* pPlayerLoop = AgPlayerByIndex(i);
         if (pPlayerLoop && !pPlayerLoop->IsSpectator())
-            iPlayers++;
+        {
+            matchPlayers.push_back(pPlayerLoop);
+        }
     }
 
-    if (iPlayers < (int)ag_start_minplayers.value)
+    if (matchPlayers.size() < (int)ag_start_minplayers.value)
     {
         UTIL_ClientPrintAll(HUD_PRINTCENTER, UTIL_VarArgs("You need %d players to start a game on this server.", (int)ag_start_minplayers.value));
         return;
@@ -123,6 +126,14 @@ void AgMatch::Start(const AgString& sSpawn)
 
     //Pause the game
     g_bPaused = true;
+
+    for (const auto matchPlayer : matchPlayers)
+    {
+        if (g_pGameRules->ShouldRecordGame(matchPlayer))
+        {
+            matchPlayer->RecordGame();
+        }
+    }
 }
 
 
@@ -236,6 +247,8 @@ void AgMatch::Abort()
                 pPlayerLoop->Spectate_Stop(true);
             }
             pPlayerLoop->SetDisplayGamemode(2); //Show settings.
+
+            pPlayerLoop->StopGameRecording();
         }
     }
 }

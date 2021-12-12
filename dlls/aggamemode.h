@@ -45,6 +45,7 @@ extern DLL_GLOBAL AgGameMode GameMode;
 const char* AgGamenameChar();
 AgString AgGamename();
 AgString AgGamedescription();
+AgString AgSanitizedShortGamename();
 
 //++ muphicks
 enum enumGameType { STANDARD = 0, ARENA = 1, LMS = 2, CTF = 3, ARCADE = 4, SGBOW = 5, INSTAGIB = 6, DOM = 7 };

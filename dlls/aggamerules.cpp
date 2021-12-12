@@ -64,7 +64,18 @@ bool AgGameRules::AgThink()
 
     //Check if game over.
     if (g_fGameOver)
+    {
+		for (auto i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* player = AgPlayerByIndex(i);
+			if (!player)
+				continue;
+
+			player->StopGameRecording();
+		}
+
         return true;
+    }
 
     //Update HUD timer and effective time.
     m_Timer.Think();
@@ -266,6 +277,11 @@ void AgGameRules::PlayerSpawn(CBasePlayer* pPlayer)
 
         //Display greeting message
         AgDisplayGreetingMessage(pPlayer->GetAuthID());
+
+        if (ShouldRecordGame(pPlayer))
+        {
+            pPlayer->RecordGame();
+        }
 
         return;
     }
@@ -1273,6 +1289,20 @@ void AgGameRules::SendMapListToClient(CBasePlayer* pPlayer, bool bStart)
 
     if (pPlayer->m_iMapListSent >= (int)g_sMapList.size())
         pPlayer->m_iMapListSent = -1;
+}
+
+bool AgGameRules::ShouldRecordGame(CBasePlayer* pPlayer)
+{
+    if (ag_force_match_recording.value == 0.0f)
+        return false;
+
+    if (ag_match_running.value == 0.0f)
+        return false;
+
+    if (!pPlayer->IsIngame())
+        return false;
+        
+    return true;
 }
 
 //-- Martin Webrant
