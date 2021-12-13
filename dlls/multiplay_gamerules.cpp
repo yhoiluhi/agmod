@@ -1816,7 +1816,7 @@ void CHalfLifeMultiplay :: ChangeLevel( void )
 }
 
 #define MAX_MOTD_CHUNK	  60
-#define MAX_MOTD_LENGTH   1536 // (MAX_MOTD_CHUNK * 4)
+#define MAX_MOTD_LENGTH   3000
 
 void CHalfLifeMultiplay :: SendMOTDToClient( edict_t *client )
 {
