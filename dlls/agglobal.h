@@ -207,6 +207,8 @@ extern cvar_t ag_enforcement_cooldown;
 
 extern cvar_t ag_force_match_recording;
 
+extern cvar_t ag_match_mute;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 

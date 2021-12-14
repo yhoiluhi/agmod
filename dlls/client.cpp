@@ -459,6 +459,11 @@ void Host_Say( edict_t *pEntity, int teamonly )
 			if ( !client->IsObserver() )
 				continue;
 
+		// sv_ag_match_mute 2 -> match players can't see any non-teammate message
+		if ( ag_match_running.value != 0.0f && ag_match_mute.value == 2.0f
+			&& !client->IsTeammate(player) && !client->IsSpectator() )
+			continue;
+
 		MESSAGE_BEGIN( MSG_ONE, gmsgSayText, NULL, client->pev );
 			WRITE_BYTE( ENTINDEX(pEntity) );
 			WRITE_STRING( text );

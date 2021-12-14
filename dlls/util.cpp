@@ -1655,6 +1655,9 @@ void UTIL_StripToken( const char *pKey, char *pDest )
 
 void UTIL_DispatchChat(CBasePlayer* dstPlayer, ChatType type, std::string msg)
 {
+	if (ag_match_running.value != 0.0f && ag_match_mute.value != 0.0f)
+		return;
+
 	// The blank strings in these params are necessary so that the client can READ_STRING() those
 	// and get to the last READ_BYTE() correctly to read the chat type, otherwise the READ_STRING()
 	// will try to read the chat type and when it reaches that READ_BYTE() there won't be anything

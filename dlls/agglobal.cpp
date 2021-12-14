@@ -231,6 +231,8 @@ DLL_GLOBAL cvar_t	ag_enforcement_cooldown = { "sv_agforce_cooldown",  "15" }; //
 
 DLL_GLOBAL cvar_t	ag_force_match_recording = { "sv_ag_force_match_recording",  "0" }; // Default: 0 - Don't force clients to record matches
 
+DLL_GLOBAL cvar_t	ag_match_mute = { "sv_ag_match_mute",  "0" }; // Default: 0 - Don't mute chat messages during match
+
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
 
@@ -446,6 +448,8 @@ void AgInitGame()
     CVAR_REGISTER(&ag_enforcement_cooldown);
 
     CVAR_REGISTER(&ag_force_match_recording);
+
+    CVAR_REGISTER(&ag_match_mute);
 
     CVAR_REGISTER(&mm_agsay);
 

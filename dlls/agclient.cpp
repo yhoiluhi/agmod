@@ -648,6 +648,11 @@ void AgClient::Say(CBasePlayer* pPlayer, say_type Type)
                 if (0 == ag_spectalk.value && !pPlayer->IsAdmin() && All == Type && 0 < ag_match_running.value && pPlayer != pPlayerLoop)
                     continue;
 
+                // sv_ag_match_mute 2 -> match players can't see any non-teammate message
+                if (ag_match_running.value != 0.0f && ag_match_mute.value == 2.0f
+                    && !pPlayer->IsAdmin() && !pPlayerLoop->IsSpectator() && pPlayer != pPlayerLoop)
+                    continue;
+
 #ifndef AG_NO_CLIENT_DLL
                 if (bSendLocation)
                 {
@@ -703,6 +708,11 @@ void AgClient::Say(CBasePlayer* pPlayer, say_type Type)
 
                 //Dont let spectators read your team talk.
                 if ((Team == Type || Close == Type) && pPlayerLoop->IsSpectator())
+                    continue;
+
+                // sv_ag_match_mute 2 -> match players can't see any non-teammate message
+                if (ag_match_running.value != 0.0f && ag_match_mute.value == 2.0f
+                    && !pPlayer->IsTeammate(pPlayerLoop))
                     continue;
 
 #ifndef AG_NO_CLIENT_DLL
