@@ -1413,7 +1413,6 @@ void CBasePlayer::PlayerDeathThink(void)
 	StopAnimation();
 
 	pev->effects |= EF_NOINTERP;
-	pev->framerate = 0.0;
   
   //++ BulliT
   //Remove sticky dead models.
