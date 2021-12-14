@@ -354,7 +354,7 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                     AgConsole("Adding bots by vote is not allowed by server admin.", pPlayer);
                     return true;
                 }
-                if (ag_match_running.value != 0.0f)
+                if (ag_match_running.value != 0.0f && !g_bLangame)
                 {
                     AgConsole("Sorry, can't add a bot during a match.", pPlayer);
                     return true;
