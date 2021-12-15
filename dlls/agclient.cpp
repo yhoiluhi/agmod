@@ -648,7 +648,7 @@ void AgClient::Say(CBasePlayer* pPlayer, say_type Type)
                 if (0 == ag_spectalk.value && !pPlayer->IsAdmin() && All == Type && 0 < ag_match_running.value && pPlayer != pPlayerLoop)
                     continue;
 
-                // sv_ag_match_mute 2 -> match players can't see any non-teammate message
+                // sv_ag_match_mute 2, i'm a spec and match players won't see my message
                 if (ag_match_running.value != 0.0f && ag_match_mute.value == 2.0f
                     && !pPlayer->IsAdmin() && !pPlayerLoop->IsSpectator() && pPlayer != pPlayerLoop)
                     continue;
@@ -710,9 +710,10 @@ void AgClient::Say(CBasePlayer* pPlayer, say_type Type)
                 if ((Team == Type || Close == Type) && pPlayerLoop->IsSpectator())
                     continue;
 
-                // sv_ag_match_mute 2 -> match players can't see any non-teammate message
+                // sv_ag_match_mute 2, i'm a match player and my opponents won't see my messages,
+                // but my teammates and specs will see them
                 if (ag_match_running.value != 0.0f && ag_match_mute.value == 2.0f
-                    && !pPlayer->IsTeammate(pPlayerLoop))
+                    && !pPlayer->IsTeammate(pPlayerLoop) && !pPlayerLoop->IsSpectator())
                     continue;
 
 #ifndef AG_NO_CLIENT_DLL
