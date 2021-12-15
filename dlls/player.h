@@ -212,7 +212,6 @@ public:
 	Vector				m_vecAutoAim;
 	BOOL				m_fOnTarget;
 	int					m_iDeaths;
-	float				m_iRespawnFrames;	// used in PlayerDeathThink() to make sure players can always respawn
 
 	int m_lastx, m_lasty;  // These are the previous update's crosshair angles, DON"T SAVE/RESTORE
 
@@ -392,6 +391,8 @@ protected:
 	int m_iLastPlayerId;
 	float m_fNextPlayerId;
 	bool m_bSentCheatCheck;
+
+	float m_flLastUnaliveTime;
 
 public:
 	int  m_iVote;             //What player voted. -1 (not voted), 0 no, 1 yes.

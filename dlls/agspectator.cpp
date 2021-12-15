@@ -203,7 +203,7 @@ void CBasePlayer::Spectate_Stop(bool bIntermediateSpawn)
     pev->iuser2 = 0;
     pev->effects &= ~EF_NODRAW;
     pev->movetype = MOVETYPE_WALK;
-    m_iRespawnFrames = 0;
+    m_flLastUnaliveTime = gpGlobals->time;
     m_bDoneFirstSpawn = !bIntermediateSpawn;
     m_iHideHUD &= ~HIDEHUD_WEAPONS;
     m_iHideHUD &= ~HIDEHUD_FLASHLIGHT;

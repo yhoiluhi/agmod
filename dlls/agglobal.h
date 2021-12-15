@@ -209,6 +209,9 @@ extern cvar_t ag_force_match_recording;
 
 extern cvar_t ag_match_mute;
 
+extern cvar_t ag_min_respawn_time;
+extern cvar_t ag_forcerespawn_time;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 

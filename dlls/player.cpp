@@ -994,7 +994,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 
 	SetAnimation( PLAYER_DIE );
 	
-	m_iRespawnFrames = 0;
+	m_flLastUnaliveTime = gpGlobals->time;
 
 	pev->modelindex = g_ulModelIndexPlayer;    // don't use eyes
 
@@ -1394,13 +1394,14 @@ void CBasePlayer::PlayerDeathThink(void)
 	}
 
 	if (pev->modelindex && (!m_fSequenceFinished) && (pev->deadflag == DEAD_DYING))
-	{
 		StudioFrameAdvance( );
 
-		m_iRespawnFrames++;				// Note, these aren't necessarily real "frames", so behavior is dependent on # of client movement commands
-		if ( m_iRespawnFrames < 120 )   // Animations should be no longer than this
-			return;
-	}
+	auto minRespawnTime = V_min(ag_min_respawn_time.value, 120.0f);
+	if (CVAR_GET_FLOAT("mp_forcerespawn") > 0.0f)
+		minRespawnTime = V_min(minRespawnTime, ag_forcerespawn_time.value);
+
+	if (minRespawnTime > (gpGlobals->time - m_flLastUnaliveTime))
+		return;
 
 	// once we're done animating our death and we're on the ground, we want to set movetype to None so our dead body won't do collisions and stuff anymore
 	// this prevents a bug where the dead body would go to a player's head if he walked over it while the dead player was clicking their button to respawn
@@ -1438,16 +1439,17 @@ void CBasePlayer::PlayerDeathThink(void)
 		return;
 	}
 
-// if the player has been dead for one second longer than allowed by forcerespawn, 
-// forcerespawn isn't on. Send the player off to an intermission camera until they 
-// choose to respawn.
-	if ( g_pGameRules->IsMultiplayer() && ( gpGlobals->time > (m_fDeadTime + 6) ) && !(m_afPhysicsFlags & PFLAG_OBSERVER) )
+	// Player can already respawn. Wait a second to show them the game settings HUD
+	if ( g_pGameRules->IsMultiplayer() && ( gpGlobals->time > (minRespawnTime + 1.0f) ) && !(m_afPhysicsFlags & PFLAG_OBSERVER) )
 	{
-    //-- Martin Webrant
-    m_fDisplayGamemode = gpGlobals->time + 1;
-		// go to dead camera. 
+		//++ BulliT
+		m_fDisplayGamemode = gpGlobals->time + 1;
+		//-- Martin Webrant
+
+		// go to dead camera.
+		//++ BulliT
 		//StartDeathCam();
-    //-- Martin Webrant
+		//-- Martin Webrant
 	}
 
 	if ( pev->iuser1 )	// player is in spectator mode
@@ -1456,12 +1458,12 @@ void CBasePlayer::PlayerDeathThink(void)
 // wait for any button down,  or mp_forcerespawn is set and the respawn time is up
   //++ BulliT
   //Don't trigg on any button - just attack button.
-  if ( !(pev->button & IN_ATTACK || pev->button & IN_USE) && !( g_pGameRules->IsMultiplayer() && CVAR_GET_FLOAT("mp_forcerespawn") > 0 && (gpGlobals->time > (m_fDeadTime + 5) ) ) )
+  if ( !(pev->button & IN_ATTACK || pev->button & IN_USE) && !( g_pGameRules->IsMultiplayer() && CVAR_GET_FLOAT("mp_forcerespawn") > 0
+	  && (gpGlobals->time > (m_flLastUnaliveTime + ag_forcerespawn_time.value) ) ) )
     return;
   //-- Martin Webrant
 
 	pev->button = 0;
-	m_iRespawnFrames = 0;
 
 	//ALERT(at_console, "Respawn\n");
 
@@ -2901,7 +2903,6 @@ void CBasePlayer::PostThink()
       || DEAD_RESPAWNABLE == pev->deadflag)
     {
       pev->button = 0;
-      m_iRespawnFrames = 0;
       pev->effects &= ~EF_NODRAW;
       
       pev->takedamage = DAMAGE_YES;
