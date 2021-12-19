@@ -553,6 +553,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	float flRatio;
 	float flBonus;
 	float flHealthPrev = pev->health;
+	float flArmorPrev = pev->armorvalue;
 
 	flBonus = ARMOR_BONUS;
 	flRatio = ARMOR_RATIO;
@@ -595,6 +596,20 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 			pev->armorvalue -= flArmor;
 		
 		flDamage = flNew;
+	}
+
+	if (ag_gauss_fix.value == 2.0f && this == pAttacker && pAttacker->m_pActiveItem->m_iId == WEAPON_GAUSS)
+	{
+		// Little hack to not die in CBaseMonster::TakeDamage
+		pev->health = pev->max_health + flDamage;
+		CBaseMonster::TakeDamage(pevInflictor, pevAttacker, (int)flDamage, bitsDamageType);
+
+		// Restore the armor and hp. The previous CBaseMonster::TakeDamage has taken
+		// care of applying the velocity corresponding to the damage that we were
+		// to receive from the gauss boost
+		pev->health = flHealthPrev;
+		pev->armorvalue = flArmorPrev;
+		return 0;
 	}
 
 	// this cast to INT is critical!!! If a player ends up with 0.5 health, the engine will get that
