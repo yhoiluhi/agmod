@@ -294,14 +294,7 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                     return true;
                 }
 
-                CBasePlayer* pPlayerLoop = AgPlayerByName(m_sValue);
-                if (pPlayerLoop)
-                {
-                    m_sAuthID = pPlayerLoop->GetAuthID();
-                    m_sTarget = pPlayerLoop;
-                    CallVote(pPlayer);
-                }
-                else
+                if (m_sValue.empty())
                 {
                     if (!FStrEq(m_sVote.c_str(), "agkick")
                         && 0 != strncmp(m_sVote.c_str(), "agforceteam", 11)
@@ -312,9 +305,16 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                         m_sAuthID = pPlayer->GetAuthID();
                         m_sTarget = pPlayer;
                         CallVote(pPlayer);
+
+                        return true;
                     }
-                    else
-                        AgConsole("No such player exist on server.", pPlayer);
+                }
+                CBasePlayer* pPlayerLoop = AgPlayerByName(m_sValue, pPlayer);
+                if (pPlayerLoop)
+                {
+                    m_sAuthID = pPlayerLoop->GetAuthID();
+                    m_sTarget = pPlayerLoop;
+                    CallVote(pPlayer);
                 }
                 return true;
             }

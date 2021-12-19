@@ -389,17 +389,13 @@ void AgCommand::Allow(const AgString& sPlayerIdOrName, CBasePlayer* pPlayer)
     }
 
     //Get player.
-    CBasePlayer* pPlayerLoop = AgPlayerByName(sPlayerIdOrName);
+    CBasePlayer* pPlayerLoop = AgPlayerByName(sPlayerIdOrName, pPlayer);
     if (!pPlayerLoop && pPlayer && 0 == sPlayerIdOrName.size())
         pPlayerLoop = pPlayer;
 
     if (pPlayerLoop)
     {
         g_pGameRules->m_Match.Allow(pPlayerLoop);
-    }
-    else
-    {
-        AgConsole("No such player exist on server.", pPlayer);
     }
 }
 
@@ -562,7 +558,7 @@ void AgCommand::TeamUp(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName, co
     if (!g_pGameRules->IsTeamplay())
         return;
 
-    CBasePlayer* pTeamUpPlayer = AgPlayerByName(sPlayerIdOrName);
+    CBasePlayer* pTeamUpPlayer = AgPlayerByName(sPlayerIdOrName, pPlayer);
     if (pTeamUpPlayer)
     {
         pTeamUpPlayer->ChangeTeam(sTeam.c_str(), true);
@@ -592,7 +588,7 @@ void AgCommand::Spectator(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName)
     if (!g_pGameRules->IsTeamplay())
         return;
 
-    CBasePlayer* pSpectatorPlayer = AgPlayerByName(sPlayerIdOrName);
+    CBasePlayer* pSpectatorPlayer = AgPlayerByName(sPlayerIdOrName, pPlayer);
     if (pSpectatorPlayer)
     {
         pSpectatorPlayer->Spectate_Start();

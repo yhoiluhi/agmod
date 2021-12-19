@@ -45,7 +45,7 @@ bool AgStats::HandleCommand(CBasePlayer* pPlayer)
     {
         CBasePlayer* pStatsPlayer = pPlayer;
         if (CMD_ARGC() == 2)
-            pStatsPlayer = AgPlayerByName(CMD_ARGV(1));
+            pStatsPlayer = AgPlayerByName(CMD_ARGV(1), pPlayer);
 
         if (pStatsPlayer)
             PrintStats(pPlayer, pStatsPlayer);

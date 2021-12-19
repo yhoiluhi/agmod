@@ -16,6 +16,7 @@
 #include "gamerules.h"
 #include <time.h>
 #include <map>
+#include <regex>
 #ifndef _WIN32
 #include <sys/types.h>
 #include <dirent.h>
@@ -244,6 +245,8 @@ DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 DLL_GLOBAL bool g_bLangame = false;
 DLL_GLOBAL bool g_bUseTeamColors = false;
 extern AgString g_sGamemode;
+
+std::regex colorRegexp("\\^[0-9]");
 
 // Keep this sorted
 std::vector<std::string> g_votableSettings = {
@@ -576,21 +579,82 @@ CBasePlayer* AgPlayerByIndex(int iPlayerIndex)
 }
 
 
-CBasePlayer* AgPlayerByName(const AgString& sNameOrPlayerNumber)
+CBasePlayer* AgPlayerByName(const AgString& sNameOrPlayerNumber, CBasePlayer* pPlayer)
 {
-    if (0 == sNameOrPlayerNumber.size())
+    if (sNameOrPlayerNumber.empty())
+    {
+        AgConsole("Please, provide a player to vote for.", pPlayer);
         return NULL;
+    }
 
+    std::vector<CBasePlayer*> matchedPlayers;
     for (int i = 1; i <= gpGlobals->maxClients; i++)
     {
         CBasePlayer* pPlayerLoop = AgPlayerByIndex(i);
         if (pPlayerLoop)
             if (0 == stricmp(pPlayerLoop->GetName(), sNameOrPlayerNumber.c_str()) ||
                 "#" == sNameOrPlayerNumber.substr(0, 1) &&
-                GETPLAYERUSERID(pPlayerLoop->edict()) == atoi(sNameOrPlayerNumber.substr(1).c_str())
-                )
+                GETPLAYERUSERID(pPlayerLoop->edict()) == atoi(sNameOrPlayerNumber.substr(1).c_str()))
+            {
                 return pPlayerLoop;
+            }
+            else
+            {
+                // TODO: improve all of this. Just trying to match case-insensitively
+                AgString targetName = sNameOrPlayerNumber;
+                AgString playerName = pPlayerLoop->GetName();
+
+                AgToLower(targetName);
+                AgToLower(playerName);
+
+                auto matched = strstr(playerName.c_str(), targetName.c_str());
+                if (matched)
+                {
+                    // TODO: if it matches the colored name partially, should it have precedence
+                    // over the uncolored match? if there's "stat^5ic" and "Static" in the server
+                    // and I do "agallow stat^5", right now it matches both, one through the
+                    // colored partial match and the other through the uncolored match, and I think
+                    // you probably want to vote the colored one only since you were very specific
+                    // when calling the vote, as you included color codes in the name...
+                    matchedPlayers.push_back(pPlayerLoop);
+                    continue;
+                }
+
+                // Try without colors codes now
+                targetName = std::regex_replace(targetName, colorRegexp, "");
+                playerName = std::regex_replace(playerName, colorRegexp, "");
+
+                matched = strstr(playerName.c_str(), targetName.c_str());
+                if (matched)
+                    matchedPlayers.push_back(pPlayerLoop);
+            }
+
     }
+
+    if (matchedPlayers.empty())
+        AgConsole("No such player exist on server.", pPlayer);
+    else if (matchedPlayers.size() == 1)
+    {
+        const auto result = matchedPlayers[0];
+        return result; // avoid C26816 warning
+    }
+    else
+    {
+        AgString msg;
+        msg.append("Several players matched that name, which one did you mean to vote?\n");
+        for (const auto match : matchedPlayers)
+        {
+            msg.append(UTIL_VarArgs("-> %s (#%d)\n", match->GetName(), GETPLAYERUSERID(match->edict())));
+        }
+        // Split the message into chunks, because only the first 127 bytes of the message are displayed
+        // on the client's console, and this is potentially longer than that
+        for (size_t i = 0; i < msg.size(); i += 127)
+        {
+            AgString chunk = msg.substr(i, 127);
+            AgConsole(chunk, pPlayer);
+        }
+    }
+
     return NULL;
 }
 
