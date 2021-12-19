@@ -212,7 +212,7 @@ extern cvar_t ag_match_mute;
 extern cvar_t ag_min_respawn_time;
 extern cvar_t ag_forcerespawn_time;
 
-extern cvar_t ag_restrict_votes;
+extern cvar_t ag_restrict_vote;
 
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;

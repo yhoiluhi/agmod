@@ -46,6 +46,8 @@ DLL_GLOBAL cvar_t	ag_allow_timeout = { "sv_ag_allow_timeout","1" };       //Allo
 
 // TODO: review if these should really be unlogged, I think it has some interest to log them and shouldn't be spammy
 DLL_GLOBAL cvar_t	ag_allow_vote = { "sv_ag_allow_vote","1", FCVAR_SERVER | FCVAR_UNLOGGED };       //Voting is enabled by default.
+DLL_GLOBAL cvar_t	ag_restrict_vote = { "sv_ag_restrict_vote",  "0" }; // Default: 0 - Don't restrict votes
+
 DLL_GLOBAL cvar_t	ag_vote_start = { "sv_ag_vote_start","1", FCVAR_SERVER | FCVAR_UNLOGGED };                    //Start voting enabled by default
 DLL_GLOBAL cvar_t	ag_vote_setting = { "sv_ag_vote_setting","1" };                  //Setting voting enabled by default
 DLL_GLOBAL cvar_t	ag_vote_gamemode = { "sv_ag_vote_gamemode","1", FCVAR_SERVER | FCVAR_UNLOGGED };                 //Gamemode voting is enabled by default.
@@ -236,8 +238,6 @@ DLL_GLOBAL cvar_t	ag_match_mute = { "sv_ag_match_mute",  "0" }; // Default: 0 - 
 
 DLL_GLOBAL cvar_t	ag_min_respawn_time = { "sv_ag_min_respawn_time", "0.75" }; // Default: 0.75 - avg @ 144 fps was 0.83s, but sometimes it went down to 0.7s...
 DLL_GLOBAL cvar_t	ag_forcerespawn_time = { "sv_ag_forcerespawn_time", "5" }; // Default: 5 - in seconds
-
-DLL_GLOBAL cvar_t	ag_restrict_votes = { "sv_ag_restrict_votes",  "0" }; // Default: 0 - Don't restrict votes
 
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
@@ -462,7 +462,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_min_respawn_time);
     CVAR_REGISTER(&ag_forcerespawn_time);
 
-    CVAR_REGISTER(&ag_restrict_votes);
+    CVAR_REGISTER(&ag_restrict_vote);
 
     CVAR_REGISTER(&mm_agsay);
 

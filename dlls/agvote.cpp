@@ -706,10 +706,10 @@ bool AgVote::ResetVote()
 
 bool CBasePlayer::HasVotingRestrictions()
 {
-    if (ag_restrict_votes.value == 0.0f)
+    if (ag_restrict_vote.value == 0.0f)
         return false;
 
-    if (ag_restrict_votes.value == 1.0f && ag_match_running.value == 1.0f && IsSpectator())
+    if (ag_restrict_vote.value == 1.0f && ag_match_running.value == 1.0f && IsSpectator())
         return true;
 
     // There may be ag_restrict_value 2 or higher in the future
