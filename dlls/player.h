@@ -530,6 +530,8 @@ public:
 
 	void RecordGame();
 	void StopGameRecording();
+
+	bool HasVotingRestrictions();
 };
 //++ BulliT
 inline const char* CBasePlayer::GetAuthID()

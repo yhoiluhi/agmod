@@ -236,6 +236,8 @@ DLL_GLOBAL cvar_t	ag_match_mute = { "sv_ag_match_mute",  "0" }; // Default: 0 - 
 DLL_GLOBAL cvar_t	ag_min_respawn_time = { "sv_ag_min_respawn_time", "0.75" }; // Default: 0.75 - avg @ 144 fps was 0.83s, but sometimes it went down to 0.7s...
 DLL_GLOBAL cvar_t	ag_forcerespawn_time = { "sv_ag_forcerespawn_time", "5" }; // Default: 5 - in seconds
 
+DLL_GLOBAL cvar_t	ag_restrict_votes = { "sv_ag_restrict_votes",  "0" }; // Default: 0 - Don't restrict votes
+
 DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
 
 
@@ -456,6 +458,8 @@ void AgInitGame()
 
     CVAR_REGISTER(&ag_min_respawn_time);
     CVAR_REGISTER(&ag_forcerespawn_time);
+
+    CVAR_REGISTER(&ag_restrict_votes);
 
     CVAR_REGISTER(&mm_agsay);
 
