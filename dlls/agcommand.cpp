@@ -591,6 +591,7 @@ void AgCommand::Spectator(CBasePlayer* pPlayer, const AgString& sPlayerIdOrName)
     CBasePlayer* pSpectatorPlayer = AgPlayerByName(sPlayerIdOrName, pPlayer);
     if (pSpectatorPlayer)
     {
+        pSpectatorPlayer->SetIngame(false);
         pSpectatorPlayer->Spectate_Start();
         pSpectatorPlayer->m_flLastSpecEnforcement = AgTime();
     }
@@ -603,7 +604,8 @@ void AgCommand::Spectator(CBasePlayer* pPlayer, CBasePlayer* target)
         return;
     if (!g_pGameRules->IsTeamplay())
         return;
-
+    
+    target->SetIngame(false);
     target->Spectate_Start();
     target->m_flLastSpecEnforcement = AgTime();
 }
