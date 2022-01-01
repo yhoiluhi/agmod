@@ -11,6 +11,7 @@
 
 #include "aggamerules.h"
 #include "agclient.h"
+#include "cvar.h"
 
 #include "voice_gamemgr.h"
 extern CVoiceGameMgr g_VoiceGameMgr;
@@ -281,6 +282,42 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
     else if (FStrEq(CMD_ARGV(0), "settings"))
     {
         pPlayer->SetDisplayGamemode(0);
+
+        const auto changedCVars = CVar::GetChangesOverGamemode();
+        if (changedCVars.size() > 0)
+        {
+            AgString msg;
+
+            msg.append("These cvars have been changed:\n");
+            for (const auto changedCVar : changedCVars)
+            {
+                msg.append(UTIL_VarArgs("- %s [%s -> %s]\n",
+                    changedCVar.name.c_str(), changedCVar.defaultValue.c_str(), changedCVar.changedValue.c_str()));
+            }
+            AgConsoleLarge(msg, pPlayer);
+        }
+        else
+            AgConsole("No gamemode-related cvar changed", pPlayer);
+
+        return true;
+    }
+    else if (FStrEq(CMD_ARGV(0), "gamemodevars"))
+    {
+        if ((pPlayer->m_flLastGamemodeVarsRequest + GAMEMODE_VARS_REQUEST_COOLDOWN) > AgTime())
+            return true;
+
+        pPlayer->m_flLastGamemodeVarsRequest = AgTime();
+
+        AgString msg;
+        const auto cvars = CVar::GetGamemodeCVars();
+
+        msg.append(UTIL_VarArgs("---- Showing %d gamemode config cvars ----\n", cvars.size()));
+        for (const auto entry : cvars)
+        {
+            msg.append(UTIL_VarArgs("-> %s: %s\n", entry.first.c_str(), entry.second.c_str()));
+        }
+        AgConsoleLarge(msg, pPlayer);
+
         return true;
     }
 #ifndef AG_NO_CLIENT_DLL

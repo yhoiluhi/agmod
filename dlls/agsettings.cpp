@@ -7,9 +7,11 @@
 #include "game.h"
 #include "agglobal.h"
 #include "agsettings.h"
+#include "cvar.h"
 #ifdef AGSTATS
 #include "agstats.h"
 #endif
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -95,10 +97,7 @@ bool AgSettings::Think()
 
 bool AgSettings::AdminSetting(const AgString& sSetting, const AgString& sValue)
 {
-	if (0 == strnicmp(sSetting.c_str(), "ag_", 3)
-		|| 0 == strnicmp(sSetting.c_str(), "mp_timelimit", 12)
-		|| 0 == strnicmp(sSetting.c_str(), "mp_fraglimit", 12)
-		)
+	if (CVar::IsTracked(sSetting))
 	{
 		CVAR_SET_STRING(sSetting.c_str(), sValue.c_str());
 		return true;

@@ -16,31 +16,32 @@
 #include "eiface.h"
 #include "util.h"
 #include "game.h"
+#include "cvar.h"
 
 //++ BulliT
 #include "agglobal.h"
 //-- Martin Webrant
-cvar_t	displaysoundlist = {"displaysoundlist","0"};
+cvar_t	displaysoundlist = CVar::Create("displaysoundlist", "0");
 
 // multiplayer server rules
-cvar_t	fragsleft	= {"mp_fragsleft","0", FCVAR_SERVER | FCVAR_UNLOGGED };	  // Don't spam console/log files/users with this changing
-cvar_t	timeleft	= {"mp_timeleft","0" , FCVAR_SERVER | FCVAR_UNLOGGED };	  // "      "
+cvar_t	fragsleft      = CVar::Create("mp_fragsleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED);	  // Don't spam console/log files/users with this changing
+cvar_t	timeleft       = CVar::Create("mp_timeleft", "0", FCVAR_SERVER | FCVAR_UNLOGGED);	  // "      "
 
 // multiplayer server rules
-cvar_t	teamplay	= {"mp_teamplay","0", FCVAR_SERVER };
-cvar_t	fraglimit	= {"mp_fraglimit","0", FCVAR_SERVER };
-cvar_t	timelimit	= {"mp_timelimit","0", FCVAR_SERVER };
-cvar_t	friendlyfire= {"mp_friendlyfire","0", FCVAR_SERVER };
-cvar_t	falldamage	= {"mp_falldamage","0", FCVAR_SERVER };
-cvar_t	weaponstay	= {"mp_weaponstay","0", FCVAR_SERVER };
-cvar_t	forcerespawn= {"mp_forcerespawn","1", FCVAR_SERVER };
-cvar_t	flashlight	= {"mp_flashlight","0", FCVAR_SERVER };
-cvar_t	aimcrosshair= {"mp_autocrosshair","1", FCVAR_SERVER };
-cvar_t	decalfrequency = {"decalfrequency","30", FCVAR_SERVER };
-cvar_t	teamlist = {"mp_teamlist","hgrunt;scientist", FCVAR_SERVER };
-cvar_t	teamoverride = {"mp_teamoverride","1" };
-cvar_t	defaultteam = {"mp_defaultteam","0" };
-cvar_t	allowmonsters={"mp_allowmonsters","0", FCVAR_SERVER };
+cvar_t	teamplay       = CVar::Create("mp_teamplay", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+cvar_t	fraglimit      = CVar::Create("mp_fraglimit", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_BASIC_PRIVILEGES);
+cvar_t	timelimit      = CVar::Create("mp_timelimit", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_BASIC_PRIVILEGES);
+cvar_t	friendlyfire   = CVar::Create("mp_friendlyfire", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+cvar_t	falldamage     = CVar::Create("mp_falldamage", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+cvar_t	weaponstay     = CVar::Create("mp_weaponstay", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+cvar_t	forcerespawn   = CVar::Create("mp_forcerespawn", "1", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+cvar_t	flashlight     = CVar::Create("mp_flashlight", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+cvar_t	aimcrosshair   = CVar::Create("mp_autocrosshair", "1", FCVAR_SERVER);
+cvar_t	decalfrequency = CVar::Create("decalfrequency", "30", FCVAR_SERVER, CCVAR_VOTABLE);
+cvar_t	teamlist       = CVar::Create("mp_teamlist", "hgrunt;scientist", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+cvar_t	teamoverride   = CVar::Create("mp_teamoverride", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+cvar_t	defaultteam    = CVar::Create("mp_defaultteam", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+cvar_t	allowmonsters  = CVar::Create("mp_allowmonsters", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
 // mp_chattime is like the minimum intermission time, you can't skip it, it's meant
 // to have some time for saying gg, etc. before changing map, it's part of the intermission
@@ -48,15 +49,15 @@ cvar_t	allowmonsters={"mp_allowmonsters","0", FCVAR_SERVER };
 // change map if no one in the server has skipped it before
 // mp_intermission_skip_auto is for skipping the whole intermission (includes chattime) when
 // appropriate, like when there's just 1 player (or none) in the server
-cvar_t  mp_chattime = {"mp_chattime","6", FCVAR_SERVER };
-cvar_t  mp_intermission_time = {"mp_intermission_time","15", FCVAR_SERVER };
-cvar_t  mp_intermission_skip_auto = {"mp_intermission_skip_auto","1", FCVAR_SERVER };
+cvar_t  mp_chattime = CVar::Create("mp_chattime", "6", FCVAR_SERVER);
+cvar_t  mp_intermission_time = CVar::Create("mp_intermission_time", "15", FCVAR_SERVER);
+cvar_t  mp_intermission_skip_auto = CVar::Create("mp_intermission_skip_auto", "1", FCVAR_SERVER);
 
 // sv_singleplayer 1: enables entities and stuff that allows playing singleplayer campaigns properly
-cvar_t	singleplayer = { "sv_singleplayer", "0", FCVAR_SERVER };
+cvar_t	singleplayer = CVar::Create("sv_singleplayer", "0", FCVAR_SERVER, CCVAR_VOTABLE);
 
 // These 2 cvars for loading and gauss charging are used to disable clientside prediction (cl_lw 0) when they're in a specific state,
-// which is necessary for weapons and specially gauss to work correctly through saveloads (e.g.: keep gaus charge)
+// which is necessary for weapons and specially gauss to work correctly through saveloads (e.g.: keep gauss charge)
 // Credits to h0boken for finding out that disabling clientside prediction kinda fixes the issue
 cvar_t	sploading = { "sv_sp_loading", "0", FCVAR_SERVER }; // only true when loading (changelevel)
 cvar_t	spgausscharging = { "sv_sp_gauss_charging", "0", FCVAR_SERVER }; // only true when gauss is charging (secondary fire)
@@ -479,14 +480,16 @@ void GameDLLInit( void )
 	g_psv_aim = CVAR_GET_POINTER( "sv_aim" );
 	g_footsteps = CVAR_GET_POINTER( "mp_footsteps" );
 
+	CVar::Load();
+
 	CVAR_REGISTER (&displaysoundlist);
+
+	CVAR_REGISTER (&fragsleft);
+	CVAR_REGISTER (&timeleft);
 
 	CVAR_REGISTER (&teamplay);
 	CVAR_REGISTER (&fraglimit);
 	CVAR_REGISTER (&timelimit);
-
-	CVAR_REGISTER (&fragsleft);
-	CVAR_REGISTER (&timeleft);
 
 	CVAR_REGISTER (&friendlyfire);
 	CVAR_REGISTER (&falldamage);
@@ -505,6 +508,7 @@ void GameDLLInit( void )
 	CVAR_REGISTER (&mp_intermission_skip_auto);
 
 	CVAR_REGISTER (&singleplayer);
+
 	CVAR_REGISTER (&sploading);
 	CVAR_REGISTER (&spgausscharging);
 

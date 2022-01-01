@@ -8,6 +8,7 @@
 #include "agcommand.h"
 #include "agadmincache.h"
 #include "agglobal.h"
+#include "cvar.h"
 
 DLL_GLOBAL AgCommand Command; //The one and only
 FILE_GLOBAL CBasePlayer* s_pAdmin = NULL;
@@ -306,58 +307,55 @@ bool AgCommand::HandleCommand(CBasePlayer* pPlayer)
     if (!g_pGameRules || 0 == CMD_ARGC())
         return false;
 
-    if (pPlayer->IsAdmin())
+    if (!pPlayer->IsAdmin())
+        return false;
+
+    //Server command
+    for (int i = 0; i < sizeof(s_Commands) / sizeof(s_Commands[0]); i++)
     {
-        //Server command
-        for (int i = 0; i < sizeof(s_Commands) / sizeof(s_Commands[0]); i++)
+        if (s_Commands[i].pClient)
         {
-            if (s_Commands[i].pClient)
+            if (FStrEq(s_Commands[i].szCommand, CMD_ARGV(0)))
             {
-                if (FStrEq(s_Commands[i].szCommand, CMD_ARGV(0)))
-                {
-                    s_Commands[i].pClient(pPlayer);
-                    if (FStrEq(s_Commands[i].szCommand, "help"))
-                        return false;
-                    else
-                        return true;
-                }
-            }
-            else if (s_Commands[i].pServer)
-            {
-                if (FStrEq(s_Commands[i].szCommand, CMD_ARGV(0)))
-                {
-                    s_Commands[i].pServer();
+                s_Commands[i].pClient(pPlayer);
+                if (FStrEq(s_Commands[i].szCommand, "help"))
+                    return false;
+                else
                     return true;
-                }
             }
         }
-
-        if (1 == CMD_ARGC())
+        else if (s_Commands[i].pServer)
         {
-            if (GameMode.IsGamemode(CMD_ARGV(0)))
+            if (FStrEq(s_Commands[i].szCommand, CMD_ARGV(0)))
             {
-                if (!GameMode.IsAllowedGamemode(CMD_ARGV(0), pPlayer))
-                {
-                    AgConsole("Gamemode not allowed by server admin.", pPlayer);
-                    return true;
-                }
-
-                GameMode.Gamemode(CMD_ARGV(0));
+                s_Commands[i].pServer();
                 return true;
             }
         }
+    }
 
-        // Other settings like ag_* and mp_*
-        if (0 < CMD_ARGC()
-            && std::find(std::begin(g_votableSettings), std::end(g_votableSettings), CMD_ARGV(0)) != std::end(g_votableSettings)
-            )
+    if (1 == CMD_ARGC())
+    {
+        if (GameMode.IsGamemode(CMD_ARGV(0)))
         {
-            if (1 == CMD_ARGC())
-                Setting(CMD_ARGV(0), "", pPlayer);
-            else if (2 == CMD_ARGC())
-                Setting(CMD_ARGV(0), CMD_ARGV(1), pPlayer);
+            if (!GameMode.IsAllowedGamemode(CMD_ARGV(0), pPlayer))
+            {
+                AgConsole("Gamemode not allowed by server admin.", pPlayer);
+                return true;
+            }
+
+            GameMode.Gamemode(CMD_ARGV(0));
             return true;
         }
+    }
+
+    if (CVar::IsTracked(CMD_ARGV(0)))
+    {
+        if (1 == CMD_ARGC())
+            Setting(CMD_ARGV(0), "", pPlayer);
+        else if (2 == CMD_ARGC())
+            Setting(CMD_ARGV(0), CMD_ARGV(1), pPlayer);
+        return true;
     }
     return false;
 }

@@ -158,7 +158,8 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/aglms.o \
 	$(HLDLL_OBJ_DIR)/agdom.o \
 	$(HLDLL_OBJ_DIR)/spawnchooser.o \
-	$(HLDLL_OBJ_DIR)/agflood.o
+	$(HLDLL_OBJ_DIR)/agflood.o \
+	$(HLDLL_OBJ_DIR)/cvar.o
 
 HLWPN_OBJS = \
 	$(HLWPN_OBJ_DIR)/hl_wpn_glock.o

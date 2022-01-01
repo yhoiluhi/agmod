@@ -32,6 +32,8 @@
 #include "gamerules.h"
 #include <hltv.h>
 
+#include <string>
+
 float UTIL_WeaponTimeBase( void )
 {
 #if defined( CLIENT_WEAPONS )
@@ -2596,3 +2598,10 @@ void UTIL_SendDirectorMessage( edict_t *ent1, edict_t *ent2, int priority_and_fl
   MESSAGE_END();
 }
 //-- Martin Webrant
+
+// https://stackoverflow.com/a/20446239
+bool UTIL_EndsWith(const std::string& str, const std::string& suffix)
+{
+    return str.size() >= suffix.size() &&
+           str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}

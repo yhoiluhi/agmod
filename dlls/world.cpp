@@ -630,7 +630,8 @@ void CWorld :: Precache( void )
 			ALERT ( at_console, "\n*Graph Loaded!\n" );
 		}
 	}
-
+	
+	// TODO: move this to before InstallGameRules()?
 	if ( pev->speed > 0 )
 		CVAR_SET_FLOAT( "sv_zmax", pev->speed );
 	else
@@ -649,7 +650,8 @@ void CWorld :: Precache( void )
 			pEntity->pev->spawnflags = SF_MESSAGE_ONCE;
 		}
 	}
-
+	
+	// TODO: move this to before InstallGameRules()?
 	if ( pev->spawnflags & SF_WORLD_DARK )
 		CVAR_SET_FLOAT( "v_dark", 1.0 );
 	else
@@ -660,6 +662,7 @@ void CWorld :: Precache( void )
 	else
 		gDisplayTitle = FALSE;
 
+	// TODO: move this to before InstallGameRules()?
 	if ( pev->spawnflags & SF_WORLD_FORCETEAM )
 	{
 		CVAR_SET_FLOAT( "mp_defaultteam", 1 );

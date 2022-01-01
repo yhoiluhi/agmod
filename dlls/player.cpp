@@ -6364,6 +6364,8 @@ void CBasePlayer::Init()
 	m_flLastModelEnforcement = AgTime() - ag_enforcement_cooldown.value - 0.001f;
 	m_flLastSpecEnforcement = AgTime() - ag_enforcement_cooldown.value - 0.001f;
 
+	m_flLastGamemodeVarsRequest = AgTime() - GAMEMODE_VARS_REQUEST_COOLDOWN;
+
 	m_bSpawnFull = false;
 
 	m_bRecording = false;

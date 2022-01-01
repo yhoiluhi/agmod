@@ -7,6 +7,7 @@
 #include "agglobal.h"
 #include "agvote.h"
 #include "agcommand.h"
+#include "cvar.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -54,6 +55,7 @@ AgVote::AgVote()
     m_fMaxTime = 0.0;
     m_fNextVote = AgTime();
     m_bRunning = false;
+    m_sTarget = nullptr;
 }
 
 AgVote::~AgVote()
@@ -427,12 +429,17 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                 CallVote(pPlayer);
                 return true;
             }
-            // Other settings like ag_* and mp_*
-            else if (m_sValue.size()
-                && std::find(std::begin(g_votableSettings), std::end(g_votableSettings), m_sVote.c_str()) != std::end(g_votableSettings)
-                )
+            else if (CVar::IsVotable(m_sVote))
             {
-                if (!ag_vote_setting.value)
+                if (CVar::IsBasicSetting(m_sVote))
+                {
+                    if (ag_vote_setting.value == 0.0f)
+                    {
+                        AgConsole("Vote is not allowed by server admin.", pPlayer);
+                        return true;
+                    }
+                }
+                else if (ag_vote_setting.value != 2.0f)
                 {
                     AgConsole("Vote is not allowed by server admin.", pPlayer);
                     return true;

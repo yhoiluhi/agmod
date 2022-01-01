@@ -26,6 +26,7 @@
 #include	"teamplay_gamerules.h"
 #include	"skill.h"
 #include	"game.h"
+#include	"cvar.h"
 
 extern edict_t *EntSelectSpawnPoint( CBasePlayer *pPlayer );
 
@@ -320,6 +321,8 @@ void CGameRules::RefreshSkillData ( void )
 AgGameRules* InstallGameRules(void)
 //-- Martin Webrant
 {
+	CVar::StopRecordingStartupChanges();
+	CVar::StartRecordingChanges();
 	SERVER_COMMAND( "exec game.cfg\n" );
 	SERVER_EXECUTE( );
 
@@ -354,6 +357,7 @@ AgGameRules* InstallGameRules(void)
 		}
 	}
 #endif
+	CVar::StopRecordingServerChanges();
 
 	//Execute my rules just before allocating what class to use. 
 	//This ensures that all is set correctly. Server.cfg can override my vars with no trouble.

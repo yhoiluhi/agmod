@@ -14,6 +14,7 @@
 #include "agcommand.h"
 #include "agwallhack.h"
 #include "gamerules.h"
+#include "cvar.h"
 #include <time.h>
 #include <map>
 #include <regex>
@@ -27,178 +28,297 @@
 void AgInitTimer();
 
 #ifdef AG_NO_CLIENT_DLL
-DLL_GLOBAL cvar_t	ag_version = { "sv_ag_version","6.7mini", FCVAR_SERVER };
+DLL_GLOBAL cvar_t	ag_version = CVar::Create("sv_ag_version", "6.7mini", FCVAR_SERVER);
 #else
-DLL_GLOBAL cvar_t	ag_version = { "sv_ag_version","6.7", FCVAR_SERVER };
+DLL_GLOBAL cvar_t	ag_version = CVar::Create("sv_ag_version", "6.7", FCVAR_SERVER);
 #endif
 
-DLL_GLOBAL cvar_t	ag_gamemode = { "sv_ag_gamemode","ffa", FCVAR_SERVER }; //The current gamemode
-DLL_GLOBAL cvar_t	ag_gamemode_auto = { "sv_ag_gamemode_auto","1", FCVAR_SERVER }; // Detect the gamemode based on the map and switch gamemode automatically
-DLL_GLOBAL cvar_t	ag_allowed_gamemodes = { "sv_ag_allowed_gamemodes","" };
 
-DLL_GLOBAL cvar_t	ag_pure = { "sv_ag_pure","0",FCVAR_SERVER };     //Default off.
+// ## General Gameplay ##
 
-DLL_GLOBAL cvar_t	ag_match_running = { "sv_ag_match_running","0",FCVAR_SERVER | FCVAR_UNLOGGED };          //Default not match. Protects players from wondering into the server.
+DLL_GLOBAL cvar_t	ag_gametype = CVar::Create("sv_ag_gametype", "");
 
-DLL_GLOBAL cvar_t	ag_oldphysics = { "sv_ag_oldphysics","1" };
+// The current gamemode
+DLL_GLOBAL cvar_t	ag_gamemode = CVar::Create("sv_ag_gamemode", "ffa", FCVAR_SERVER);
 
-DLL_GLOBAL cvar_t	ag_allow_timeout = { "sv_ag_allow_timeout","1" };       //Allow timeout.
+// Detect the gamemode based on the map and switch gamemode automatically
+DLL_GLOBAL cvar_t	ag_gamemode_auto = CVar::Create("sv_ag_gamemode_auto", "1", FCVAR_SERVER, CCVAR_VOTABLE);
 
-// TODO: review if these should really be unlogged, I think it has some interest to log them and shouldn't be spammy
-DLL_GLOBAL cvar_t	ag_allow_vote = { "sv_ag_allow_vote","1", FCVAR_SERVER | FCVAR_UNLOGGED };       //Voting is enabled by default.
-DLL_GLOBAL cvar_t	ag_restrict_vote = { "sv_ag_restrict_vote",  "0" }; // Default: 0 - Don't restrict votes
+DLL_GLOBAL cvar_t	ag_allowed_gamemodes = CVar::Create("sv_ag_allowed_gamemodes", "", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_vote_start = { "sv_ag_vote_start","1", FCVAR_SERVER | FCVAR_UNLOGGED };                    //Start voting enabled by default
-DLL_GLOBAL cvar_t	ag_vote_setting = { "sv_ag_vote_setting","1" };                  //Setting voting enabled by default
-DLL_GLOBAL cvar_t	ag_vote_gamemode = { "sv_ag_vote_gamemode","1", FCVAR_SERVER | FCVAR_UNLOGGED };                 //Gamemode voting is enabled by default.
-DLL_GLOBAL cvar_t	ag_vote_kick = { "sv_ag_vote_kick","0" };                     //Kick voting is disabled by default. // TODO: review if this should be defaulted to 1
-DLL_GLOBAL cvar_t	ag_vote_allow = { "sv_ag_vote_allow","1" };                    //All voting is enabled by default.
-DLL_GLOBAL cvar_t	ag_vote_admin = { "sv_ag_vote_admin","0" };                    //Admin voting is disabled by default.
-DLL_GLOBAL cvar_t	ag_vote_map = { "sv_ag_vote_map","1", FCVAR_SERVER | FCVAR_UNLOGGED };                      //Map voting is enabled by default.
-DLL_GLOBAL cvar_t	ag_vote_failed_time = { "sv_ag_vote_failed_time","30" };
+// Default off
+DLL_GLOBAL cvar_t	ag_pure = CVar::Create("sv_ag_pure", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
-DLL_GLOBAL cvar_t	ag_start_minplayers = { "sv_ag_start_minplayers","2" };
+// Default not match. Protects players from wandering into the server
+DLL_GLOBAL cvar_t	ag_match_running = CVar::Create("sv_ag_match_running", "0", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_vote_mp_timelimit_low = { "sv_ag_vote_mp_timelimit_low","10" };
-DLL_GLOBAL cvar_t	ag_vote_mp_timelimit_high = { "sv_ag_vote_mp_timelimit_high","40" };
-DLL_GLOBAL cvar_t	ag_vote_mp_fraglimit_low = { "sv_ag_vote_mp_fraglimit_low","0" };
-DLL_GLOBAL cvar_t	ag_vote_mp_fraglimit_high = { "sv_ag_vote_mp_fraglimit_high","100" };
-DLL_GLOBAL cvar_t	ag_vote_extra_timelimit = { "sv_ag_vote_extra_timelimit","30" };
+// Bhop cap off
+DLL_GLOBAL cvar_t	ag_oldphysics = CVar::Create("sv_ag_oldphysics", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_vote_bot = { "sv_ag_vote_bot", "1" }; // Allow adding bots
-DLL_GLOBAL cvar_t	ag_vote_team = { "sv_ag_vote_team", "1" }; // Allow vote to force someone to team up
-DLL_GLOBAL cvar_t	ag_vote_spectator = { "sv_ag_vote_spectator", "1" }; // Allow vote to force someone to spectate
+// Allow timeout
+DLL_GLOBAL cvar_t	ag_allow_timeout = CVar::Create("sv_ag_allow_timeout", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_floodmsgs = { "sv_ag_floodmsgs","4" };
-DLL_GLOBAL cvar_t	ag_floodpersecond = { "sv_ag_floodpersecond","4" };
-DLL_GLOBAL cvar_t	ag_floodwaitdelay = { "sv_ag_floodwaitdelay","10" };
+DLL_GLOBAL cvar_t	ag_start_minplayers = CVar::Create("sv_ag_start_minplayers", "2", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_player_id = { "sv_ag_player_id","5" };           //Default 5 seconds.
-DLL_GLOBAL cvar_t	ag_auto_admin = { "sv_ag_auto_admin","1" };          //Default 1 = Autoauthenticate admins based on won id.
+// Default 5 seconds
+DLL_GLOBAL cvar_t	ag_player_id = CVar::Create("sv_ag_player_id", "5", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
-DLL_GLOBAL cvar_t	ag_lj_timer = { "sv_ag_lj_timer","0" };            //Default 0 = turned off.
+// Default 0 = turned off
+DLL_GLOBAL cvar_t	ag_lj_timer = CVar::Create("sv_ag_lj_timer", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
-DLL_GLOBAL cvar_t	ag_wallgauss = { "sv_ag_wallgauss","1" };           //Default 1 = Lame wallgauss on.
-DLL_GLOBAL cvar_t	ag_headshot = { "sv_ag_headshot","3" };            //Default 3 = 3 times damage
-DLL_GLOBAL cvar_t	ag_blastradius = { "sv_ag_blastradius","1" };         //Default 1 = Standard radius
+// Default 1 = Lame wallgauss on
+DLL_GLOBAL cvar_t	ag_wallgauss = CVar::Create("sv_ag_wallgauss", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
+// Default 3 = 3 times damage
+DLL_GLOBAL cvar_t	ag_headshot = CVar::Create("sv_ag_headshot", "3", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
-DLL_GLOBAL cvar_t	ag_ban_crowbar = { "sv_ag_ban_crowbar","0" };
-DLL_GLOBAL cvar_t	ag_ban_glock = { "sv_ag_ban_glock","0" };
-DLL_GLOBAL cvar_t	ag_ban_357 = { "sv_ag_ban_357","0" };
-DLL_GLOBAL cvar_t	ag_ban_mp5 = { "sv_ag_ban_mp5","0" };
-DLL_GLOBAL cvar_t	ag_ban_shotgun = { "sv_ag_ban_shotgun", "0" };
-DLL_GLOBAL cvar_t	ag_ban_crossbow = { "sv_ag_ban_crossbow", "0" };
-DLL_GLOBAL cvar_t	ag_ban_rpg = { "sv_ag_ban_rpg","0" };
-DLL_GLOBAL cvar_t	ag_ban_gauss = { "sv_ag_ban_gauss","0" };
-DLL_GLOBAL cvar_t	ag_ban_egon = { "sv_ag_ban_egon","0" };
-DLL_GLOBAL cvar_t	ag_ban_hornet = { "sv_ag_ban_hornet","0" };
+// Default 1 = Standard radius
+DLL_GLOBAL cvar_t	ag_blastradius = CVar::Create("sv_ag_blastradius", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
-DLL_GLOBAL cvar_t	ag_ban_hgrenade = { "sv_ag_ban_hgrenade","0" };
-DLL_GLOBAL cvar_t	ag_ban_satchel = { "sv_ag_ban_satchel","0" };
-DLL_GLOBAL cvar_t	ag_ban_tripmine = { "sv_ag_ban_tripmine","0" };
-DLL_GLOBAL cvar_t	ag_ban_snark = { "sv_ag_ban_snark","0" };
-DLL_GLOBAL cvar_t	ag_ban_longjump = { "sv_ag_ban_longjump","0" };
-DLL_GLOBAL cvar_t	ag_ban_m203 = { "sv_ag_ban_m203","0" };
-DLL_GLOBAL cvar_t	ag_ban_9mmar = { "sv_ag_ban_9mmar","0" };
-DLL_GLOBAL cvar_t	ag_ban_bockshot = { "sv_ag_ban_bockshot","0" };
-DLL_GLOBAL cvar_t	ag_ban_uranium = { "sv_ag_ban_uranium","0" };
-DLL_GLOBAL cvar_t	ag_ban_bolts = { "sv_ag_ban_bolts","0" };
-DLL_GLOBAL cvar_t	ag_ban_rockets = { "sv_ag_ban_rockets","0" };
-DLL_GLOBAL cvar_t	ag_ban_357ammo = { "sv_ag_ban_357ammo","0" };
+DLL_GLOBAL cvar_t	ag_max_spectators = CVar::Create("sv_ag_max_spectators", "5", FCVAR_SERVER | FCVAR_UNLOGGED);
+DLL_GLOBAL cvar_t	ag_spec_enable_disable = CVar::Create("sv_ag_spec_enable_disable", "0", FCVAR_SERVER | FCVAR_UNLOGGED);
+DLL_GLOBAL cvar_t	ag_spectalk = CVar::Create("ag_spectalk", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_ban_armour = { "sv_ag_ban_armour","0" };
-DLL_GLOBAL cvar_t	ag_ban_health = { "sv_ag_ban_health","0" };
-DLL_GLOBAL cvar_t	ag_ban_recharg = { "sv_ag_ban_recharg","0" };
+DLL_GLOBAL cvar_t	ag_spawn_volume = CVar::Create("sv_ag_spawn_volume", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_show_gibs = CVar::Create("sv_ag_show_gibs", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
-DLL_GLOBAL cvar_t	ag_start_crowbar = { "sv_ag_start_crowbar","1" };
-DLL_GLOBAL cvar_t	ag_start_glock = { "sv_ag_start_glock","1" };
-DLL_GLOBAL cvar_t	ag_start_357 = { "sv_ag_start_357","0" };
-DLL_GLOBAL cvar_t	ag_start_mp5 = { "sv_ag_start_mp5","0" };
-DLL_GLOBAL cvar_t	ag_start_shotgun = { "sv_ag_start_shotgun", "0" };
-DLL_GLOBAL cvar_t	ag_start_crossbow = { "sv_ag_start_crossbow", "0" };
-DLL_GLOBAL cvar_t	ag_start_rpg = { "sv_ag_start_rpg","0" };
-DLL_GLOBAL cvar_t	ag_start_gauss = { "sv_ag_start_gauss","0" };
-DLL_GLOBAL cvar_t	ag_start_egon = { "sv_ag_start_egon","0" };
-DLL_GLOBAL cvar_t	ag_start_hornet = { "sv_ag_start_hornet","0" };
+// Default 0 - no fix. 1 = ignore direct selfgauss; 2 = ignore every selfgauss
+DLL_GLOBAL cvar_t	ag_gauss_fix = CVar::Create("ag_gauss_fix", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_BASIC_PRIVILEGES);
 
-DLL_GLOBAL cvar_t	ag_start_hgrenade = { "sv_ag_start_hgrenade","0" };
-DLL_GLOBAL cvar_t	ag_start_satchel = { "sv_ag_start_satchel","0" };
-DLL_GLOBAL cvar_t	ag_start_tripmine = { "sv_ag_start_tripmine","0" };
-DLL_GLOBAL cvar_t	ag_start_snark = { "sv_ag_start_snark","0" };
-DLL_GLOBAL cvar_t	ag_start_longjump = { "sv_ag_start_longjump","0" };
-DLL_GLOBAL cvar_t	ag_start_m203 = { "sv_ag_start_m203","0" };
-DLL_GLOBAL cvar_t	ag_start_9mmar = { "sv_ag_start_9mmar","68" };
-DLL_GLOBAL cvar_t	ag_start_bockshot = { "sv_ag_start_bockshot","0" };
-DLL_GLOBAL cvar_t	ag_start_uranium = { "sv_ag_start_uranium","0" };
-DLL_GLOBAL cvar_t	ag_start_bolts = { "sv_ag_start_bolts","0" };
-DLL_GLOBAL cvar_t	ag_start_rockets = { "sv_ag_start_rockets","0" };
-DLL_GLOBAL cvar_t	ag_start_357ammo = { "sv_ag_start_357ammo","0" };
-DLL_GLOBAL cvar_t	ag_start_armour = { "sv_ag_start_armour","0" };
-DLL_GLOBAL cvar_t	ag_start_health = { "sv_ag_start_health","100" };
+// Default 0 - no fix. 1 = improve rocket's start position when moving backwards and shooting RPG
+DLL_GLOBAL cvar_t	ag_rpg_fix = CVar::Create("ag_rpg_fix", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_BASIC_PRIVILEGES);
 
-DLL_GLOBAL cvar_t	ag_dmg_crowbar = { "sv_ag_dmg_crowbar","25" };
-DLL_GLOBAL cvar_t	ag_dmg_glock = { "sv_ag_dmg_glock","12" };
-DLL_GLOBAL cvar_t	ag_dmg_357 = { "sv_ag_dmg_357","40" };
-DLL_GLOBAL cvar_t	ag_dmg_mp5 = { "sv_ag_dmg_mp5","12" };
-DLL_GLOBAL cvar_t	ag_dmg_shotgun = { "sv_ag_dmg_shotgun", "20" };
-DLL_GLOBAL cvar_t	ag_dmg_crossbow = { "sv_ag_dmg_crossbow", "20" };
-DLL_GLOBAL cvar_t	ag_dmg_bolts = { "sv_ag_dmg_bolts","50" };
-DLL_GLOBAL cvar_t	ag_dmg_rpg = { "sv_ag_dmg_rpg","120" };
-DLL_GLOBAL cvar_t	ag_dmg_gauss = { "sv_ag_dmg_gauss","20" };
-DLL_GLOBAL cvar_t	ag_dmg_egon_wide = { "sv_ag_dmg_egon_wide","20" };
-DLL_GLOBAL cvar_t	ag_dmg_egon_narrow = { "sv_ag_dmg_egon_narrow","10" };
-DLL_GLOBAL cvar_t	ag_dmg_hornet = { "sv_ag_dmg_hornet","10" };
-DLL_GLOBAL cvar_t	ag_dmg_hgrenade = { "sv_ag_dmg_hgrenade","100" };
-DLL_GLOBAL cvar_t	ag_dmg_satchel = { "sv_ag_dmg_satchel","120" };
-DLL_GLOBAL cvar_t	ag_dmg_tripmine = { "sv_ag_dmg_tripmine","150" };
-DLL_GLOBAL cvar_t	ag_dmg_m203 = { "sv_ag_dmg_m203","100" };
+// Default: 0 - Don't force clients to record matches
+DLL_GLOBAL cvar_t	ag_force_match_recording = CVar::Create("sv_ag_force_match_recording", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// Default: 0.75 - avg @ 144 fps was 0.83s, but sometimes it went down to 0.7s...
+DLL_GLOBAL cvar_t	ag_min_respawn_time = CVar::Create("sv_ag_min_respawn_time", "0.75", CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// Default: 5 - in seconds
+DLL_GLOBAL cvar_t	ag_forcerespawn_time = CVar::Create("sv_ag_forcerespawn_time", "5", CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// Default: 5 - How many AG bots at max.
+DLL_GLOBAL cvar_t	ag_bot_limit = CVar::Create("sv_ag_bot_limit", "5", FCVAR_SERVER | FCVAR_UNLOGGED);
 
 
-DLL_GLOBAL cvar_t	ag_max_spectators = { "sv_ag_max_spectators","5" };
-DLL_GLOBAL cvar_t	ag_spec_enable_disable = { "sv_ag_spec_enable_disable","0" };
-DLL_GLOBAL cvar_t	ag_spectalk = { "ag_spectalk","1" };
+// ## Voting ##
 
-DLL_GLOBAL cvar_t	ag_spawn_volume = { "sv_ag_spawn_volume","1" };
-DLL_GLOBAL cvar_t	ag_show_gibs = { "sv_ag_show_gibs","1" };
+// Voting is enabled by default. If 0, disables every vote, even if specific ones are enabled
+DLL_GLOBAL cvar_t	ag_allow_vote = CVar::Create("sv_ag_allow_vote", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_gametype = { "sv_ag_gametype","" };
+// Default: 0 - Bots don't take part in votes
+DLL_GLOBAL cvar_t	ag_bot_allow_vote = CVar::Create("sv_ag_bot_allow_vote", "0", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_ctf_flag_resettime = { "sv_ag_ctf_flag_resettime","30" };  //the time that a dropped flag lays in the world before respawning
-DLL_GLOBAL cvar_t	ag_ctf_capture_limit = { "sv_ag_ctf_capturelimit","10", FCVAR_SERVER };  //the number of captures before map ends.
-DLL_GLOBAL cvar_t	ag_ctf_teamcapturepoints = { "sv_ag_ctf_teamcapturepoints","1" };  //the ammount of points his teammates get
-DLL_GLOBAL cvar_t	ag_ctf_capturepoints = { "sv_ag_ctf_capturepoints","4" };  //the amount of points the capturer gets
-DLL_GLOBAL cvar_t	ag_ctf_returnpoints = { "sv_ag_ctf_returnpoints","1" };  //the amount of points the returner gets.
-DLL_GLOBAL cvar_t	ag_ctf_carrierkillpoints = { "sv_ag_ctf_carrierkillpoints","1" };  //the amount of points the killer gets.
-DLL_GLOBAL cvar_t	ag_ctf_stealpoints = { "sv_ag_ctf_stealpoints","1" };  //the amount of points the stealer gets.
-DLL_GLOBAL cvar_t	ag_ctf_defendpoints = { "sv_ag_ctf_defendpoints","1" };  //the amount of points the defender gets.
-DLL_GLOBAL cvar_t	ag_ctf_roundbased = { "sv_ag_ctf_roundbased","0" };  //1 for roundbased CTF game.
+// Default: 0 - Don't restrict votes
+DLL_GLOBAL cvar_t	ag_restrict_vote = CVar::Create("sv_ag_restrict_vote", "0", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+// `agstart` vote enable/disable
+DLL_GLOBAL cvar_t	ag_vote_start = CVar::Create("sv_ag_vote_start", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+// On 1 allows voting settings like mp_timelimit and a few others
+// On 2 allows voting a lot more mp_* cvars, like mp_forcerespawn, sv_ag_wallgauss, etc.
+DLL_GLOBAL cvar_t	ag_vote_setting = CVar::Create("sv_ag_vote_setting", "1", FCVAR_SERVER);
+
+// Allows voting gamemodes
+DLL_GLOBAL cvar_t	ag_vote_gamemode = CVar::Create("sv_ag_vote_gamemode", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+// `agkick` vote enable/disable
+DLL_GLOBAL cvar_t	ag_vote_kick = CVar::Create("sv_ag_vote_kick", "1", FCVAR_SERVER);
+
+// `agallow` vote enable/disable
+DLL_GLOBAL cvar_t	ag_vote_allow = CVar::Create("sv_ag_vote_allow", "1", FCVAR_SERVER);
+
+// `agadmin` vote enable/disable
+DLL_GLOBAL cvar_t	ag_vote_admin = CVar::Create("sv_ag_vote_admin", "0");
+
+// `agmap` vote enable/disable
+DLL_GLOBAL cvar_t	ag_vote_map = CVar::Create("sv_ag_vote_map", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+DLL_GLOBAL cvar_t	ag_vote_mp_timelimit_low = CVar::Create("sv_ag_vote_mp_timelimit_low", "10", FCVAR_SERVER | FCVAR_UNLOGGED);
+DLL_GLOBAL cvar_t	ag_vote_mp_timelimit_high = CVar::Create("sv_ag_vote_mp_timelimit_high", "40", FCVAR_SERVER | FCVAR_UNLOGGED);
+DLL_GLOBAL cvar_t	ag_vote_mp_fraglimit_low = CVar::Create("sv_ag_vote_mp_fraglimit_low", "0", FCVAR_SERVER | FCVAR_UNLOGGED);
+DLL_GLOBAL cvar_t	ag_vote_mp_fraglimit_high = CVar::Create("sv_ag_vote_mp_fraglimit_high", "100", FCVAR_SERVER | FCVAR_UNLOGGED);
+DLL_GLOBAL cvar_t	ag_vote_extra_timelimit = CVar::Create("sv_ag_vote_extra_timelimit", "30", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+// `spawnbot` vote enable/disable. Allow adding bots
+DLL_GLOBAL cvar_t	ag_vote_bot = CVar::Create("sv_ag_vote_bot", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+// `agforceteamup` vote enable/disable. Allow voting to force someone to team up
+DLL_GLOBAL cvar_t	ag_vote_team = CVar::Create("sv_ag_vote_team", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+// `agforcespectator` vote enable/disable. Allow voting to force someone into spectator mode
+DLL_GLOBAL cvar_t	ag_vote_spectator = CVar::Create("sv_ag_vote_spectator", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+DLL_GLOBAL cvar_t	ag_vote_failed_time = CVar::Create("sv_ag_vote_failed_time", "30", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+
+// ## Weapon Bans ##
+
+DLL_GLOBAL cvar_t	ag_ban_crowbar = CVar::Create("sv_ag_ban_crowbar", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_glock = CVar::Create("sv_ag_ban_glock", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_357 = CVar::Create("sv_ag_ban_357", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_mp5 = CVar::Create("sv_ag_ban_mp5", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_shotgun = CVar::Create("sv_ag_ban_shotgun", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_crossbow = CVar::Create("sv_ag_ban_crossbow", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_rpg = CVar::Create("sv_ag_ban_rpg", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_gauss = CVar::Create("sv_ag_ban_gauss", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_egon = CVar::Create("sv_ag_ban_egon", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_hornet = CVar::Create("sv_ag_ban_hornet", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+
+// ## Ammo Bans ## (satchels and others are considered ammo)
+
+DLL_GLOBAL cvar_t	ag_ban_hgrenade = CVar::Create("sv_ag_ban_hgrenade", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_satchel = CVar::Create("sv_ag_ban_satchel", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_tripmine = CVar::Create("sv_ag_ban_tripmine", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_snark = CVar::Create("sv_ag_ban_snark", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_longjump = CVar::Create("sv_ag_ban_longjump", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_m203 = CVar::Create("sv_ag_ban_m203", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_9mmar = CVar::Create("sv_ag_ban_9mmar", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_bockshot = CVar::Create("sv_ag_ban_bockshot", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_uranium = CVar::Create("sv_ag_ban_uranium", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_bolts = CVar::Create("sv_ag_ban_bolts", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_rockets = CVar::Create("sv_ag_ban_rockets", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_357ammo = CVar::Create("sv_ag_ban_357ammo", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+
+// ## Other Bans ##
+
+DLL_GLOBAL cvar_t	ag_ban_armour = CVar::Create("sv_ag_ban_armour", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_health = CVar::Create("sv_ag_ban_health", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_ban_recharg = CVar::Create("sv_ag_ban_recharg", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+
+// ## Starting Weapons ##
+
+DLL_GLOBAL cvar_t	ag_start_crowbar = CVar::Create("sv_ag_start_crowbar", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_glock = CVar::Create("sv_ag_start_glock", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_357 = CVar::Create("sv_ag_start_357", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_mp5 = CVar::Create("sv_ag_start_mp5", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_shotgun = CVar::Create("sv_ag_start_shotgun", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_crossbow = CVar::Create("sv_ag_start_crossbow", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_rpg = CVar::Create("sv_ag_start_rpg", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_gauss = CVar::Create("sv_ag_start_gauss", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_egon = CVar::Create("sv_ag_start_egon", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_hornet = CVar::Create("sv_ag_start_hornet", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+
+// ## Starting Ammo ##
+
+DLL_GLOBAL cvar_t	ag_start_hgrenade = CVar::Create("sv_ag_start_hgrenade", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_satchel = CVar::Create("sv_ag_start_satchel", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_tripmine = CVar::Create("sv_ag_start_tripmine", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_snark = CVar::Create("sv_ag_start_snark", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_longjump = CVar::Create("sv_ag_start_longjump", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_m203 = CVar::Create("sv_ag_start_m203", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_9mmar = CVar::Create("sv_ag_start_9mmar", "68", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_bockshot = CVar::Create("sv_ag_start_bockshot", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_uranium = CVar::Create("sv_ag_start_uranium", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_bolts = CVar::Create("sv_ag_start_bolts", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_rockets = CVar::Create("sv_ag_start_rockets", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_357ammo = CVar::Create("sv_ag_start_357ammo", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+
+// ## Other Starting Elements ##
+
+DLL_GLOBAL cvar_t	ag_start_armour = CVar::Create("sv_ag_start_armour", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_start_health = CVar::Create("sv_ag_start_health", "100", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+
+// ## Weapon Damage ##
+
+DLL_GLOBAL cvar_t	ag_dmg_crowbar = CVar::Create("sv_ag_dmg_crowbar", "25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_glock = CVar::Create("sv_ag_dmg_glock", "12", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_357 = CVar::Create("sv_ag_dmg_357", "40", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_mp5 = CVar::Create("sv_ag_dmg_mp5", "12", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_shotgun = CVar::Create("sv_ag_dmg_shotgun", "20", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_crossbow = CVar::Create("sv_ag_dmg_crossbow", "20", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_bolts = CVar::Create("sv_ag_dmg_bolts", "50", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_rpg = CVar::Create("sv_ag_dmg_rpg", "120", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_gauss = CVar::Create("sv_ag_dmg_gauss", "20", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_egon_wide = CVar::Create("sv_ag_dmg_egon_wide", "20", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_egon_narrow = CVar::Create("sv_ag_dmg_egon_narrow", "10", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_hornet = CVar::Create("sv_ag_dmg_hornet", "10", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_hgrenade = CVar::Create("sv_ag_dmg_hgrenade", "100", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_satchel = CVar::Create("sv_ag_dmg_satchel", "120", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_tripmine = CVar::Create("sv_ag_dmg_tripmine", "150", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_dmg_m203 = CVar::Create("sv_ag_dmg_m203", "100", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+
+// ## CTF ##
+
+// The time that a dropped flag lays in the world before respawning
+DLL_GLOBAL cvar_t	ag_ctf_flag_resettime = CVar::Create("sv_ag_ctf_flag_resettime", "30", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// The number of captures before map ends
+DLL_GLOBAL cvar_t	ag_ctf_capture_limit = CVar::Create("sv_ag_ctf_capturelimit", "10", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// The ammount of points his teammates get
+DLL_GLOBAL cvar_t	ag_ctf_teamcapturepoints = CVar::Create("sv_ag_ctf_teamcapturepoints", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// The amount of points the capturer gets
+DLL_GLOBAL cvar_t	ag_ctf_capturepoints = CVar::Create("sv_ag_ctf_capturepoints", "4", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// The amount of points the returner gets
+DLL_GLOBAL cvar_t	ag_ctf_returnpoints = CVar::Create("sv_ag_ctf_returnpoints", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// The amount of points the killer gets
+DLL_GLOBAL cvar_t	ag_ctf_carrierkillpoints = CVar::Create("sv_ag_ctf_carrierkillpoints", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// The amount of points the stealer gets
+DLL_GLOBAL cvar_t	ag_ctf_stealpoints = CVar::Create("sv_ag_ctf_stealpoints", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// The amount of points the defender gets
+DLL_GLOBAL cvar_t	ag_ctf_defendpoints = CVar::Create("sv_ag_ctf_defendpoints", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// 1 for roundbased CTF game.
+DLL_GLOBAL cvar_t	ag_ctf_roundbased = CVar::Create("sv_ag_ctf_roundbased", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+
+// ## DOM ##
 
 //++ muphicks
-DLL_GLOBAL cvar_t	ag_dom_mincontroltime = { "sv_ag_dom_mincontroltime","5" }; // number of seconds team must control point to score
-DLL_GLOBAL cvar_t	ag_dom_controlpoints = { "sv_ag_dom_controlpoints", "1" }; // number of points scored when under teams control
-DLL_GLOBAL cvar_t	ag_dom_resetscorelimit = { "sv_ag_dom_resetscorelimit", "6" }; // max time under 1 teams control 5*6 = 30 seconds
-DLL_GLOBAL cvar_t	ag_dom_scorelimit = { "sv_ag_dom_scorelimit", "200" }; // max points a team needs to get to win the game
+
+// Number of seconds team must control point to score
+DLL_GLOBAL cvar_t	ag_dom_mincontroltime = CVar::Create("sv_ag_dom_mincontroltime", "5", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// Number of points scored when under teams control
+DLL_GLOBAL cvar_t	ag_dom_controlpoints = CVar::Create("sv_ag_dom_controlpoints", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// Max time under 1 teams control 5*6 = 30 seconds
+DLL_GLOBAL cvar_t	ag_dom_resetscorelimit = CVar::Create("sv_ag_dom_resetscorelimit", "6", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// Max points a team needs to get to win the game
+DLL_GLOBAL cvar_t	ag_dom_scorelimit = CVar::Create("sv_ag_dom_scorelimit", "200", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
 //-- muphicks
 
-DLL_GLOBAL cvar_t	ag_gauss_fix = { "ag_gauss_fix","0" };            //Default 0 - no fix. 1 = ignore direct selfgauss; 2 = ignore every selfgauss
-DLL_GLOBAL cvar_t	ag_rpg_fix = { "ag_rpg_fix","0" };            //Default 0 - no fix.
 
-DLL_GLOBAL cvar_t	ag_spawn_system = { "ag_spawn_system", "0", FCVAR_SERVER };  // Default 0 - classic mode (select a random spawn from the next 5)
-DLL_GLOBAL cvar_t	ag_spawn_history_entries = { "ag_spawn_history_entries", "25", FCVAR_SERVER };  // Default 25 - remember all of these spawnpoints that were last used
+// ## Spawn System ##
+
+// Default 0 - classic mode (select a random spawn from the next 5)
+DLL_GLOBAL cvar_t	ag_spawn_system = CVar::Create("ag_spawn_system", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+
+// Default 25 - remember all of these spawnpoints that were last used
+DLL_GLOBAL cvar_t	ag_spawn_history_entries = CVar::Create("ag_spawn_history_entries", "25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
 // This is to avoid repeating the last used spawnpoints, 0.25 means avoid the 25% of total spawns that were last used,
 // so in crossfire there rare 17 spawns, the 25% of that is 4.25, it's rounded to 4, so it will avoid the last 4 spots where you spawned in crossfire
 // It can be capped by `ag_spawn_history_entries`, so if its value is 3 (less than 4), it would avoid the last 3 instead
-DLL_GLOBAL cvar_t	ag_spawn_avoid_last_spots = { "ag_spawn_avoid_last_spots", "0.25", FCVAR_SERVER };
+DLL_GLOBAL cvar_t	ag_spawn_avoid_last_spots = CVar::Create("ag_spawn_avoid_last_spots", "0.25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
 // A fraction of the total spawnpoints, that will be used for the Far spawn system to choose a spawnpoint randomly
-DLL_GLOBAL cvar_t	ag_spawn_far_spots = { "ag_spawn_far_spots", "0.25", FCVAR_SERVER };
+DLL_GLOBAL cvar_t	ag_spawn_far_spots = CVar::Create("ag_spawn_far_spots", "0.25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+
 
 // Probabilities for the Position-aware Spawn System to pick these spot categories for the next spawn
-DLL_GLOBAL cvar_t	ag_spawn_pa_visible_chance = { "ag_spawn_pa_visible_chance", "10", FCVAR_SERVER }; // Default 10 - means 10%
-DLL_GLOBAL cvar_t	ag_spawn_pa_audible_chance = { "ag_spawn_pa_audible_chance", "25", FCVAR_SERVER }; // Default 25 - means 25%
-DLL_GLOBAL cvar_t	ag_spawn_pa_safe_chance    = { "ag_spawn_pa_safe_chance",    "65", FCVAR_SERVER }; // Default 65 - means 65%
+// 10 - means 10%, 25 = 25%, 65 = 65%
+DLL_GLOBAL cvar_t	ag_spawn_pa_visible_chance = CVar::Create("ag_spawn_pa_visible_chance", "10", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+DLL_GLOBAL cvar_t	ag_spawn_pa_audible_chance = CVar::Create("ag_spawn_pa_audible_chance", "25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+DLL_GLOBAL cvar_t	ag_spawn_pa_safe_chance    = CVar::Create("ag_spawn_pa_safe_chance",    "65", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+
+
+// ## FPS Limiter ##
 
 // Some of these should be prefixed sv_ag_* instead of just ag_*, because it seems the convention
 // was to have the non-votable ones with sv_ag_* and the votable ones with ag_*. But it might be
@@ -206,40 +326,84 @@ DLL_GLOBAL cvar_t	ag_spawn_pa_safe_chance    = { "ag_spawn_pa_safe_chance",    "
 // So I've decided to break the convention here to make it easier for players and admins to use these,
 // as you can just type ag_fps_limit and tab or press down arrow to see all the different cvars, instead
 // of having to do this with both sv_ag_fps_limit and ag_fps_limit. We'll see if it's the right decision
-DLL_GLOBAL cvar_t	ag_fps_limit = { "ag_fps_limit", "0", FCVAR_SERVER };  // Default: 0 - Cap players' fps_max. Standard in 2021 is 144 (125 and 100 before; 250 for bhop)
-DLL_GLOBAL cvar_t	ag_fps_limit_auto = { "ag_fps_limit_auto", "0", FCVAR_SERVER };  // Default: 0 - Whether to limit the fps to the most common fps among players
-DLL_GLOBAL cvar_t	ag_fps_limit_check_interval = { "ag_fps_limit_check_interval", "10.0", FCVAR_SERVER };  // Default: 10 seconds - How often to check for changing the limit
-DLL_GLOBAL cvar_t	ag_fps_limit_match_only = { "ag_fps_limit_match_only", "0", FCVAR_SERVER };  // Default: 0 - Whether to limit it only for players in a match
-DLL_GLOBAL cvar_t	ag_fps_limit_steampipe = { "ag_fps_limit_steampipe", "1", FCVAR_SERVER };  // Default: 1 - Whether to account for the 0.5 fps added by the engine (steampipe)
-DLL_GLOBAL cvar_t	ag_fps_limit_warnings = { "ag_fps_limit_warnings", "3", FCVAR_SERVER };  // Default: 3 - How many warnings before applying the punishment
-DLL_GLOBAL cvar_t	ag_fps_limit_warnings_interval = { "ag_fps_limit_warnings_interval", "5.0", FCVAR_SERVER };  // Default: 5 seconds - Time between warnings
-DLL_GLOBAL cvar_t	ag_fps_limit_punishment = { "ag_fps_limit_punishment", "kick", FCVAR_SERVER };  // Default: kick - Options: slap, kick, ban (3 mins)
-DLL_GLOBAL cvar_t	ag_fps_limit_punishment_slap_intensity = { "ag_fps_limit_punishment_slap_intensity", "1.0", FCVAR_SERVER };  // Default: 1.0 - Multiplier for slap damage & punch
-DLL_GLOBAL cvar_t	ag_fps_limit_punishment_slap_interval = { "ag_fps_limit_punishment_slap_interval", "1.0", FCVAR_SERVER };  // Default: 1 second - Time between slaps
-DLL_GLOBAL cvar_t	ag_fps_limit_punishment_ban_time = { "ag_fps_limit_punishment_ban_time", "3", FCVAR_SERVER };  // Default: 3 minutes - How much time to ban them for
 
-DLL_GLOBAL cvar_t	ag_satchel_destroyable = { "sv_ag_satchel_destroyable", "0", FCVAR_SERVER }; // Default: 0 - Cannot destroy satchels (only with the detonator)
-DLL_GLOBAL cvar_t	ag_satchel_health      = { "sv_ag_satchel_health",     "15", FCVAR_SERVER }; // Default: 15 hp
-DLL_GLOBAL cvar_t	ag_satchel_solid       = { "sv_ag_satchel_solid",       "1", FCVAR_SERVER }; // Default: 1 - Solid, players can collide with them
+// Default: 0 - Cap players' fps_max. Standard in 2021 is 144 (125 and 100 before; 250 for bhop)
+DLL_GLOBAL cvar_t	ag_fps_limit = CVar::Create("ag_fps_limit", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
-DLL_GLOBAL cvar_t	ag_bot_allow_vote = { "sv_ag_bot_allow_vote", "0", FCVAR_SERVER }; // Default: 0 - Bots don't take part in votes
-DLL_GLOBAL cvar_t	ag_bot_limit      = { "sv_ag_bot_limit",      "5", FCVAR_SERVER }; // Default: 5 - How many AG bots at max.
+// Default: 0 - Whether to limit the fps to the most common fps among players
+DLL_GLOBAL cvar_t	ag_fps_limit_auto = CVar::Create("ag_fps_limit_auto", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
-DLL_GLOBAL cvar_t	ag_flood_name_cooldown       = { "sv_ag_flood_name_cooldown",  "2" }; // Default: 2 - Seconds to wait before changing their name again
-DLL_GLOBAL cvar_t	ag_flood_name_spec_cooldown  = { "sv_ag_flood_name_spec_cooldown",  "60" }; // Default: 60 - Seconds to wait before changing their name again when on spec
-DLL_GLOBAL cvar_t	ag_flood_model_cooldown      = { "sv_ag_flood_model_cooldown", "2" }; // Default: 2 - Seconds to wait before changing their model again
-DLL_GLOBAL cvar_t	ag_flood_model_spec_cooldown = { "sv_ag_flood_model_spec_cooldown", "60" }; // Default: 60 - Seconds to wait before changing their model again when on spec
+// Default: 10 seconds - How often to check for changing the limit
+DLL_GLOBAL cvar_t	ag_fps_limit_check_interval = CVar::Create("ag_fps_limit_check_interval", "10.0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
-DLL_GLOBAL cvar_t	ag_enforcement_cooldown = { "sv_agforce_cooldown",  "15" }; // Default: 15 - Seconds to wait before target can change their model or specmode again
+// Default: 0 - Whether to limit it only for players in a match
+DLL_GLOBAL cvar_t	ag_fps_limit_match_only = CVar::Create("ag_fps_limit_match_only", "0", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_force_match_recording = { "sv_ag_force_match_recording",  "0" }; // Default: 0 - Don't force clients to record matches
+// Default: 1 - Whether to account for the 0.5 fps added by the engine (steampipe)
+DLL_GLOBAL cvar_t	ag_fps_limit_steampipe = CVar::Create("ag_fps_limit_steampipe", "1", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_match_mute = { "sv_ag_match_mute",  "0" }; // Default: 0 - Don't mute chat messages during match
+// Default: 3 - How many warnings before applying the punishment
+DLL_GLOBAL cvar_t	ag_fps_limit_warnings = CVar::Create("ag_fps_limit_warnings", "3", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	ag_min_respawn_time = { "sv_ag_min_respawn_time", "0.75" }; // Default: 0.75 - avg @ 144 fps was 0.83s, but sometimes it went down to 0.7s...
-DLL_GLOBAL cvar_t	ag_forcerespawn_time = { "sv_ag_forcerespawn_time", "5" }; // Default: 5 - in seconds
+// Default: 5 seconds - Time between warnings
+DLL_GLOBAL cvar_t	ag_fps_limit_warnings_interval = CVar::Create("ag_fps_limit_warnings_interval", "5.0", FCVAR_SERVER | FCVAR_UNLOGGED);
 
-DLL_GLOBAL cvar_t	mm_agsay = { "mm_agsay","1", FCVAR_SERVER };
+// Default: kick - Options: slap, kick, ban (3 mins)
+DLL_GLOBAL cvar_t	ag_fps_limit_punishment = CVar::Create("ag_fps_limit_punishment", "kick", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+// Default: 1.0 - Multiplier for slap damage & punch
+DLL_GLOBAL cvar_t	ag_fps_limit_punishment_slap_intensity = CVar::Create("ag_fps_limit_punishment_slap_intensity", "1.0", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+// Default: 1 second - Time between slaps
+DLL_GLOBAL cvar_t	ag_fps_limit_punishment_slap_interval = CVar::Create("ag_fps_limit_punishment_slap_interval", "1.0", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+// Default: 3 minutes - How much time to ban them for
+DLL_GLOBAL cvar_t	ag_fps_limit_punishment_ban_time = CVar::Create("ag_fps_limit_punishment_ban_time", "3", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+
+// ## Satchels ##
+
+// Default: 0 - Cannot destroy satchels (only with the detonator)
+DLL_GLOBAL cvar_t	ag_satchel_destroyable = CVar::Create("sv_ag_satchel_destroyable", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// Default: 15 hp
+DLL_GLOBAL cvar_t	ag_satchel_health = CVar::Create("sv_ag_satchel_health", "15", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// Default: 1 - Solid, players can collide with them
+DLL_GLOBAL cvar_t	ag_satchel_solid = CVar::Create("sv_ag_satchel_solid", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+
+// ## Flood Protection / Mute ##
+
+DLL_GLOBAL cvar_t	ag_floodmsgs = CVar::Create("sv_ag_floodmsgs", "4");
+DLL_GLOBAL cvar_t	ag_floodpersecond = CVar::Create("sv_ag_floodpersecond", "4");
+DLL_GLOBAL cvar_t	ag_floodwaitdelay = CVar::Create("sv_ag_floodwaitdelay", "10");
+
+// Default: 2 - Seconds to wait before changing their name again
+DLL_GLOBAL cvar_t	ag_flood_name_cooldown = CVar::Create("sv_ag_flood_name_cooldown", "2");
+
+// Default: 60 - Seconds to wait before changing their name again when on spec
+DLL_GLOBAL cvar_t	ag_flood_name_spec_cooldown = CVar::Create("sv_ag_flood_name_spec_cooldown", "60");
+
+// Default: 2 - Seconds to wait before changing their model again
+DLL_GLOBAL cvar_t	ag_flood_model_cooldown = CVar::Create("sv_ag_flood_model_cooldown", "2");
+
+// Default: 60 - Seconds to wait before changing their model again when on spec
+DLL_GLOBAL cvar_t	ag_flood_model_spec_cooldown = CVar::Create("sv_ag_flood_model_spec_cooldown", "60");
+
+// Default: 15 - Seconds to wait before target can change their model or specmode again
+DLL_GLOBAL cvar_t	ag_enforcement_cooldown = CVar::Create("sv_agforce_cooldown", "15");
+
+// Default: 0 - Don't mute chat messages during match
+DLL_GLOBAL cvar_t	ag_match_mute = CVar::Create("sv_ag_match_mute", "0", FCVAR_SERVER | FCVAR_UNLOGGED);
+
+
+// ## Others ##
+
+// Default 1 = Autoauthenticate admins based on won id
+DLL_GLOBAL cvar_t	ag_auto_admin = CVar::Create("sv_ag_auto_admin", "1");
+
+DLL_GLOBAL cvar_t	mm_agsay = CVar::Create("mm_agsay", "1", FCVAR_SERVER);
 
 
 DLL_GLOBAL bool g_bLangame = false;
@@ -248,51 +412,63 @@ extern AgString g_sGamemode;
 
 std::regex colorRegexp("\\^[0-9]");
 
-// Keep this sorted
-std::vector<std::string> g_votableSettings = {
-    "ag_fps_limit",
-    "ag_fps_limit_auto",
-    "ag_fps_limit_check_interval",
-    "ag_gauss_fix",
-    "ag_rpg_fix",
-    "ag_spawn_avoid_last_spots",
-    "ag_spawn_far_spots",
-    "ag_spawn_history_entries",
-    "ag_spawn_pa_audible_chance",
-    "ag_spawn_pa_safe_chance",
-    "ag_spawn_pa_visible_chance",
-    "ag_spawn_system",
-    "mp_fraglimit",
-    "mp_friendlyfire",
-    "mp_timelimit",
-    "mp_weaponstay",
-};
-
 void LoadGreetingMessages();
 
 void AgInitGame()
 {
     AgInitTimer();
-
+    
     CVAR_REGISTER(&ag_version);
+
+    // ## General Gameplay ##
+    CVAR_REGISTER(&ag_gametype);
     CVAR_REGISTER(&ag_gamemode);
     CVAR_REGISTER(&ag_gamemode_auto);
     CVAR_REGISTER(&ag_allowed_gamemodes);
-
-    CVAR_REGISTER(&ag_allow_vote);
     CVAR_REGISTER(&ag_pure);
     CVAR_REGISTER(&ag_match_running);
-
     CVAR_REGISTER(&ag_oldphysics);
-
+    CVAR_REGISTER(&ag_allow_timeout);
+    CVAR_REGISTER(&ag_start_minplayers);
     CVAR_REGISTER(&ag_player_id);
     CVAR_REGISTER(&ag_lj_timer);
-
-    CVAR_REGISTER(&ag_auto_admin);
     CVAR_REGISTER(&ag_wallgauss);
     CVAR_REGISTER(&ag_headshot);
     CVAR_REGISTER(&ag_blastradius);
+    CVAR_REGISTER(&ag_max_spectators);
+    CVAR_REGISTER(&ag_spec_enable_disable);
+    CVAR_REGISTER(&ag_spectalk);
+    CVAR_REGISTER(&ag_spawn_volume);
+    CVAR_REGISTER(&ag_show_gibs);
+    CVAR_REGISTER(&ag_gauss_fix);
+    CVAR_REGISTER(&ag_rpg_fix);
+    CVAR_REGISTER(&ag_force_match_recording);
+    CVAR_REGISTER(&ag_min_respawn_time);
+    CVAR_REGISTER(&ag_forcerespawn_time);
+    CVAR_REGISTER(&ag_bot_limit);
 
+    // ## Voting ##
+    CVAR_REGISTER(&ag_allow_vote);
+    CVAR_REGISTER(&ag_bot_allow_vote);
+    CVAR_REGISTER(&ag_restrict_vote);
+    CVAR_REGISTER(&ag_vote_start);
+    CVAR_REGISTER(&ag_vote_setting);
+    CVAR_REGISTER(&ag_vote_gamemode);
+    CVAR_REGISTER(&ag_vote_kick);
+    CVAR_REGISTER(&ag_vote_allow);
+    CVAR_REGISTER(&ag_vote_admin);
+    CVAR_REGISTER(&ag_vote_map);
+    CVAR_REGISTER(&ag_vote_mp_timelimit_low);
+    CVAR_REGISTER(&ag_vote_mp_timelimit_high);
+    CVAR_REGISTER(&ag_vote_mp_fraglimit_low);
+    CVAR_REGISTER(&ag_vote_mp_fraglimit_high);
+    CVAR_REGISTER(&ag_vote_extra_timelimit);
+    CVAR_REGISTER(&ag_vote_bot);
+    CVAR_REGISTER(&ag_vote_team);
+    CVAR_REGISTER(&ag_vote_spectator);
+    CVAR_REGISTER(&ag_vote_failed_time);
+
+    // ## Weapon Bans ##
     CVAR_REGISTER(&ag_ban_crowbar);
     CVAR_REGISTER(&ag_ban_glock);
     CVAR_REGISTER(&ag_ban_357);
@@ -304,6 +480,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_ban_egon);
     CVAR_REGISTER(&ag_ban_hornet);
 
+    // ## Ammo Bans ##
     CVAR_REGISTER(&ag_ban_hgrenade);
     CVAR_REGISTER(&ag_ban_satchel);
     CVAR_REGISTER(&ag_ban_tripmine);
@@ -317,10 +494,12 @@ void AgInitGame()
     CVAR_REGISTER(&ag_ban_rockets);
     CVAR_REGISTER(&ag_ban_357ammo);
 
+    // ## Other Bans ##
     CVAR_REGISTER(&ag_ban_armour);
     CVAR_REGISTER(&ag_ban_health);
     CVAR_REGISTER(&ag_ban_recharg);
 
+    // ## Starting Weapons ##
     CVAR_REGISTER(&ag_start_crowbar);
     CVAR_REGISTER(&ag_start_glock);
     CVAR_REGISTER(&ag_start_357);
@@ -332,6 +511,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_start_egon);
     CVAR_REGISTER(&ag_start_hornet);
 
+    // ## Starting Ammo ##
     CVAR_REGISTER(&ag_start_hgrenade);
     CVAR_REGISTER(&ag_start_satchel);
     CVAR_REGISTER(&ag_start_tripmine);
@@ -345,9 +525,11 @@ void AgInitGame()
     CVAR_REGISTER(&ag_start_rockets);
     CVAR_REGISTER(&ag_start_357ammo);
 
+    // ## Other Starting Elements ##
     CVAR_REGISTER(&ag_start_armour);
     CVAR_REGISTER(&ag_start_health);
 
+    // ## Weapon Damage ##
     CVAR_REGISTER(&ag_dmg_crowbar);
     CVAR_REGISTER(&ag_dmg_glock);
     CVAR_REGISTER(&ag_dmg_357);
@@ -365,42 +547,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_dmg_tripmine);
     CVAR_REGISTER(&ag_dmg_m203);
 
-    CVAR_REGISTER(&ag_allow_timeout);
-
-    CVAR_REGISTER(&ag_vote_start);
-    CVAR_REGISTER(&ag_vote_setting);
-    CVAR_REGISTER(&ag_vote_gamemode);
-    CVAR_REGISTER(&ag_vote_kick);
-    CVAR_REGISTER(&ag_vote_allow);
-    CVAR_REGISTER(&ag_vote_admin);
-    CVAR_REGISTER(&ag_vote_map);
-    CVAR_REGISTER(&ag_vote_failed_time);
-
-    CVAR_REGISTER(&ag_start_minplayers);
-
-    CVAR_REGISTER(&ag_vote_mp_timelimit_low);
-    CVAR_REGISTER(&ag_vote_mp_timelimit_high);
-    CVAR_REGISTER(&ag_vote_mp_fraglimit_low);
-    CVAR_REGISTER(&ag_vote_mp_fraglimit_high);
-    CVAR_REGISTER(&ag_vote_extra_timelimit);
-
-    CVAR_REGISTER(&ag_vote_bot);
-    CVAR_REGISTER(&ag_vote_team);
-    CVAR_REGISTER(&ag_vote_spectator);
-
-    CVAR_REGISTER(&ag_floodmsgs);
-    CVAR_REGISTER(&ag_floodpersecond);
-    CVAR_REGISTER(&ag_floodwaitdelay);
-
-    CVAR_REGISTER(&ag_max_spectators);
-    CVAR_REGISTER(&ag_spec_enable_disable);
-    CVAR_REGISTER(&ag_spectalk);
-
-    CVAR_REGISTER(&ag_spawn_volume);
-    CVAR_REGISTER(&ag_show_gibs);
-
-    CVAR_REGISTER(&ag_gametype);
-
+    // ## CTF ##
     CVAR_REGISTER(&ag_ctf_flag_resettime);
     CVAR_REGISTER(&ag_ctf_capturepoints);
     CVAR_REGISTER(&ag_ctf_teamcapturepoints);
@@ -411,6 +558,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_ctf_defendpoints);
     CVAR_REGISTER(&ag_ctf_roundbased);
 
+    // ## DOM ##
     //++ muphicks
     CVAR_REGISTER(&ag_dom_mincontroltime);
     CVAR_REGISTER(&ag_dom_controlpoints);
@@ -418,9 +566,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_dom_scorelimit);
     //-- muphicks
 
-    CVAR_REGISTER(&ag_gauss_fix);
-    CVAR_REGISTER(&ag_rpg_fix);
-
+    // ## Spawn System ##
     CVAR_REGISTER(&ag_spawn_system);
     CVAR_REGISTER(&ag_spawn_history_entries);
     CVAR_REGISTER(&ag_spawn_avoid_last_spots);
@@ -429,6 +575,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_spawn_pa_audible_chance);
     CVAR_REGISTER(&ag_spawn_pa_safe_chance);
 
+    // ## FPS Limiter ##
     CVAR_REGISTER(&ag_fps_limit);
     CVAR_REGISTER(&ag_fps_limit_auto);
     CVAR_REGISTER(&ag_fps_limit_check_interval);
@@ -441,32 +588,29 @@ void AgInitGame()
     CVAR_REGISTER(&ag_fps_limit_punishment_slap_interval);
     CVAR_REGISTER(&ag_fps_limit_punishment_ban_time);
 
+    // ## Satchels ##
     CVAR_REGISTER(&ag_satchel_destroyable);
     CVAR_REGISTER(&ag_satchel_health);
     CVAR_REGISTER(&ag_satchel_solid);
-
-    CVAR_REGISTER(&ag_bot_allow_vote);
-    CVAR_REGISTER(&ag_bot_limit);
-
+    
+    // ## Flood Protection / Mute ##
+    CVAR_REGISTER(&ag_floodmsgs);
+    CVAR_REGISTER(&ag_floodpersecond);
+    CVAR_REGISTER(&ag_floodwaitdelay);
     CVAR_REGISTER(&ag_flood_name_cooldown);
     CVAR_REGISTER(&ag_flood_name_spec_cooldown);
     CVAR_REGISTER(&ag_flood_model_cooldown);
     CVAR_REGISTER(&ag_flood_model_spec_cooldown);
-
     CVAR_REGISTER(&ag_enforcement_cooldown);
-
-    CVAR_REGISTER(&ag_force_match_recording);
-
     CVAR_REGISTER(&ag_match_mute);
 
-    CVAR_REGISTER(&ag_min_respawn_time);
-    CVAR_REGISTER(&ag_forcerespawn_time);
-
-    CVAR_REGISTER(&ag_restrict_vote);
-
+    // ## Others ##
+    CVAR_REGISTER(&ag_auto_admin);
     CVAR_REGISTER(&mm_agsay);
 
     Command.Init();
+
+    CVar::StartRecordingChanges();
 
     //Set up initial settings. Add "startup_" before
     char* servercfgfile = (char*)CVAR_GET_STRING("servercfgfile");
@@ -695,6 +839,23 @@ void AgConsole(const AgString& sText, CBasePlayer* pPlayer)
     else
     {
         g_engfuncs.pfnServerPrint(UTIL_VarArgs("%s\n", sText.c_str()));
+    }
+}
+
+void AgConsoleLarge(AgString sText, CBasePlayer* pPlayer)
+{
+    if (!UTIL_EndsWith(sText, "\n"))
+        sText.append("\n");
+
+    // Split the message into chunks, because only the first 127 bytes of the message are displayed
+    // on the client's console, and this is potentially longer than that
+    for (size_t i = 0; i < sText.size(); i += 127)
+    {
+        AgString chunk = sText.substr(i, 127);
+        if (pPlayer && pPlayer->pev)
+            ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, chunk.c_str());
+        else
+            g_engfuncs.pfnServerPrint(chunk.c_str());
     }
 }
 

@@ -38,6 +38,8 @@ extern int gmsgSpectator;
 
 constexpr float BARELY_AUDIBLE_DIST = 1280.0;
 
+constexpr float GAMEMODE_VARS_REQUEST_COOLDOWN = 5.0f;
+
 //
 // Player PHYSICS FLAGS bits
 //
@@ -438,6 +440,8 @@ public:
 	bool m_bRespawning;
 
 	bool m_bRecording;
+
+	double m_flLastGamemodeVarsRequest;
 
 	void          Init();     //Init all extra variables.
 	const char* GetAuthID(); //Get steam ID

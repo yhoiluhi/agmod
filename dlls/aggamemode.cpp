@@ -7,6 +7,8 @@
 #include	"gamerules.h"
 #include  "aggamemode.h"
 #include  "agglobal.h"
+#include "cvar.h"
+
 #include <algorithm>
 
 
@@ -303,9 +305,18 @@ void AgGameMode::ExecConfig()
     }
     else
     {
+        // Now we're gonna execute the gamemode config and check what cvars it changes,
+        // so that we have the ability to notify clients when these gamemode-dependent
+        // cvars have been changed from their default value for this gamemode
+        // Another approach could be parsing the gamemode config and any exec'd config
+        // within that one, recursively, to see what cvars/values are the default ones
+        // for this gamemode
+
+        CVar::StartRecordingChanges();
         g_pGame = (*itrGames).second;
         SERVER_COMMAND(UTIL_VarArgs("exec gamemodes/%s\n", g_pGame->m_sCfg.c_str()));
         SERVER_EXECUTE();
+        CVar::StopRecordingGamemodeChanges();
 
         //So that map does not restart directly.
         g_sGamemode = CVAR_GET_STRING("sv_ag_gamemode");
