@@ -330,17 +330,15 @@ AgGameRules* InstallGameRules(void)
 	char* servercfgfile = (char*)CVAR_GET_STRING("servercfgfile");
 	if (servercfgfile && servercfgfile[0])
 	{
-		char szCommand[256];
-
 		ALERT(at_console, "Executing dedicated server config file\n");
-		sprintf(szCommand, "exec %s\n", servercfgfile);
-		SERVER_COMMAND(szCommand);
+		SERVER_COMMAND(UTIL_VarArgs("exec %s\n", servercfgfile));
+		SERVER_EXECUTE();
 	}
 
 #ifndef AG_NO_CLIENT_DLL
-	//Detect CTF maps.
 	if (ag_gamemode_auto.value > 0.0f)
 	{
+		//Detect CTF maps.
 		if (AgIsCTFMap(STRING(gpGlobals->mapname)))
 		{
 			AgString sGametype = CVAR_GET_STRING("sv_ag_gametype");

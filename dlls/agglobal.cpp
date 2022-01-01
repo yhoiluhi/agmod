@@ -617,11 +617,8 @@ void AgInitGame()
 
     if (servercfgfile && servercfgfile[0])
     {
-        char szCommand[256];
-
         ALERT(at_console, "Executing dedicated server startup config file\n");
-        sprintf(szCommand, "exec startup_%s\n", servercfgfile);
-        SERVER_COMMAND(szCommand);
+        SERVER_COMMAND(UTIL_VarArgs("exec startup_%s\n", servercfgfile));
         SERVER_EXECUTE();
     }
 

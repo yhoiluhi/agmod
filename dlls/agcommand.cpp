@@ -11,7 +11,6 @@
 #include "cvar.h"
 
 DLL_GLOBAL AgCommand Command; //The one and only
-FILE_GLOBAL CBasePlayer* s_pAdmin = NULL;
 
 
 
