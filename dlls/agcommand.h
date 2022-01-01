@@ -50,6 +50,7 @@ public:
     static void MaxTime();
     static void MoreTime();
     static void AddRespawningStaticBot(CBasePlayer* pPlayer);
+    static void AgGamemodeDefaultCVars();
 };
 
 extern DLL_GLOBAL AgCommand Command;

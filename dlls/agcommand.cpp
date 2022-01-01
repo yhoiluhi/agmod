@@ -207,6 +207,16 @@ void  agmoretime(void)
     agmoretime_client(NULL);
 }
 
+void  agdefault_client(CBasePlayer* pPlayer)
+{
+    Command.AgGamemodeDefaultCVars();
+}
+
+void  agdefault()
+{
+    agdefault_client(nullptr);
+}
+
 
 FILE_GLOBAL COMMANDS s_Commands[] =
 {
@@ -230,6 +240,8 @@ FILE_GLOBAL COMMANDS s_Commands[] =
 
   "agmaxtime",agmaxtime,agmaxtime_client,"agmaxtime - Set the time limit to the max allowed by the server",
   "agmoretime",agmoretime,agmoretime_client,"agmoretime - Extend the time limit, ignoring the max limit",
+
+  "agdefault",agdefault,agdefault_client,"agdefault - Set gamemode-related cvars to default values",
 };
 
 
@@ -681,6 +693,15 @@ void AgCommand::AddRespawningStaticBot(CBasePlayer* pPlayer)
         g_engfuncs.pfnSetClientKeyValue(pBot->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pEntity), "model", "blue");
     else
         g_engfuncs.pfnSetClientKeyValue(pBot->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pEntity), "model", "red");
+}
+
+void AgCommand::AgGamemodeDefaultCVars()
+{
+    CVar::RestoreAllToGamemodeValue();
+
+    AgString msg = "Gamemode-related cvars have been reset";
+    AgSay(NULL, msg);
+    AgConsole(msg);
 }
 
 //-- Martin Webrant

@@ -391,6 +391,17 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                 CallVote(pPlayer);
                 return true;
             }
+            else if (FStrEq(m_sVote.c_str(), "agdefault"))
+            {
+                if (ag_vote_setting.value != 2.0f)
+                {
+                    AgConsole("Defaulting gamemode cvars is not allowed here.", pPlayer);
+                    return true;
+                }
+                CallVote(pPlayer);
+
+                return true;
+            }
             else if (0 == strncmp(m_sVote.c_str(), "mp_timelimit", 12))
             {
                 if (!ag_vote_setting.value)
@@ -622,6 +633,10 @@ void AgVote::Think()
             else if (FStrEq(m_sVote.c_str(), "spawnbot"))
             {
                 Command.AddRespawningStaticBot(AgPlayerByAuthID(m_sCallerID));
+            }
+            else if (FStrEq(m_sVote.c_str(), "agdefault"))
+            {
+                Command.AgGamemodeDefaultCVars();
             }
             else if (0 == strncmp(m_sVote.c_str(), "agforceteam", 11))
             {
