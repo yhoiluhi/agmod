@@ -92,10 +92,10 @@ DLL_GLOBAL cvar_t	ag_rpg_fix = CVar::Create("ag_rpg_fix", "0", FCVAR_SERVER | FC
 DLL_GLOBAL cvar_t	ag_force_match_recording = CVar::Create("sv_ag_force_match_recording", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
 // Default: 0.75 - avg @ 144 fps was 0.83s, but sometimes it went down to 0.7s...
-DLL_GLOBAL cvar_t	ag_min_respawn_time = CVar::Create("sv_ag_min_respawn_time", "0.75", CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_min_respawn_time = CVar::Create("sv_ag_min_respawn_time", "0.75", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
 // Default: 5 - in seconds
-DLL_GLOBAL cvar_t	ag_forcerespawn_time = CVar::Create("sv_ag_forcerespawn_time", "5", CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_forcerespawn_time = CVar::Create("sv_ag_forcerespawn_time", "5", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
 // Default: 5 - How many AG bots at max.
 DLL_GLOBAL cvar_t	ag_bot_limit = CVar::Create("sv_ag_bot_limit", "5", FCVAR_SERVER | FCVAR_UNLOGGED);
