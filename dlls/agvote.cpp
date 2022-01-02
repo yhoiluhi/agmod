@@ -310,7 +310,18 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
 
                         return true;
                     }
+                    else
+                    {
+                        AgConsole("Please, specify a target player for this vote.", pPlayer);
+                        return true;
+                    }
                 }
+                else if (m_sValue2.empty() && 0 == strncmp(m_sVote.c_str(), "agforceteam", 11))
+                {
+                    AgConsole("Please, specify a team for the target player.", pPlayer);
+                    return true;
+                }
+
                 CBasePlayer* pPlayerLoop = AgPlayerByName(m_sValue, pPlayer);
                 if (pPlayerLoop)
                 {
