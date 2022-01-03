@@ -101,6 +101,7 @@ AgGameMode::AgGameMode()
 {
     m_fNextCheck = 0;
     m_fNextFpsLimitCheck = 0;
+    m_fNextCvarCheck = CVARS_CHECK_INTERVAL;
 }
 
 AgGameMode::~AgGameMode()
@@ -256,6 +257,27 @@ void AgGameMode::Think()
             player->LimitFps();
         }
     }
+
+    if (m_fNextCvarCheck <= gpGlobals->time)
+    {
+        const auto changedCVars = CVar::GetChangesOverGamemode();
+
+        auto numAsterisks = 0;
+        if (!changedCVars.empty())
+            numAsterisks = (changedCVars.size() / 5) + 1;
+
+        if (g_pGame->m_iAsterisks > 0)
+        {
+            // Remove previous asterisks
+            g_pGame->m_sName = g_pGame->m_sName.substr(0, g_pGame->m_sName.length() - g_pGame->m_iAsterisks);
+        }
+
+        if (numAsterisks > 0)
+            g_pGame->m_sName.insert(g_pGame->m_sName.end(), numAsterisks, '*');
+
+        m_fNextCvarCheck = gpGlobals->time + CVARS_CHECK_INTERVAL;
+        g_pGame->m_iAsterisks = numAsterisks;
+    }
 }
 
 void AgGameMode::Gamemode(const AgString& sGamemode, CBasePlayer* pPlayer)
@@ -289,6 +311,7 @@ void AgGameMode::ExecConfig()
 {
     m_fNextCheck = 0;
     m_fNextFpsLimitCheck = 0;
+    m_fNextCvarCheck = CVARS_CHECK_INTERVAL;
 
     if (g_sNextmode.size())
     {

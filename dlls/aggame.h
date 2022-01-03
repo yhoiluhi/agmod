@@ -21,6 +21,12 @@ public:
     AgString m_sCfg;
     AgString m_sDescription;
 
+    // This asterisk number is here to keep track of gamemode dirty state
+    // If some gamemode cvar is changed, the name will have at least 1 asterisk,
+    // and then another asterisk every 5 changed cvars, to know approximately
+    // how "dirty" the gamemode is at this moment
+    int m_iAsterisks;
+
     bool IsValid();
 };
 

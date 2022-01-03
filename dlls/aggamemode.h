@@ -20,8 +20,11 @@ class AgGameMode
     AgGame* pCurrent;
     float  m_fNextCheck;
     float  m_fNextFpsLimitCheck;
+    float  m_fNextCvarCheck;
 
     static constexpr float MIN_FPS_LIMIT_CHECK_INTERVAL = 0.001;
+
+    static constexpr float CVARS_CHECK_INTERVAL = 5.0;
 
 public:
     AgGameMode();

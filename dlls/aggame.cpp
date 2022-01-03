@@ -14,7 +14,7 @@
 
 AgGame::AgGame()
 {
-
+    m_iAsterisks = 0;
 }
 
 AgGame::~AgGame()
