@@ -563,4 +563,5 @@ float UTIL_SharedRandomFloat( unsigned int seed, float low, float high );
 
 float UTIL_WeaponTimeBase( void );
 
+bool UTIL_IsPointInEntity(Vector point, CBaseEntity* entity);
 bool UTIL_EndsWith(const std::string& str, const std::string& suffix);

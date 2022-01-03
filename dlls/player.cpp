@@ -598,7 +598,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		flDamage = flNew;
 	}
 
-	if (ag_gauss_fix.value == 2.0f && this == pAttacker && pAttacker->m_pActiveItem->m_iId == WEAPON_GAUSS)
+	if (ag_gauss_fix.value >= 3.0f && this == pAttacker && pAttacker->m_pActiveItem->m_iId == WEAPON_GAUSS)
 	{
 		// Little hack to not die in CBaseMonster::TakeDamage
 		pev->health = pev->max_health + flDamage;

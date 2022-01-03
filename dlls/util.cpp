@@ -2599,6 +2599,18 @@ void UTIL_SendDirectorMessage( edict_t *ent1, edict_t *ent2, int priority_and_fl
 }
 //-- Martin Webrant
 
+bool UTIL_IsPointInEntity(Vector point, CBaseEntity* entity)
+{
+	if ((entity->pev->absmin.x <= point.x && point.x <= entity->pev->absmax.x) &&
+		(entity->pev->absmin.y <= point.y && point.y <= entity->pev->absmax.y) &&
+		(entity->pev->absmin.z <= point.z && point.z <= entity->pev->absmax.z))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 // https://stackoverflow.com/a/20446239
 bool UTIL_EndsWith(const std::string& str, const std::string& suffix)
 {

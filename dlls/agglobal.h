@@ -8,7 +8,6 @@
 
 #include "hltv.h"
 
-
 #define _bool_h 1
 
 #include <string>
@@ -214,6 +213,19 @@ extern cvar_t ag_forcerespawn_time;
 
 extern cvar_t ag_restrict_vote;
 
+extern cvar_t ag_allow_nuke;
+extern cvar_t ag_nuke_grenade;
+extern cvar_t ag_nuke_crossbow;
+extern cvar_t ag_nuke_rpg;
+extern cvar_t ag_nuke_gauss;
+extern cvar_t ag_nuke_egon;
+extern cvar_t ag_nuke_tripmine;
+extern cvar_t ag_nuke_satchel;
+extern cvar_t ag_nuke_snark;
+extern cvar_t ag_nuke_other; // maybe for a new weapon, added via plugin, that does radius damage or sth
+
+extern cvar_t ag_explosion_fix;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 
@@ -270,6 +282,7 @@ bool AgIsLocalServer();
 const char* AgGetGame();
 const char* AgGetDirectory();
 const char* AgGetDirectoryValve();
+bool IsNukeAllowed(entvars_t* pevInflictor);
 
 #endif // !defined(_AG_GLOBAL_H_)
 
