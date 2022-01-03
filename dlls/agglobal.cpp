@@ -438,7 +438,6 @@ DLL_GLOBAL cvar_t	ag_speedrun = CVar::Create("sv_ag_speedrun", "0", FCVAR_SERVER
 
 DLL_GLOBAL bool g_bLangame = false;
 DLL_GLOBAL bool g_bUseTeamColors = false;
-extern AgString g_sGamemode;
 
 std::regex colorRegexp("\\^[0-9]");
 

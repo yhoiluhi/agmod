@@ -234,7 +234,6 @@ extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 
 extern float g_flSpeedrunStartTime;
-extern std::vector<std::string> g_votableSettings;
 
 void AgInitGame();
 CBasePlayer* AgPlayerByIndex(int iPlayerIndex);
