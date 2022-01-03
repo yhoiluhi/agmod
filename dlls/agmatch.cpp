@@ -7,6 +7,7 @@
 #include "agglobal.h"
 #include "player.h"
 #include "gamerules.h"
+#include "cvar.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -19,6 +20,7 @@ AgMatch::AgMatch()
     m_fMatchStart = 0.0;
     m_fNextSay = 0.0;
     m_fNextHLTV = 0.0;
+    m_bCountdownStarted = false;
     CVAR_SET_FLOAT("sv_ag_match_running", 0);
     CVAR_SET_FLOAT("ag_spectalk", 1);
     CVAR_SET_FLOAT("sv_ag_show_gibs", 1);
@@ -41,6 +43,12 @@ void AgMatch::Think()
         }
         else
         {
+            if (!m_bCountdownStarted)
+            {
+                CountdownStart();
+                m_bCountdownStarted = true;
+            }
+
             //Countdown
             if (m_fNextSay < gpGlobals->time)
             {
@@ -140,6 +148,7 @@ void AgMatch::Start(const AgString& sSpawn)
 void AgMatch::MatchStart()
 {
     m_fMatchStart = -1;
+    m_bCountdownStarted = false;
 
     //Reset score cache.
     g_pGameRules->m_ScoreCache.Reset();
@@ -226,6 +235,7 @@ void AgMatch::Abort()
     CVAR_SET_FLOAT("ag_spectalk", 1);
 
     m_fMatchStart = -1;
+    m_bCountdownStarted = false;
 
     //Score log off
     g_pGameRules->m_ScoreLog.End();
@@ -276,3 +286,15 @@ void AgMatch::Allow(CBasePlayer* pPlayer)
 }
 
 //-- Martin Webrant
+
+// Things to do when the countdown starts
+void AgMatch::CountdownStart()
+{
+    const auto changedCvars = CVar::GetChangesOverGamemode();
+    if (!changedCvars.empty())
+    {
+        AgString msg = "This match won't be pure!\nSome cvars don't have default values";
+        AgSay(NULL, msg);
+        AgConsole(msg);
+    }
+}
