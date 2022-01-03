@@ -309,6 +309,7 @@ inline void			UTIL_CenterPrintAll( const char *msg_name, const char *param1 = NU
 {
 	UTIL_ClientPrintAll( HUD_PRINTCENTER, msg_name, param1, param2, param3, param4 );
 }
+extern void			UTIL_ServerMessage(const char* text);
 
 class CBasePlayerItem;
 class CBasePlayer;

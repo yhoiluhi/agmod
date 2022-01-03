@@ -429,12 +429,17 @@ DLL_GLOBAL cvar_t	ag_auto_admin = CVar::Create("sv_ag_auto_admin", "1");
 
 DLL_GLOBAL cvar_t	mm_agsay = CVar::Create("mm_agsay", "1", FCVAR_SERVER);
 
+// Default 0 - Disabled. On 1 it shows the time it took to finish a fraglimit-based game
+DLL_GLOBAL cvar_t	ag_speedrun = CVar::Create("sv_ag_speedrun", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+
 
 DLL_GLOBAL bool g_bLangame = false;
 DLL_GLOBAL bool g_bUseTeamColors = false;
 extern AgString g_sGamemode;
 
 std::regex colorRegexp("\\^[0-9]");
+
+DLL_GLOBAL float g_flSpeedrunStartTime = 0.0f;
 
 void LoadGreetingMessages();
 
@@ -644,6 +649,7 @@ void AgInitGame()
     // ## Others ##
     CVAR_REGISTER(&ag_auto_admin);
     CVAR_REGISTER(&mm_agsay);
+    CVAR_REGISTER(&ag_speedrun);
 
     Command.Init();
 

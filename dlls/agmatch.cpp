@@ -225,6 +225,8 @@ void AgMatch::MatchStart()
 
     //Spectator scoreboards
     g_pGameRules->HLTV_ResendScoreBoard();
+
+    g_flSpeedrunStartTime = gpGlobals->time;
 }
 
 void AgMatch::Abort()

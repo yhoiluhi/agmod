@@ -365,6 +365,8 @@ AgGameRules* InstallGameRules(void)
 	SERVER_COMMAND(UTIL_VarArgs("exec %s.cfg\n", STRING(gpGlobals->mapname)));
 	SERVER_EXECUTE();
 
+	g_flSpeedrunStartTime = gpGlobals->time;
+
 	if ( singleplayer.value > 0.0f )
 	{
 		// generic half-life

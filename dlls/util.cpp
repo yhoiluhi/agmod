@@ -866,6 +866,14 @@ void UTIL_ClientPrintAll( int msg_dest, const char *msg_name, const char *param1
 	UTIL_ClientPrintAll(msg_dest, msg_name, param1, param2, param3, param4, -1);
 }
 
+void UTIL_ServerMessage(const char* text)
+{
+	MESSAGE_BEGIN(MSG_ALL, gmsgTextMsg);
+		WRITE_BYTE(HUD_PRINTTALK);
+		WRITE_STRING(text);
+	MESSAGE_END();
+}
+
 void ClientPrint( entvars_t *client, int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4, int type )
 {
 	MESSAGE_BEGIN( MSG_ONE, gmsgTextMsg, NULL, client );
