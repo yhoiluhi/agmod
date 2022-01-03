@@ -372,9 +372,17 @@ void CHalfLifeTeamplay::ChangePlayerTeam( CBasePlayer *pPlayer, const char *pTea
 	{
 		// kill the player,  remove a death,  and let them start on the new team
 		m_DisableDeathMessages = TRUE;
-		if (!ag_match_running.value)
+		m_DisableDeathPenalty = TRUE;
+
+		if (ag_match_running.value != 0.0f && ag_match_teamchange_suicide_penalty.value >= 1.0f)
 		{
-			m_DisableDeathPenalty = TRUE;
+			m_DisableDeathPenalty = FALSE;
+
+			// -1 because a PlayerKilled() will already be triggered due to m_DisableDeathPenalty being false
+			const auto extraSuicides = static_cast<int>(ag_match_teamchange_suicide_penalty.value) - 1;
+
+			pPlayer->m_iDeaths += extraSuicides;
+			pPlayer->pev->frags -= extraSuicides;
 		}
 
 		entvars_t *pevWorld = VARS( INDEXENT(0) );

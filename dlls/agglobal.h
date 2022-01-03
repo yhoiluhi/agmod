@@ -226,6 +226,8 @@ extern cvar_t ag_nuke_other; // maybe for a new weapon, added via plugin, that d
 
 extern cvar_t ag_explosion_fix;
 
+extern cvar_t ag_match_teamchange_suicide_penalty;
+
 extern cvar_t ag_speedrun;
 
 extern bool g_bLangame;

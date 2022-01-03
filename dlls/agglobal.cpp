@@ -100,6 +100,9 @@ DLL_GLOBAL cvar_t	ag_forcerespawn_time = CVar::Create("sv_ag_forcerespawn_time",
 // Default: 5 - How many AG bots at max.
 DLL_GLOBAL cvar_t	ag_bot_limit = CVar::Create("sv_ag_bot_limit", "5", FCVAR_SERVER | FCVAR_UNLOGGED);
 
+// Default: 1 - How many suicides will trigger for the player changing team during a match. 0 -> no penalty, 1 -> -1 frag & +1 death, 5 -> -5 frags & +5 deaths
+DLL_GLOBAL cvar_t	ag_match_teamchange_suicide_penalty = CVar::Create("sv_ag_match_teamchange_suicide_penalty", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
 
 // ## Voting ##
 
@@ -475,6 +478,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_min_respawn_time);
     CVAR_REGISTER(&ag_forcerespawn_time);
     CVAR_REGISTER(&ag_bot_limit);
+    CVAR_REGISTER(&ag_match_teamchange_suicide_penalty);
 
     // ## Voting ##
     CVAR_REGISTER(&ag_allow_vote);
