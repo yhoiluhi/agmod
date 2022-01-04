@@ -3008,7 +3008,6 @@ pt_end:
 }
 
 
-std::vector<CBaseEntity*> g_spawnHistory;
 
 inline int FNullEnt( CBaseEntity *ent ) { return (ent == NULL) || FNullEnt( ent->edict() ); }
 

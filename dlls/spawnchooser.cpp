@@ -58,7 +58,7 @@ CBaseEntity* CSpawnChooser::GetClassicSpawnPoint()
 	CBaseEntity* pSpot = m_lastSpawn;
 
 	// Randomize the start spot
-	for (int i = RANDOM_LONG(1, 5); i > 0; i--)
+	for (int i = GetRandomNumber(1, 5); i > 0; i--)
 		pSpot = UTIL_FindEntityByClassname(pSpot, "info_player_deathmatch");
 
 	if (FNullEnt(pSpot))  // skip over the null point
@@ -111,7 +111,7 @@ CBaseEntity* CSpawnChooser::GetFarSpawnPoint()
 	}
 	std::vector<CBasePlayer*> enemies = m_spawningPlayer->GetPlayingEnemies();
 	
-	if (enemies.empty())
+	if (enemies.empty() || IsCleanStartNeeded())
 	{
 		ALERT(at_aiconsole, "No enemy found. Selecting some random spawn without distance checks...\n");
 		return GetRandomSpawnPoint();
@@ -166,7 +166,7 @@ CBaseEntity* CSpawnChooser::GetFarSpawnPoint()
 
 	// The distances are now sorted, first one is the longest and last one the shortest,
 	// so now we just take a random one out of the first N spawns
-	const auto selectedDistance = distancesToSort[RANDOM_LONG(0, numberOfFarSpawns - 1)];
+	const auto selectedDistance = distancesToSort[GetRandomNumber(0, numberOfFarSpawns - 1)];
 	ALERT(at_aiconsole, "Selected distance: %.2f\n", selectedDistance);
 	
 	CBaseEntity* pSpot = nullptr;
@@ -195,7 +195,7 @@ CBaseEntity* CSpawnChooser::GetRandomSpawnPoint()
 		// If this gets to find a spot then there's some bug, the vector containing spawns shouldn't be empty
 		return GetClassicSpawnPoint();
 	}
-	return g_spawnPoints[RANDOM_LONG(0, g_spawnPoints.size() - 1)];
+	return g_spawnPoints[GetRandomNumber(0, g_spawnPoints.size() - 1)];
 }
 
 // Get a random spawn point with increased chances that it will be a spawn far from some opponent,
@@ -264,10 +264,10 @@ CBaseEntity* CSpawnChooser::GetPositionAwareSpawnPoint()
 
 	int spotIdx;
 	if (!spotsToSelect.empty())
-		spotIdx = spotsToSelect[RANDOM_LONG(0, spotsToSelect.size() - 1)];
+		spotIdx = spotsToSelect[GetRandomNumber(0, spotsToSelect.size() - 1)];
 	else
 	{
-		ALERT(at_error, "No spot found, gotta select a random spot then (this shouldn't have happened, review code)\n");
+		ALERT(at_aiconsole, "No spot found, gotta select a random spot\n");
 		return GetRandomSpawnPoint();
 	}
 	pSpot = g_spawnPoints[spotIdx];
@@ -325,7 +325,7 @@ void CSpawnChooser::SetupSpotAwareness()
 	else
 		ALERT(at_aiconsole, "Engine player: %s\n", enginePlayer->GetName());
 
-	if (enemies.empty())
+	if (enemies.empty() || IsCleanStartNeeded())
 	{
 		ALERT(at_aiconsole, "No enemy found. Skipping spawn point awareness setup\n");
 		return;
@@ -500,4 +500,44 @@ void CSpawnChooser::ClassifySpots()
 		}
 		ALERT(at_aiconsole, "\n");
 	}
+}
+
+// Both min and max are inclusive
+int CSpawnChooser::GetRandomNumber(int min, int max)
+{
+	if (g_spawnRNG.GetSeed() != 0)
+	{
+		auto newMin = min;
+		auto newMax = max;
+		if (min > max)
+		{
+			newMin = max;
+			newMax = min;
+		}
+		newMax = newMax - newMin + 1;
+
+		// Based on OpenBSD's arc4random_uniform
+		const auto t = (-newMax) % newMax;
+		for (;;)
+		{
+			const auto r = g_spawnRNG.GetRandomInt();
+			if (r >= t)
+				return r % newMax + newMin;
+		}
+	}
+	else
+		return RANDOM_LONG(min, max);
+}
+
+bool CSpawnChooser::IsGameStart()
+{
+	// This will be empty if we're starting a map or a match (agstart)
+	return g_spawnHistory.empty();
+}
+
+bool CSpawnChooser::IsCleanStartNeeded()
+{
+	// If the game is seeded, we want to have a predictable start,
+	// not depending on where the players are BEFORE starting the match
+	return IsGameStart() && g_spawnRNG.GetSeed() != 0;
 }

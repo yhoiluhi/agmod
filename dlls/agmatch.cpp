@@ -166,6 +166,8 @@ void AgMatch::MatchStart()
         g_pGameRules->m_DOM.ResetControlPoints();
     //-- muphicks
 
+    ReseedSpawnSystem();
+
     //Loop through all active players, reset Score and respawn.
     for (int i = 1; i <= gpGlobals->maxClients; i++)
     {

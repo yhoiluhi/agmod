@@ -33,8 +33,6 @@ extern int gmsgGameMode;
 extern int gmsgAuthID;
 extern int gmsgMapList;
 
-std::vector<CBaseEntity*> g_spawnPoints;
-
 AgGameRules::AgGameRules()
 {
     g_bPaused = false;

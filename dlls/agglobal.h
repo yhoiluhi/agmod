@@ -7,6 +7,7 @@
 #pragma warning(disable:4530) 
 
 #include "hltv.h"
+#include "agrandom.h"
 
 #define _bool_h 1
 
@@ -177,6 +178,7 @@ extern cvar_t ag_spawn_far_spots;
 extern cvar_t ag_spawn_pa_visible_chance;
 extern cvar_t ag_spawn_pa_audible_chance;
 extern cvar_t ag_spawn_pa_safe_chance;
+extern cvar_t ag_spawn_seed;
 
 extern cvar_t ag_fps_limit;
 extern cvar_t ag_fps_limit_auto;
@@ -233,7 +235,12 @@ extern cvar_t ag_speedrun;
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 
+extern std::vector<CBaseEntity*> g_spawnPoints;
+extern std::vector<CBaseEntity*> g_spawnHistory;
+
 extern float g_flSpeedrunStartTime;
+
+extern AgRandom g_spawnRNG;
 
 void AgInitGame();
 CBasePlayer* AgPlayerByIndex(int iPlayerIndex);
@@ -287,6 +294,8 @@ const char* AgGetGame();
 const char* AgGetDirectory();
 const char* AgGetDirectoryValve();
 bool IsNukeAllowed(entvars_t* pevInflictor);
+
+void ReseedSpawnSystem();
 
 #endif // !defined(_AG_GLOBAL_H_)
 

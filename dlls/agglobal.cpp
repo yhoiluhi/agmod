@@ -320,6 +320,11 @@ DLL_GLOBAL cvar_t	ag_spawn_pa_visible_chance = CVar::Create("ag_spawn_pa_visible
 DLL_GLOBAL cvar_t	ag_spawn_pa_audible_chance = CVar::Create("ag_spawn_pa_audible_chance", "25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 DLL_GLOBAL cvar_t	ag_spawn_pa_safe_chance    = CVar::Create("ag_spawn_pa_safe_chance",    "65", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
+// Default: 0 - No changes to seeding. It will use the random functions provided by the engine, whose seeding depends on the epoch time
+// and it has its own algorithm to provide a random number from that seed
+// If set to any other value, that value will be used as the seed for the spawn selection
+DLL_GLOBAL cvar_t	ag_spawn_seed = CVar::Create("ag_spawn_seed", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
 
 // ## FPS Limiter ##
 
@@ -441,7 +446,12 @@ DLL_GLOBAL bool g_bUseTeamColors = false;
 
 std::regex colorRegexp("\\^[0-9]");
 
+std::vector<CBaseEntity*> g_spawnPoints;
+std::vector<CBaseEntity*> g_spawnHistory;
+
 DLL_GLOBAL float g_flSpeedrunStartTime = 0.0f;
+
+DLL_GLOBAL AgRandom g_spawnRNG;
 
 void LoadGreetingMessages();
 
@@ -606,6 +616,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_spawn_pa_visible_chance);
     CVAR_REGISTER(&ag_spawn_pa_audible_chance);
     CVAR_REGISTER(&ag_spawn_pa_safe_chance);
+    CVAR_REGISTER(&ag_spawn_seed);
 
     // ## FPS Limiter ##
     CVAR_REGISTER(&ag_fps_limit);
@@ -1538,3 +1549,15 @@ bool IsNukeAllowed(entvars_t* pevInflictor)
     return ag_nuke_other.value != 0.0f;
 }
 
+void ReseedSpawnSystem()
+{
+    auto seed = static_cast<int>(ag_spawn_seed.value);
+    if (seed != 0)
+    {
+        // Seed for spawn selection
+        g_spawnRNG.SeedRNG(std::abs(seed));
+        g_spawnHistory.clear();
+
+        AgConsole(UTIL_VarArgs("Using seed %d for the spawns", g_spawnRNG.GetSeed()));
+    }
+}

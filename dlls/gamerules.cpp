@@ -367,6 +367,8 @@ AgGameRules* InstallGameRules(void)
 
 	g_flSpeedrunStartTime = gpGlobals->time;
 
+	ReseedSpawnSystem();
+
 	if ( singleplayer.value > 0.0f )
 	{
 		// generic half-life

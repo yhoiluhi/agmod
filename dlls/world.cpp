@@ -475,9 +475,6 @@ void CWorld :: Spawn( void )
 	g_flWeaponCheat = CVAR_GET_FLOAT( "sv_cheats" );  // Is the impulse 101 command allowed?
 }
 
-extern std::vector<CBaseEntity*> g_spawnPoints;
-extern std::vector<CBaseEntity*> g_spawnHistory;
-
 void CWorld :: Precache( void )
 {
 	g_spawnPoints.clear();

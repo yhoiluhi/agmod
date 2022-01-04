@@ -1170,7 +1170,6 @@ EntSelectCTFSpawnPoint
 Returns the CTF entity to spawn at
 ============
 */
-extern std::vector<CBaseEntity*> g_spawnHistory;
 inline int FNullEnt(CBaseEntity* ent) { return (ent == NULL) || FNullEnt(ent->edict()); }
 
 // TODO: refactor to use CSpawnChooser

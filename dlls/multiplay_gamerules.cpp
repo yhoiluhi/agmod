@@ -49,7 +49,6 @@ extern int gmsgMOTD;
 extern int gmsgServerName;
 
 extern int g_teamplay;
-extern std::vector<CBaseEntity*> g_spawnPoints;
 
 float g_flIntermissionStartTime = 0;
 

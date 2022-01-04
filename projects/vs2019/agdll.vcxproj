@@ -255,6 +255,7 @@
     <ClCompile Include="..\..\dlls\agwallhack.cpp" />
     <ClCompile Include="..\..\dlls\agflood.cpp" />
     <ClCompile Include="..\..\dlls\cvar.cpp" />
+    <ClCompile Include="..\..\dlls\agrandom.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\const.h" />
@@ -335,6 +336,7 @@
     <ClInclude Include="..\..\dlls\agflood.h" />
     <ClInclude Include="..\..\dlls\cvar.h" />
     <ClInclude Include="..\..\dlls\cvardef.h" />
+    <ClInclude Include="..\..\dlls\agrandom.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
