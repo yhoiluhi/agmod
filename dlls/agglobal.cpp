@@ -300,25 +300,25 @@ DLL_GLOBAL cvar_t	ag_dom_scorelimit = CVar::Create("sv_ag_dom_scorelimit", "200"
 // ## Spawn System ##
 
 // Default 0 - classic mode (select a random spawn from the next 5)
-DLL_GLOBAL cvar_t	ag_spawn_system = CVar::Create("ag_spawn_system", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+DLL_GLOBAL cvar_t	ag_spawn_system = CVar::Create("ag_spawn_system", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
 // Default 25 - remember all of these spawnpoints that were last used
-DLL_GLOBAL cvar_t	ag_spawn_history_entries = CVar::Create("ag_spawn_history_entries", "25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+DLL_GLOBAL cvar_t	ag_spawn_history_entries = CVar::Create("ag_spawn_history_entries", "25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
 // This is to avoid repeating the last used spawnpoints, 0.25 means avoid the 25% of total spawns that were last used,
-// so in crossfire there rare 17 spawns, the 25% of that is 4.25, it's rounded to 4, so it will avoid the last 4 spots where you spawned in crossfire
+// so in crossfire there are 17 spawns, the 25% of that is 4.25, it's rounded to 4, so it will avoid the last 4 spots where you spawned in crossfire
 // It can be capped by `ag_spawn_history_entries`, so if its value is 3 (less than 4), it would avoid the last 3 instead
-DLL_GLOBAL cvar_t	ag_spawn_avoid_last_spots = CVar::Create("ag_spawn_avoid_last_spots", "0.25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+DLL_GLOBAL cvar_t	ag_spawn_avoid_last_spots = CVar::Create("ag_spawn_avoid_last_spots", "0.25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
 // A fraction of the total spawnpoints, that will be used for the Far spawn system to choose a spawnpoint randomly
-DLL_GLOBAL cvar_t	ag_spawn_far_spots = CVar::Create("ag_spawn_far_spots", "0.25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+DLL_GLOBAL cvar_t	ag_spawn_far_spots = CVar::Create("ag_spawn_far_spots", "0.25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
 
 // Probabilities for the Position-aware Spawn System to pick these spot categories for the next spawn
 // 10 - means 10%, 25 = 25%, 65 = 65%
-DLL_GLOBAL cvar_t	ag_spawn_pa_visible_chance = CVar::Create("ag_spawn_pa_visible_chance", "10", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
-DLL_GLOBAL cvar_t	ag_spawn_pa_audible_chance = CVar::Create("ag_spawn_pa_audible_chance", "25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
-DLL_GLOBAL cvar_t	ag_spawn_pa_safe_chance    = CVar::Create("ag_spawn_pa_safe_chance",    "65", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+DLL_GLOBAL cvar_t	ag_spawn_pa_visible_chance = CVar::Create("ag_spawn_pa_visible_chance", "10", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_spawn_pa_audible_chance = CVar::Create("ag_spawn_pa_audible_chance", "25", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+DLL_GLOBAL cvar_t	ag_spawn_pa_safe_chance    = CVar::Create("ag_spawn_pa_safe_chance",    "65", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
 // Default: 0 - No changes to seeding. It will use the random functions provided by the engine, whose seeding depends on the epoch time
 // and it has its own algorithm to provide a random number from that seed
