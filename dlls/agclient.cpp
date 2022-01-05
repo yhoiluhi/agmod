@@ -107,6 +107,7 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
             // player is dropping an item.
             pPlayer->DropPlayerItem((char*)CMD_ARGV(1));
         }
+        return true;
     }
     else if (FStrEq(CMD_ARGV(0), "spectate"))
     {
