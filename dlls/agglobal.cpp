@@ -1572,7 +1572,10 @@ float GetCountdownTimeOrDefault(float defaultValue)
     if (ag_countdown.value == 0.0f)
         countdown = defaultValue;
     else if (ag_countdown.value < MIN_COUNTDOWN_TIME)
+    {
         countdown = MIN_COUNTDOWN_TIME;
+        CVAR_SET_FLOAT("sv_ag_countdown", MIN_COUNTDOWN_TIME);
+    }
     else
         countdown = ag_countdown.value;
 
