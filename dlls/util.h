@@ -141,9 +141,15 @@ inline int ENTINDEX(const edict_t *pEdict)
 }
 #endif
 inline edict_t* INDEXENT( int iEdictNum )		{ return (*g_engfuncs.pfnPEntityOfEntIndex)(iEdictNum); }
+//++ BulliT
+#ifndef AGMSGSTAT
+//-- Martin Webrant
 inline void MESSAGE_BEGIN( int msg_dest, int msg_type, const float *pOrigin, entvars_t *ent ) {
 	(*g_engfuncs.pfnMessageBegin)(msg_dest, msg_type, pOrigin, ENT(ent));
 }
+//++ BulliT
+#endif
+//-- Martin Webrant
 
 // Testing the three types of "entity" for nullity
 #define eoNullEntity 0

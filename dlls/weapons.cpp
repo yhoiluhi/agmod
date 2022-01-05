@@ -417,10 +417,12 @@ void W_Precache(void)
 	
 	PRECACHE_SOUND ("items/weapondrop1.wav");// weapon falls to the ground
 
+//++ BulliT
 #ifndef AG_NO_CLIENT_DLL
 	UTIL_PrecacheOther("item_flag_team1");
 	UTIL_PrecacheOther("item_flag_team2");
 #endif
+//-- Martin Webrant
 
 }
 

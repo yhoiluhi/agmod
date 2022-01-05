@@ -1028,6 +1028,9 @@ void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 	float		flAdjustedDamage, flFalloffReducedDamage, falloff;
 	Vector		vecSpot;
 
+//++ BulliT
+	flRadius *= ag_blastradius.value;
+//-- Martin Webrant
 	if ( flRadius )
 		falloff = flDamage / flRadius;
 	else

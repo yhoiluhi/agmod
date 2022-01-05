@@ -916,7 +916,17 @@ void CBaseTrigger :: HurtTouch ( CBaseEntity *pOther )
 	float fldmg;
 
 	if ( !pOther->pev->takedamage )
+//++ BulliT
+//		return;
+	{
+		if (0 == strncmp(STRING(pOther->pev->classname),"item_flag_team",14))
+		{
+			AgCTFFlag* pFlag = (AgCTFFlag*)pOther;
+			pFlag->ResetFlag();
+		}
 		return;
+	}
+//-- Martin Webrant
 
 	if ( (pev->spawnflags & SF_TRIGGER_HURT_CLIENTONLYTOUCH) && !pOther->IsPlayer() )
 	{
@@ -1916,6 +1926,10 @@ void CBaseTrigger :: TeleportTouch( CBaseEntity *pOther )
 	if ( pOther->IsPlayer() )
 	{
 		pevToucher->v_angle = pentTarget->v.angles;
+
+		//++ BulliT
+		((CBasePlayer*)pOther)->Spectate_UpdatePosition();
+		//-- Martin Webrant
 	}
 
 	pevToucher->fixangle = TRUE;

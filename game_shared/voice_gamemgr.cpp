@@ -216,7 +216,10 @@ void CVoiceGameMgr::UpdateMasks()
 {
 	m_UpdateInterval = 0;
 
-	bool bAllTalk = !!(sv_alltalk.value);
+//++ BulliT
+	//bool bAllTalk = !!(sv_alltalk.value);
+	bool bAllTalk = false;
+//-- Martin Webrant
 
 	for(int iClient=0; iClient < m_nMaxPlayers; iClient++)
 	{

@@ -121,6 +121,9 @@ public:
 	int		m_iJuice;
 	int		m_iOn;			// 0 = off, 1 = startup, 2 = going
 	float   m_flSoundTime;
+//++ BulliT
+	virtual void Reset();
+//-- Martin Webrant
 };
 
 TYPEDESCRIPTION CWallHealth::m_SaveData[] =
@@ -196,7 +199,10 @@ void CWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 	}
 
 	// if the player doesn't have the suit, or there is no juice left, make the deny noise
-	if ((m_iJuice <= 0) || (!(pActivator->pev->weapons & (1<<WEAPON_SUIT))))
+//++ BulliT
+	//if ((m_iJuice <= 0) || (!(pActivator->pev->weapons & (1<<WEAPON_SUIT))))
+	if ((m_iJuice <= 0) || (!(pActivator->pev->weapons & (1<<WEAPON_SUIT))) || 0 < ag_ban_recharg.value)
+//-- Martin Webrant
 	{
 		if (m_flSoundTime <= gpGlobals->time)
 		{
@@ -261,4 +267,12 @@ void CWallHealth::Off(void)
 	}
 	else
 		SetThink( &CWallHealth::SUB_DoNothing );
+}//++ BulliT
+void CWallHealth::Reset()
+{
+	m_iJuice = gSkillData.healthchargerCapacity;
+	pev->frame = 0;
+	pev->nextthink = pev->ltime;
+	Off();
 }
+//-- Martin Webrant

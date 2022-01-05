@@ -504,7 +504,10 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 			ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 		}
 
+//++ BulliT
 		if ( pEntity->ReflectGauss() && INSTAGIB != AgGametype() )
+		//if ( pEntity->ReflectGauss() )
+//-- Martin Webrant
 		{
 			float n;
 

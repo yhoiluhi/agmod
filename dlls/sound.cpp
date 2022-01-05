@@ -1552,6 +1552,9 @@ void TEXTURETYPE_Init()
 	gcTextures = 0;
 	memset(buffer, 0, 512);
 
+//++ BulliT
+	filePos = 0;
+//-- Martin Webrant
 	pMemFile = g_engfuncs.pfnLoadFileForMe( "sound/materials.txt", &fileSize );
 	if ( !pMemFile )
 		return;

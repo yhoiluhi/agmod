@@ -23,6 +23,11 @@
 #include "player.h"
 #include "hornet.h"
 #include "gamerules.h"
+//++ BulliT
+#ifdef AGSTATS
+#include "agstats.h"
+#endif
+//-- Martin Webrant
 
 
 enum hgun_e {
@@ -50,6 +55,16 @@ BOOL CHgun::IsUseable( void )
 
 void CHgun::Spawn( )
 {
+//++ BulliT
+#ifndef CLIENT_DLL
+	if (SGBOW == AgGametype())
+	{
+		//Spawn shotgun instead.
+		CBaseEntity *pNewWeapon = CBaseEntity::Create( "weapon_shotgun", g_pGameRules->VecWeaponRespawnSpot( this ), pev->angles, pev->owner );
+		return;
+	}
+#endif
+//-- Martin Webrant
 	Precache( );
 	m_iId = WEAPON_HORNETGUN;
 	SET_MODEL(ENT(pev), "models/w_hgun.mdl");
@@ -148,7 +163,11 @@ void CHgun::PrimaryAttack()
 #endif
 	
 	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-	
+//++ BulliT
+#ifdef AGSTATS
+	Stats.FireShot(m_pPlayer,STRING(pev->classname));
+#endif
+//-- Martin Webrant
 
 	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
@@ -249,6 +268,11 @@ void CHgun::SecondaryAttack( void )
 
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usHornetFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, FIREMODE_FAST, 0, 0, 0 );
 
+//++ BulliT
+#ifdef AGSTATS
+	Stats.FireShot(m_pPlayer,STRING(pev->classname));
+#endif
+//-- Martin Webrant
 
 	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
