@@ -155,7 +155,7 @@ void AgLMS::Think()
                 if (setTeams.size() > 1)
                 {
                     m_Status = Countdown;
-                    m_fMatchStart = gpGlobals->time + 8.0;
+                    m_fMatchStart = gpGlobals->time + GetCountdownTimeOrDefault(8.0f);
                     m_fNextCountdown = gpGlobals->time + 3.0;
                 }
             }
@@ -173,7 +173,7 @@ void AgLMS::Think()
                 if (iPlayers > 1)
                 {
                     m_Status = Countdown;
-                    m_fMatchStart = gpGlobals->time + 8.0;
+                    m_fMatchStart = gpGlobals->time + GetCountdownTimeOrDefault(8.0f);
                     m_fNextCountdown = gpGlobals->time + 3.0;
                 }
             }

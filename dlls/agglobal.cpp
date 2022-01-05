@@ -440,6 +440,9 @@ DLL_GLOBAL cvar_t	mm_agsay = CVar::Create("mm_agsay", "1", FCVAR_SERVER);
 // Default 0 - Disabled. On 1 it shows the time it took to finish a fraglimit-based game
 DLL_GLOBAL cvar_t	ag_speedrun = CVar::Create("sv_ag_speedrun", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
+// Default 0 - Default to gametype default. If 1 or higher then that will be the countdown before a match/game starts
+DLL_GLOBAL cvar_t	ag_countdown = CVar::Create("sv_ag_countdown", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
 
 DLL_GLOBAL bool g_bLangame = false;
 DLL_GLOBAL bool g_bUseTeamColors = false;
@@ -664,6 +667,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_auto_admin);
     CVAR_REGISTER(&mm_agsay);
     CVAR_REGISTER(&ag_speedrun);
+    CVAR_REGISTER(&ag_countdown);
 
     Command.Init();
 
@@ -1560,4 +1564,17 @@ void ReseedSpawnSystem()
 
         AgConsole(UTIL_VarArgs("Using seed %d for the spawns", g_spawnRNG.GetSeed()));
     }
+}
+
+float GetCountdownTimeOrDefault(float defaultValue)
+{
+    float countdown;
+    if (ag_countdown.value == 0.0f)
+        countdown = defaultValue;
+    else if (ag_countdown.value < MIN_COUNTDOWN_TIME)
+        countdown = MIN_COUNTDOWN_TIME;
+    else
+        countdown = ag_countdown.value;
+
+    return countdown;
 }

@@ -90,7 +90,7 @@ void AgArena::Think()
             if (GetPlayer1() && GetPlayer2())
             {
                 m_Status = Countdown;
-                m_fMatchStart = gpGlobals->time + 5.0;
+                m_fMatchStart = gpGlobals->time + GetCountdownTimeOrDefault(5.0f);
                 m_fNextCountdown = gpGlobals->time + 2.0;
             }
 

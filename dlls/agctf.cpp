@@ -246,7 +246,7 @@ void AgCTF::RoundBasedThink()
     {
         g_bPaused = true;
         m_Status = Countdown;
-        m_fMatchStart = gpGlobals->time + 8.0;
+        m_fMatchStart = gpGlobals->time + GetCountdownTimeOrDefault(8.0f);
         m_fNextCountdown = gpGlobals->time + 3.0;
 
         //Write waiting message

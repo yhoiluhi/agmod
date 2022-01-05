@@ -128,7 +128,7 @@ void AgMatch::Start(const AgString& sSpawn)
     CVAR_SET_FLOAT("sv_ag_show_gibs", 0);
 
     //Set match start time.
-    m_fMatchStart = gpGlobals->time + 10.0;
+    m_fMatchStart = gpGlobals->time + GetCountdownTimeOrDefault(10.0f);
 
     m_sSpawnFlag = sSpawn;
 

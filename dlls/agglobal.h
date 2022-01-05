@@ -232,6 +232,8 @@ extern cvar_t ag_match_teamchange_suicide_penalty;
 
 extern cvar_t ag_speedrun;
 
+extern cvar_t ag_countdown;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 
@@ -241,6 +243,8 @@ extern std::vector<CBaseEntity*> g_spawnHistory;
 extern float g_flSpeedrunStartTime;
 
 extern AgRandom g_spawnRNG;
+
+constexpr float MIN_COUNTDOWN_TIME = 3.0f;
 
 void AgInitGame();
 CBasePlayer* AgPlayerByIndex(int iPlayerIndex);
@@ -296,6 +300,8 @@ const char* AgGetDirectoryValve();
 bool IsNukeAllowed(entvars_t* pevInflictor);
 
 void ReseedSpawnSystem();
+
+float GetCountdownTimeOrDefault(float defaultValue);
 
 #endif // !defined(_AG_GLOBAL_H_)
 
