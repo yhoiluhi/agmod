@@ -504,6 +504,12 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                     return true;
                 }
 
+                if (m_sValue.empty())
+                {
+                    AgConsole(UTIL_VarArgs("%s is \"%s\"", m_sVote.c_str(), CVAR_GET_STRING(m_sVote.c_str())), pPlayer);
+                    return true;
+                }
+
                 CallVote(pPlayer);
                 return true;
             }
