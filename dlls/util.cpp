@@ -872,6 +872,8 @@ void UTIL_ServerMessage(const char* text)
 		WRITE_BYTE(HUD_PRINTTALK);
 		WRITE_STRING(text);
 	MESSAGE_END();
+
+	ALERT(at_logged, const_cast<char*>(text));
 }
 
 void ClientPrint( entvars_t *client, int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4, int type )
