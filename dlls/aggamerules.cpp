@@ -965,12 +965,24 @@ void AgGameRules::GoToIntermission()
         const auto minutes = (truncatedTime / 60) - (hours * 60);
 	    const auto seconds = runTime - (60 * minutes) - (hours * 3600);
     
+        AgString durationMsg;
+        AgString seedMsg;
+
         if (hours > 0)
-            UTIL_ServerMessage(UTIL_VarArgs("Game duration: %d:%02d:%06.3f\n", hours, minutes, seconds));
+            durationMsg = UTIL_VarArgs("Game duration: %d:%02d:%06.3f\n", hours, minutes, seconds);
         else if (minutes > 0)
-            UTIL_ServerMessage(UTIL_VarArgs("Game duration: %d:%06.3f\n", minutes, seconds));
+            durationMsg = UTIL_VarArgs("Game duration: %d:%06.3f\n", minutes, seconds);
         else
-            UTIL_ServerMessage(UTIL_VarArgs("Game duration: %.3f\n", seconds));
+            durationMsg = UTIL_VarArgs("Game duration: %.3f\n", seconds);
+
+        const auto seed = g_spawnRNG.GetSeed();
+        if (seed == 0)
+            seedMsg = UTIL_VarArgs("Spawn seed: No seed\n");
+        else
+            seedMsg = UTIL_VarArgs("Spawn seed: %d\n", seed);
+
+        UTIL_ServerMessage(durationMsg.c_str());
+        UTIL_ServerMessage(seedMsg.c_str());
 
         g_flSpeedrunStartTime = 0.0f;
     }
