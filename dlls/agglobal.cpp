@@ -83,10 +83,10 @@ DLL_GLOBAL cvar_t	ag_spawn_volume = CVar::Create("sv_ag_spawn_volume", "1", FCVA
 DLL_GLOBAL cvar_t	ag_show_gibs = CVar::Create("sv_ag_show_gibs", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
 // Default 0 - no fix. 1 = ignore direct selfgauss; 2 = ignore every selfgauss
-DLL_GLOBAL cvar_t	ag_gauss_fix = CVar::Create("ag_gauss_fix", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_BASIC_PRIVILEGES);
+DLL_GLOBAL cvar_t	ag_gauss_fix = CVar::Create("ag_gauss_fix", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE | CCVAR_BASIC_PRIVILEGES);
 
 // Default 0 - no fix. 1 = improve rocket's start position when moving backwards and shooting RPG
-DLL_GLOBAL cvar_t	ag_rpg_fix = CVar::Create("ag_rpg_fix", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_BASIC_PRIVILEGES);
+DLL_GLOBAL cvar_t	ag_rpg_fix = CVar::Create("ag_rpg_fix", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE | CCVAR_BASIC_PRIVILEGES);
 
 // Default: 0 - Don't force clients to record matches
 DLL_GLOBAL cvar_t	ag_force_match_recording = CVar::Create("sv_ag_force_match_recording", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
