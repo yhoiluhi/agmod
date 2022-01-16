@@ -1,5 +1,5 @@
+#include <map>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 // CVar is potentially votable, if the corresponding CVars are enabled (sv_ag_allow_vote,
@@ -30,7 +30,7 @@ namespace CVar
 	bool IsBasicSetting(std::string cvarName);
 
 	std::vector<ChangedCVar> GetChangesOverGamemode();
-	std::unordered_map<std::string, std::string> GetGamemodeCVars();
+	std::map<std::string, std::string> GetGamemodeCVars();
 
 	void StartRecordingChanges();
 	void StopRecordingStartupChanges();

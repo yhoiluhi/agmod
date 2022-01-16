@@ -1,5 +1,5 @@
-#include <map>
 #include <memory>
+#include <unordered_map>
 
 // FIXME: having a hard time getting everything to work
 // due to includes being weird, or me not knowing how this works exactly
@@ -335,9 +335,9 @@ namespace CVar
 		return result;
 	}
 
-	std::unordered_map<std::string, std::string> GetGamemodeCVars()
+	std::map<std::string, std::string> GetGamemodeCVars()
 	{
-		std::unordered_map<std::string, std::string> result;
+		std::map<std::string, std::string> result;
 
 		for (const auto entry : gamemodeCVars)
 		{
