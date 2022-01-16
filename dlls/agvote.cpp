@@ -420,17 +420,32 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                     AgConsole("Vote is not allowed by server admin.", pPlayer);
                     return true;
                 }
-                if (atof(m_sValue.c_str()) > ag_vote_mp_timelimit_high.value)
+
+                // TODO: refactor similar checks for fraglimit and others
+                if (m_sValue.empty())
                 {
-                    AgConsole(UTIL_VarArgs("Can't vote this. It's too high of a timelimit. Please, try a lower value. (max time: %d)",
-                        static_cast<int>(std::floor(ag_vote_mp_timelimit_high.value))), pPlayer);
+                    AgConsole(UTIL_VarArgs("%s is \"%s\"", m_sVote.c_str(), timelimit.string), pPlayer);
+                    return true;
+                }
+                else if (m_sValue == "0" && ag_vote_mp_timelimit_high.value > 0.0f)
+                {
+                    AgConsole(UTIL_VarArgs("Can't vote unlimited time. The max. you can vote is %s.",
+                        ag_vote_mp_timelimit_high.string), pPlayer);
 
                     return true;
                 }
-                if (atof(m_sValue.c_str()) < ag_vote_mp_timelimit_low.value)
+
+                if (atof(m_sValue.c_str()) > ag_vote_mp_timelimit_high.value && ag_vote_mp_timelimit_high.value != 0.0f)
                 {
-                    AgConsole(UTIL_VarArgs("Can't vote this. It's too low of a timelimit. Please, try a higher value. (min time: %d)",
-                        static_cast<int>(std::ceil(ag_vote_mp_timelimit_low.value))), pPlayer);
+                    AgConsole(UTIL_VarArgs("Can't vote this. It's too high of a timelimit. Please, try a lower value. (max time: %s)",
+                        ag_vote_mp_timelimit_high.string), pPlayer);
+
+                    return true;
+                }
+                else if (atof(m_sValue.c_str()) < ag_vote_mp_timelimit_low.value && m_sValue != "0")
+                {
+                    AgConsole(UTIL_VarArgs("Can't vote this. It's too low of a timelimit. Please, try a higher value. (min time: %s)",
+                        ag_vote_mp_timelimit_low.string), pPlayer);
                     return true;
                 }
                 CallVote(pPlayer);
@@ -443,9 +458,31 @@ bool AgVote::HandleCommand(CBasePlayer* pPlayer)
                     AgConsole("Vote is not allowed by server admin.", pPlayer);
                     return true;
                 }
-                if (atoi(m_sValue.c_str()) < ag_vote_mp_fraglimit_low.value || atoi(m_sValue.c_str()) > ag_vote_mp_fraglimit_high.value)
+
+                if (m_sValue.empty())
                 {
-                    AgConsole("Vote is not allowed by server admin.", pPlayer);
+                    AgConsole(UTIL_VarArgs("%s is \"%s\"", m_sVote.c_str(), fraglimit.string), pPlayer);
+                    return true;
+                }
+                else if (m_sValue == "0" && ag_vote_mp_fraglimit_high.value > 0.0f)
+                {
+                    AgConsole(UTIL_VarArgs("Can't vote unlimited frags. The max. you can vote is %s.",
+                        ag_vote_mp_fraglimit_high.string), pPlayer);
+
+                    return true;
+                }
+
+                if (atof(m_sValue.c_str()) > ag_vote_mp_fraglimit_high.value && ag_vote_mp_fraglimit_high.value != 0.0f)
+                {
+                    AgConsole(UTIL_VarArgs("Can't vote this. It's too high of a timelimit. Please, try a lower value. (max time: %d)",
+                        ag_vote_mp_fraglimit_high.string), pPlayer);
+
+                    return true;
+                }
+                else if (atof(m_sValue.c_str()) < ag_vote_mp_fraglimit_low.value && m_sValue != "0")
+                {
+                    AgConsole(UTIL_VarArgs("Can't vote this. It's too low of a timelimit. Please, try a higher value. (min time: %d)",
+                        ag_vote_mp_fraglimit_low.string), pPlayer);
                     return true;
                 }
                 CallVote(pPlayer);
