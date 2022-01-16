@@ -122,7 +122,6 @@ namespace CVar
 			TrackCVar("sv_zmax", CCVAR_VOTABLE | CCVAR_GAMEMODE);
 		}
 
-
 		void ApplyStartupChanges()
 		{
 			for (const auto& entry : startupCVars)
@@ -130,6 +129,9 @@ namespace CVar
 				const auto name = entry.first;
 				const auto value = entry.second;
 				CVAR_SET_STRING(name.c_str(), value.c_str());
+
+				if (cvars.count(name) == 0)
+					continue;
 
 				auto& cvar = cvars[name];
 				cvar.startupValue = value;
@@ -144,6 +146,9 @@ namespace CVar
 				const auto value = entry.second;
 				CVAR_SET_STRING(name.c_str(), value.c_str());
 
+				if (cvars.count(name) == 0)
+					continue;
+
 				auto& cvar = cvars[name];
 				cvar.serverValue = value;
 			}
@@ -156,6 +161,9 @@ namespace CVar
 				const auto name = entry.first;
 				const auto value = entry.second;
 				CVAR_SET_STRING(name.c_str(), value.c_str());
+
+				if (cvars.count(name) == 0)
+					continue;
 
 				auto& cvar = cvars[name];
 				cvar.gamemodeValue = value;
@@ -189,6 +197,27 @@ namespace CVar
 			}
 		}
 
+		std::string GetLastSetValue(std::string name)
+		{
+			std::string result;
+
+			if (cvars.count(name) == 0)
+				return result;
+
+			const auto var = cvars[name];
+
+			if (gamemodeCVars.count(name) == 1)
+				result = var.gamemodeValue;
+			else if (serverCVars.count(name) == 1)
+				result = var.serverValue;
+			else if (startupCVars.count(name) == 1)
+				result = var.startupValue;
+			else if (dllCVars.count(name) == 1)
+				result = var.dllValue;
+
+			return result;
+		}
+
 		void MakeBogus()
 		{
 			// Just some random number that I can tell it's generated here and it's not a real value
@@ -203,7 +232,13 @@ namespace CVar
 		{
 			for (const auto entry : snapshot)
 			{
-				CVAR_SET_STRING(entry.first.c_str(), entry.second.c_str());
+				const auto name = entry.first.c_str();
+
+				// Sanity check
+				if (cvars.count(name) == 0)
+					continue;
+
+				CVAR_SET_STRING(name, entry.second.c_str());
 			}
 		}
 
@@ -228,21 +263,6 @@ namespace CVar
 			{
 				dllCVars.emplace(entry.first, entry.second.dllValue);
 			}
-		}
-
-		void SaveStartup()
-		{
-			Save(startupCVars);
-		}
-
-		void SaveServer()
-		{
-			Save(serverCVars);
-		}
-
-		void SaveGamemode()
-		{
-			Save(gamemodeCVars);
 		}
 
 		void TakeSnapshot()
@@ -314,17 +334,7 @@ namespace CVar
 			const auto currValue = CVAR_GET_STRING(name.c_str());
 
 			// Try to get the default value, in order, from gamemode or server or engine/gamedll
-			std::string defaultValue;
-			if (gamemodeCVars.count(name) == 1)
-				defaultValue = var.gamemodeValue;
-			else if (serverCVars.count(name) == 1)
-				defaultValue = var.serverValue;
-			else if (startupCVars.count(name) == 1)
-				defaultValue = var.startupValue;
-			else if (dllCVars.count(name) == 1)
-				defaultValue = var.dllValue;
-			else
-				continue;
+			std::string defaultValue = GetLastSetValue(name);
 
 			if (!FStrEq(currValue, defaultValue.c_str()))
 			{
