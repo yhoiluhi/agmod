@@ -9,7 +9,11 @@
 #include "extdll.h"
 #include "util.h"
 
+#include "agglobal.h"
+
 #include "cvar.h"
+
+extern bool g_isWorldCreated;
 
 namespace CVar
 {
@@ -21,17 +25,21 @@ namespace CVar
 			std::string startupValue; // value set once at server startup
 			std::string serverValue; // value set on every map change, before gamemode cfg
 			std::string gamemodeValue; // value set by the gamemode's cfg
+			int flags;
 			int customFlags;
 
 			CustomCVar()
 			{
+				flags = 0;
 				customFlags = 0;
 			}
 
-			CustomCVar(cvar_t cvar, std::string dllValue, int customFlags = 0)
-				: dllValue(dllValue),
-				  customFlags(customFlags)
-			{}
+			CustomCVar(cvar_t cvar, int customFlags = 0)
+				: customFlags(customFlags)
+			{
+				dllValue = cvar.string;
+				flags = cvar.flags;
+			}
 		};
 
 		std::string BOGUS_VALUE = "__BOGUS_VALUE__";
@@ -45,6 +53,7 @@ namespace CVar
 		// So it will be recording the startup if it's the server start and it won't be
 		// if it's a map change
 		bool isRecording = false;
+		bool isIgnoringLog = false;
 
 		std::unordered_map<std::string, CustomCVar> cvars;
 
@@ -85,8 +94,7 @@ namespace CVar
 		void TrackCVar(std::string name, int customFlags = 0)
 		{
 			auto cvar = CVAR_GET_POINTER(name.c_str());
-			std::string dllValue(cvar->string);
-			cvars.emplace(name, CustomCVar(*cvar, dllValue, customFlags));
+			cvars.emplace(name, CustomCVar(*cvar, customFlags));
 		}
 
 		void TrackEngineCVars()
@@ -252,7 +260,7 @@ namespace CVar
 	{
 		cvar_t var = { name, value, flags };
 
-		auto cvars = CVar(name, CustomCVar(var, value, customFlags));
+		auto cvars = CVar(name, CustomCVar(var, customFlags));
 
 		return var;
 	}
@@ -344,7 +352,17 @@ namespace CVar
 		isRecording = true;
 
         TakeSnapshot();
-        MakeBogus();
+
+		IgnoreLogging();
+
+		MakeBogus();
+
+		// We restore only if the server is running, aka world created, because between registering
+		// cvars and creating the world, the HLDS does some stuff like logging cvar values, so we would
+		// be restoring the flag FCVAR_SERVER and it would log a shitton of cvars. So we only do this
+		// restore outside that edge case
+		if (g_isWorldCreated)
+			RestoreLogging();
 	}
 
 	void StopRecordingStartupChanges()
@@ -352,10 +370,16 @@ namespace CVar
 		if (snapshot.empty() || !isRecording)
 			return; // Nothing was recorded? then avoid messing cvars up
 
-        SaveStartup();
-        RestoreFromSnapshot();
-		ClearStartupDefaultValues();
-        ApplyStartupChanges();
+		Save(startupCVars);
+
+		IgnoreLogging();
+		{
+			// TODO: make it a lambda or something?
+			RestoreFromSnapshot();
+			ClearStartupDefaultValues();
+			ApplyStartupChanges();
+		}
+		RestoreLogging();
 
 		isRecording = false;
 	}
@@ -365,10 +389,15 @@ namespace CVar
 		if (snapshot.empty() || !isRecording)
 			return; // Nothing was recorded? then avoid messing cvars up
 
-        SaveServer();
-        RestoreFromSnapshot();
-		ClearServerDefaultValues();
-        ApplyServerChanges();
+		Save(serverCVars);
+
+		IgnoreLogging();
+		{
+			RestoreFromSnapshot();
+			ClearServerDefaultValues();
+			ApplyServerChanges();
+		}
+		RestoreLogging();
 
 		isRecording = false;
 	}
@@ -378,10 +407,15 @@ namespace CVar
 		if (snapshot.empty() || !isRecording)
 			return; // Nothing was recorded? then avoid messing cvars up
 
-        SaveGamemode();
-        RestoreFromSnapshot();
-		ClearGamemodeDefaultValues();
-        ApplyGamemodeChanges();
+		Save(gamemodeCVars);
+
+		IgnoreLogging();
+		{
+			RestoreFromSnapshot();
+			ClearGamemodeDefaultValues();
+			ApplyGamemodeChanges();
+		}
+		RestoreLogging();
 
 		isRecording = false;
 	}
@@ -393,5 +427,46 @@ namespace CVar
 			CVAR_SET_STRING(changedCVar.name.c_str(), changedCVar.defaultValue.c_str());
 		}
 	}
-}
 
+	void IgnoreLogging()
+	{
+		if (ag_log_cvars.value == 3.0f)
+			return;
+
+		for (const auto entry : cvars)
+		{
+			const auto name = entry.first;
+
+			auto cvar = CVAR_GET_POINTER(name.c_str());
+			if (!cvar)
+				continue;
+
+			cvar->flags &= ~FCVAR_SERVER;
+		}
+
+		isIgnoringLog = true;
+	}
+
+	void RestoreLogging()
+	{
+		if (!isIgnoringLog && g_isWorldCreated)
+			return;
+
+		for (const auto entry : cvars)
+		{
+			const auto name = entry.first;
+			const auto var = entry.second;
+
+			if (!(var.flags & FCVAR_SERVER))
+				continue;
+
+			auto cvar = CVAR_GET_POINTER(name.c_str());
+			if (!cvar)
+				continue;
+
+			cvar->flags |= FCVAR_SERVER;
+		}
+
+		isIgnoringLog = false;
+	}
+}

@@ -38,4 +38,7 @@ namespace CVar
 	void StopRecordingGamemodeChanges();
 
 	void RestoreAllToGamemodeValue();
+
+	void IgnoreLogging();
+	void RestoreLogging();
 };

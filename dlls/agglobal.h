@@ -231,8 +231,8 @@ extern cvar_t ag_explosion_fix;
 extern cvar_t ag_match_teamchange_suicide_penalty;
 
 extern cvar_t ag_speedrun;
-
 extern cvar_t ag_countdown;
+extern cvar_t ag_log_cvars;
 
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;

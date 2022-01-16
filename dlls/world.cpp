@@ -33,6 +33,7 @@
 #include "weapons.h"
 #include "gamerules.h"
 #include "teamplay_gamerules.h"
+#include "cvar.h"
 
 extern CGraph WorldGraph;
 extern CSoundEnt *pSoundEnt;
@@ -475,8 +476,14 @@ void CWorld :: Spawn( void )
 	g_flWeaponCheat = CVAR_GET_FLOAT( "sv_cheats" );  // Is the impulse 101 command allowed?
 }
 
+DLL_GLOBAL bool g_isWorldCreated = false;
+
 void CWorld :: Precache( void )
 {
+	// It's important that the world created flag is set AFTER restoring the logging...
+	CVar::RestoreLogging();
+	g_isWorldCreated = true;
+
 	g_spawnPoints.clear();
 	g_spawnHistory.clear();
 	

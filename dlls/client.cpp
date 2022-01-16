@@ -39,6 +39,7 @@
 #include "usercmd.h"
 #include "netadr.h"
 #include "pm_shared.h"
+#include "cvar.h"
 
 #if !defined ( _WIN32 )
 #include <ctype.h>
@@ -688,6 +689,9 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 
 static int g_serveractive = 0;
 
+extern bool g_isWorldCreated;
+
+// Called on server shutdown and map change
 void ServerDeactivate( void )
 {
 	// It's possible that the engine will call this function more times than is necessary
@@ -698,9 +702,12 @@ void ServerDeactivate( void )
 	}
 
 	g_serveractive = 0;
+	g_isWorldCreated = false;
 
 	// Peform any shutdown operations here...
 	//
+
+	CVar::IgnoreLogging();
 }
 
 void ServerActivate( edict_t *pEdictList, int edictCount, int clientMax )

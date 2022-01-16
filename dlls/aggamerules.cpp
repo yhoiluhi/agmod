@@ -15,6 +15,7 @@
 #include "aggamerules.h"
 #include "agflood.h"
 #include "game.h"
+#include "cvar.h"
 #ifdef AGSTATS
 #include "agstats.h"
 #endif
@@ -972,6 +973,25 @@ void AgGameRules::GoToIntermission()
             UTIL_ServerMessage(UTIL_VarArgs("Game duration: %.3f\n", seconds));
 
         g_flSpeedrunStartTime = 0.0f;
+    }
+
+    if (ag_log_cvars.value >= 1.0f)
+    {
+        const auto changedCVars = CVar::GetChangesOverGamemode();
+        if (changedCVars.size() > 0)
+        {
+            AgString msg;
+
+            msg.append("These cvars were changed:\n");
+            for (const auto changedCVar : changedCVars)
+            {
+                msg.append(UTIL_VarArgs("- %s [%s -> %s]\n",
+                    changedCVar.name.c_str(), changedCVar.defaultValue.c_str(), changedCVar.changedValue.c_str()));
+            }
+            AgConsoleLarge(msg);
+        }
+        else
+            AgConsole("There was no gamemode-related cvar changed by the end of this game");
     }
 }
 

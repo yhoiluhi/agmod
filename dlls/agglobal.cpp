@@ -443,6 +443,14 @@ DLL_GLOBAL cvar_t	ag_speedrun = CVar::Create("sv_ag_speedrun", "0", FCVAR_SERVER
 // Default 0 - Default to gametype default. If 1 or higher then that will be the countdown before a match/game starts
 DLL_GLOBAL cvar_t	ag_countdown = CVar::Create("sv_ag_countdown", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
+// Default 0 - Don't log all the gamemode-related cvars at the start of the map.
+// On 1 it will log the changed cvars at the start and at the end of the multiplayer game
+// On 2 it will log all the gamemode cvars with their current values at the start,
+// and also the changed cvars at the start and at the end of the multiplayer game
+// On 3 it will log every single bogus change to cvars at the start, plus the changed
+// cvars at the end of the multiplayer game
+DLL_GLOBAL cvar_t	ag_log_cvars = CVar::Create("sv_ag_log_cvars", "0", FCVAR_SERVER | FCVAR_UNLOGGED);
+
 
 DLL_GLOBAL bool g_bLangame = false;
 DLL_GLOBAL bool g_bUseTeamColors = false;
@@ -668,6 +676,7 @@ void AgInitGame()
     CVAR_REGISTER(&mm_agsay);
     CVAR_REGISTER(&ag_speedrun);
     CVAR_REGISTER(&ag_countdown);
+    CVAR_REGISTER(&ag_log_cvars);
 
     Command.Init();
 

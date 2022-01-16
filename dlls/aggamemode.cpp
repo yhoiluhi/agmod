@@ -346,6 +346,38 @@ void AgGameMode::ExecConfig()
 
         //Setup the gametype.
         SetupGametype();
+
+        if (ag_log_cvars.value == 2.0f)
+        {
+            AgString msg;
+            const auto cvars = CVar::GetGamemodeCVars();
+
+            msg.append(UTIL_VarArgs("---- Gamemode config cvars ----\n", cvars.size()));
+            for (const auto entry : cvars)
+            {
+                msg.append(UTIL_VarArgs("-> %s: %s\n", entry.first.c_str(), entry.second.c_str()));
+            }
+            AgConsoleLarge(msg);
+        }
+
+        if (ag_log_cvars.value >= 1.0f)
+        {
+            const auto changedCVars = CVar::GetChangesOverGamemode();
+            if (changedCVars.size() > 0)
+            {
+                AgString msg;
+
+                msg.append("These cvars were not reset after map change:\n");
+                for (const auto changedCVar : changedCVars)
+                {
+                    msg.append(UTIL_VarArgs("- %s [%s -> %s]\n",
+                        changedCVar.name.c_str(), changedCVar.defaultValue.c_str(), changedCVar.changedValue.c_str()));
+                }
+                AgConsoleLarge(msg);
+            }
+            else
+                AgConsole("No gamemode-related cvar is changed");
+        }
     }
 }
 
