@@ -1024,7 +1024,7 @@ void AgTrim(AgString& sTrim)
         sTrim = string(sTrim, b, e - b + 1);
 }
 
-void AgLog(const char* pszLog)
+void AgLogError(const char* pszLog)
 {
     char	szFile[MAX_PATH];
     sprintf(szFile, "%s/agslog.txt", AgGetDirectory());

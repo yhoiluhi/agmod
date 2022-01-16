@@ -266,7 +266,7 @@ void AgToLower(AgString& strLower);
 void AgTrim(AgString& sTrim);
 
 
-void AgLog(const char* pszLog);
+void AgLogError(const char* pszLog);
 
 double AgTime();
 

@@ -1002,7 +1002,7 @@ void Sys_Error( const char *error_string )
 {
 	// Default case, do nothing.  MOD AUTHORS:  Add code ( e.g., _asm { int 3 }; here to cause a breakpoint for debugging your game .dlls
 //++ BulliT
-  AgLog(error_string);
+  AgLogError(error_string);
 #ifdef _DEBUG
   _asm { int 3 }; 
 #endif
