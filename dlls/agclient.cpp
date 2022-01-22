@@ -33,6 +33,9 @@ extern int gmsgPlaySound;
 extern int gmsgTeamInfo;
 extern int g_teamplay;
 
+extern bool g_bPostponeChangelevel;
+extern CChangeLevel* g_pLastChangelevel;
+
 AgClient::AgClient()
 {
 
@@ -336,6 +339,22 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
         if (singleplayer.value > 0.0f && g_bLangame)
         {
             SpeedrunStats::PrintSession();
+            return true;
+        }
+        return false;
+    }
+    else if (FStrEq(CMD_ARGV(0), "delay_changelevel"))
+    {
+        if (singleplayer.value > 0.0f && g_bLangame)
+        {
+            if (g_bPostponeChangelevel && g_pLastChangelevel)
+                g_pLastChangelevel->DoChangeLevel();
+
+            g_bPostponeChangelevel = !g_bPostponeChangelevel;
+
+            // If this ever goes to multiplayer, change this AgConsole to UTIL_ClientPrintAll I guess
+            AgConsole(UTIL_VarArgs("Changelevel delay: %s", g_bPostponeChangelevel ? "ON" : "OFF"), pPlayer);
+
             return true;
         }
         return false;

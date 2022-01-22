@@ -812,3 +812,49 @@ public:
 	void Precache( void );
 	void KeyValue( KeyValueData *pkvd );
 };
+
+class CBaseTrigger : public CBaseToggle
+{
+public:
+	void EXPORT TeleportTouch ( CBaseEntity *pOther );
+	void KeyValue( KeyValueData *pkvd );
+	void EXPORT MultiTouch( CBaseEntity *pOther );
+	void EXPORT HurtTouch ( CBaseEntity *pOther );
+	void EXPORT CDAudioTouch ( CBaseEntity *pOther );
+	void ActivateMultiTrigger( CBaseEntity *pActivator );
+	void EXPORT MultiWaitOver( void );
+	void EXPORT CounterUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void InitTrigger( void );
+
+	virtual int	ObjectCaps( void ) { return CBaseToggle :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+};
+
+class CChangeLevel : public CBaseTrigger
+{
+public:
+	void Spawn( void );
+	void KeyValue( KeyValueData *pkvd );
+	void EXPORT UseChangeLevel ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT TriggerChangeLevel( void );
+	void EXPORT ExecuteChangeLevel( void );
+	void EXPORT TouchChangeLevel( CBaseEntity *pOther );
+	void ChangeLevel( CBaseEntity *pActivator );
+
+	static edict_t *FindLandmark( const char *pLandmarkName );
+	static int ChangeList( LEVELLIST *pLevelList, int maxList );
+	static int AddTransitionToList( LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark );
+	static int InTransitionVolume( CBaseEntity *pEntity, char *pVolumeName );
+
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+
+	void DoChangeLevel();
+
+	static	TYPEDESCRIPTION m_SaveData[];
+
+	char m_szMapName[cchMapNameMost];		// trigger_changelevel only:  next map
+	char m_szLandmarkName[cchMapNameMost];		// trigger_changelevel only:  landmark on next map
+	int		m_changeTarget;
+	float	m_changeTargetDelay;
+};

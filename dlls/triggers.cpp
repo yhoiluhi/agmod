@@ -518,24 +518,6 @@ void CRenderFxManager :: Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 }
 
 
-
-class CBaseTrigger : public CBaseToggle
-{
-public:
-	void EXPORT TeleportTouch ( CBaseEntity *pOther );
-	void KeyValue( KeyValueData *pkvd );
-	void EXPORT MultiTouch( CBaseEntity *pOther );
-	void EXPORT HurtTouch ( CBaseEntity *pOther );
-	void EXPORT CDAudioTouch ( CBaseEntity *pOther );
-	void ActivateMultiTrigger( CBaseEntity *pActivator );
-	void EXPORT MultiWaitOver( void );
-	void EXPORT CounterUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void EXPORT ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void InitTrigger( void );
-
-	virtual int	ObjectCaps( void ) { return CBaseToggle :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-};
-
 LINK_ENTITY_TO_CLASS( trigger, CBaseTrigger );
 
 /*
@@ -1334,32 +1316,7 @@ void CFireAndDie::Think( void )
 
 
 #define SF_CHANGELEVEL_USEONLY		0x0002
-class CChangeLevel : public CBaseTrigger
-{
-public:
-	void Spawn( void );
-	void KeyValue( KeyValueData *pkvd );
-	void EXPORT UseChangeLevel ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void EXPORT TriggerChangeLevel( void );
-	void EXPORT ExecuteChangeLevel( void );
-	void EXPORT TouchChangeLevel( CBaseEntity *pOther );
-	void ChangeLevelNow( CBaseEntity *pActivator );
 
-	static edict_t *FindLandmark( const char *pLandmarkName );
-	static int ChangeList( LEVELLIST *pLevelList, int maxList );
-	static int AddTransitionToList( LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark );
-	static int InTransitionVolume( CBaseEntity *pEntity, char *pVolumeName );
-
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-
-	static	TYPEDESCRIPTION m_SaveData[];
-
-	char m_szMapName[cchMapNameMost];		// trigger_changelevel only:  next map
-	char m_szLandmarkName[cchMapNameMost];		// trigger_changelevel only:  landmark on next map
-	int		m_changeTarget;
-	float	m_changeTargetDelay;
-};
 LINK_ENTITY_TO_CLASS( trigger_changelevel, CChangeLevel );
 
 // Global Savedata for changelevel trigger
@@ -1471,12 +1428,15 @@ edict_t *CChangeLevel :: FindLandmark( const char *pLandmarkName )
 //=========================================================
 void CChangeLevel :: UseChangeLevel ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	ChangeLevelNow( pActivator );
+	ChangeLevel( pActivator );
 }
 
 DLL_GLOBAL bool g_isUsingChangelevelTrigger = false;
 
-void CChangeLevel :: ChangeLevelNow( CBaseEntity *pActivator )
+DLL_GLOBAL bool g_bPostponeChangelevel = false;
+DLL_GLOBAL CChangeLevel* g_pLastChangelevel = nullptr;
+
+void CChangeLevel :: ChangeLevel( CBaseEntity *pActivator )
 {
 	edict_t	*pentLandmark;
 	LEVELLIST	levels[16];
@@ -1534,7 +1494,11 @@ void CChangeLevel :: ChangeLevelNow( CBaseEntity *pActivator )
 
 //	ALERT( at_console, "Level touches %d levels\n", ChangeList( levels, 16 ) );
 	ALERT( at_console, "CHANGE LEVEL: %s %s\n", st_szNextMap, st_szNextSpot );
-	CHANGE_LEVEL( st_szNextMap, st_szNextSpot );
+
+	if (g_bPostponeChangelevel)
+		g_pLastChangelevel = this;
+	else
+		DoChangeLevel();
 }
 
 //
@@ -1545,7 +1509,7 @@ void CChangeLevel :: TouchChangeLevel( CBaseEntity *pOther )
 	if (!FClassnameIs(pOther->pev, "player"))
 		return;
 
-	ChangeLevelNow( pOther );
+	ChangeLevel( pOther );
 }
 
 
@@ -1719,6 +1683,13 @@ int CChangeLevel::ChangeList( LEVELLIST *pLevelList, int maxList )
 	}
 
 	return count;
+}
+
+void CChangeLevel::DoChangeLevel()
+{
+	CHANGE_LEVEL(st_szNextMap, st_szNextSpot);
+
+	g_pLastChangelevel = nullptr;
 }
 
 /*
