@@ -39,6 +39,7 @@
 #include "hltv.h"
 #include "spawnchooser.h"
 #include "agflood.h"
+#include "speedrunstats.h"
 
 // #define DUCKFIX
 
@@ -528,7 +529,7 @@ void CBasePlayer :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector 
 
 int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
-	if (m_fLoading)
+	if (m_iLoading)
 		return 0;
 
 	// Already dead
@@ -2757,6 +2758,7 @@ void CBasePlayer :: UpdatePlayerSound ( void )
 	//ALERT ( at_console, "%d/%d\n", iVolume, m_iTargetVolume );
 }
 
+extern bool g_isUsingChangelevelTrigger;
 
 void CBasePlayer::PostThink()
 {
@@ -2766,7 +2768,7 @@ void CBasePlayer::PostThink()
 	if (!IsAlive())
 		goto pt_end;
 
-	if (m_fLoading)
+	if (m_iLoading)
 	{
 		//	We're in a frame that's frozen in time during a map load or save restore; that is, the gpGlobals->time is
 		//	not advancing yet, but frames are somehow still being processed, and we don't receive the buttons that
@@ -2779,9 +2781,9 @@ void CBasePlayer::PostThink()
 		//	previous buttons pressed even if they don't want to, but it's easily solvable by pressing some button to stop this
 		//	behaviour.
 
-		if (m_fLoading == 1)
+		if (m_iLoading == 1)
 		{
-			m_fLoading = 2;
+			m_iLoading = 2;
 			sploading.value = 2;
 			// We skip the first frozen frame because on saveloads (not passing through changelevel triggers) the engine sends
 			// buttons info somehow, but it's just whatever you had pressed previously I believe
@@ -2797,7 +2799,7 @@ void CBasePlayer::PostThink()
 		}
 		else if (m_afButtonOriginal != m_afButtonOnLoad)
 		{
-			m_fLoading = 0;
+			m_iLoading = 0;
 			sploading.value = 0;
 		}
 	}
@@ -2816,7 +2818,7 @@ void CBasePlayer::PostThink()
 		}
 	}
 
-	if (gpGlobals->time < m_flInputFixReady && singleplayer.value > 0.0f && m_fLoading == 0.0f)
+	if (gpGlobals->time < m_flInputFixReady && singleplayer.value > 0.0f && m_iLoading == 0)
 	{
 		// HACK: Some players have an invisible menu popping up and preventing them from
 		// moving the mouse when they spawn in c1a0 for instance, so we fix it with this
@@ -3326,6 +3328,7 @@ void CBasePlayer::RenewItems(void)
 
 }
 
+DLL_GLOBAL bool g_isRestoring = false;
 
 int CBasePlayer::Restore( CRestore &restore )
 {
@@ -3333,7 +3336,9 @@ int CBasePlayer::Restore( CRestore &restore )
 		return 0;
 
 	sploading.value	= 1;
-	m_fLoading		= 1;
+	m_iLoading		= 1;
+
+	g_isRestoring = true;
 
 	int status = restore.ReadFields( "PLAYER", this, m_playerSaveData, ARRAYSIZE(m_playerSaveData) );
 
@@ -4778,7 +4783,7 @@ void CBasePlayer :: UpdateClientData( void )
 #endif
 //-- Martin Webrant
 
-	if (singleplayer.value >= 0.0f && m_fLoading == 2) {
+	if (singleplayer.value >= 0.0f && m_iLoading == 2) {
 		// FIXME: HACK to avoid a bug on saveloads, where mouse input does nothing ingame,
 		// apparently because an invisible menu pops up. Only happens to a few speedrunners...
 		// Credits to h0boken for figuring out that it was the spec menu disabling the inputs
@@ -6245,6 +6250,8 @@ void CBasePlayer::LimitFps()
 		}
 		else
 		{
+			// TODO: doesn't work in singleplayer, think about what we should do instead,
+			// it will just print annoying warnings forever otherwise
 			char szCommand[64];
 			sprintf(szCommand, "kick #%d\n", GETPLAYERUSERID(edict()));
 			SERVER_COMMAND(szCommand);

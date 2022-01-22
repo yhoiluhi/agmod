@@ -28,6 +28,7 @@
 #include "aggamerules.h"
 #include "multiplay_gamerules.h"
 #include "singleplay_gamerules.h"
+#include "speedrunstats.h"
 
 //extern DLL_GLOBAL CGameRules	*g_pGameRules;
 extern DLL_GLOBAL AgGameRules* g_pGameRules;
@@ -386,4 +387,9 @@ int CHalfLifeRules::PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarg
 BOOL CHalfLifeRules :: FAllowMonsters( void )
 {
 	return TRUE;
+}
+
+void CHalfLifeRules :: EndMultiplayerGame()
+{
+	SpeedrunStats::EndRun();
 }

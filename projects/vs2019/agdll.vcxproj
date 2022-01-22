@@ -207,6 +207,7 @@
     <ClCompile Include="..\..\dlls\soundent.cpp" />
     <ClCompile Include="..\..\dlls\spawnchooser.cpp" />
     <ClCompile Include="..\..\dlls\spectator.cpp" />
+    <ClCompile Include="..\..\dlls\speedrunstats.cpp" />
     <ClCompile Include="..\..\dlls\squadmonster.cpp" />
     <ClCompile Include="..\..\dlls\squeakgrenade.cpp" />
     <ClCompile Include="..\..\dlls\subs.cpp" />
@@ -293,6 +294,7 @@
     <ClInclude Include="..\..\dlls\soundent.h" />
     <ClInclude Include="..\..\dlls\spawnchooser.h" />
     <ClInclude Include="..\..\dlls\spectator.h" />
+    <ClInclude Include="..\..\dlls\speedrunstats.h" />
     <ClInclude Include="..\..\dlls\squadmonster.h" />
     <ClInclude Include="..\..\dlls\talkmonster.h" />
     <ClInclude Include="..\..\dlls\teamplay_gamerules.h" />

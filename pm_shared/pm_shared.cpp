@@ -23,6 +23,7 @@
 #include "pm_shared.h"
 #include "pm_movevars.h"
 #include "pm_debug.h"
+#include "speedrunstats.h"
 #include <stdio.h>  // NULL
 #include <math.h>   // sqrt
 #include <string.h> // strcpy
@@ -2017,6 +2018,8 @@ void PM_Duck( void )
 				// Use 1 second so super long jump will work
 				pmove->flDuckTime = 1000;
 				pmove->bInDuck    = true;
+
+				SpeedrunStats::AddDuck();
 			}
 
 			time = V_max( 0.0, ( 1.0 - (float)pmove->flDuckTime / 1000.0 ) );
@@ -2606,6 +2609,8 @@ void PM_Jump (void)
 
 	// Flag that we jumped.
 	pmove->oldbuttons |= IN_JUMP;	// don't jump again until released
+
+	SpeedrunStats::AddJump();
 }
 
 /*
@@ -2948,6 +2953,9 @@ void PM_PlayerMove ( qboolean server )
 {
 	physent_t *pLadder = NULL;
 
+	vec3_t oldPos;
+	VectorCopy(pmove->origin, oldPos);
+
 	// Are we running server code?
 	pmove->server = server;                
 
@@ -3199,6 +3207,10 @@ void PM_PlayerMove ( qboolean server )
 		PM_PlayWaterSounds();
 		break;
 	}
+
+	vec3_t diff;
+	VectorSubtract(pmove->origin, oldPos, diff);
+	SpeedrunStats::AddDistance(diff);
 }
 
 void PM_CreateStuckTable( void )

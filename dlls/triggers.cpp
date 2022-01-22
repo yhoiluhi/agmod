@@ -27,6 +27,7 @@
 #include "saverestore.h"
 #include "trains.h"			// trigger_camera has train functionality
 #include "gamerules.h"
+#include "speedrunstats.h"
 
 #define	SF_TRIGGER_PUSH_START_OFF	2//spawnflag that makes trigger_push spawn turned OFF
 #define SF_TRIGGER_HURT_TARGETONCE	1// Only fire hurt target once
@@ -1473,6 +1474,8 @@ void CChangeLevel :: UseChangeLevel ( CBaseEntity *pActivator, CBaseEntity *pCal
 	ChangeLevelNow( pActivator );
 }
 
+DLL_GLOBAL bool g_isUsingChangelevelTrigger = false;
+
 void CChangeLevel :: ChangeLevelNow( CBaseEntity *pActivator )
 {
 	edict_t	*pentLandmark;
@@ -1526,6 +1529,9 @@ void CChangeLevel :: ChangeLevelNow( CBaseEntity *pActivator )
 		strcpy(st_szNextSpot, m_szLandmarkName);
 		gpGlobals->vecLandmarkOffset = VARS(pentLandmark)->origin;
 	}
+
+	g_isUsingChangelevelTrigger = true;
+
 //	ALERT( at_console, "Level touches %d levels\n", ChangeList( levels, 16 ) );
 	ALERT( at_console, "CHANGE LEVEL: %s %s\n", st_szNextMap, st_szNextSpot );
 	CHANGE_LEVEL( st_szNextMap, st_szNextSpot );
@@ -2014,6 +2020,7 @@ void CTriggerEndSection::EndSectionUse( CBaseEntity *pActivator, CBaseEntity *pC
 	if ( pev->message )
 	{
 		g_engfuncs.pfnEndSection(STRING(pev->message));
+		SpeedrunStats::EndRun();
 	}
 	UTIL_Remove( this );
 }
@@ -2045,6 +2052,7 @@ void CTriggerEndSection::EndSectionTouch( CBaseEntity *pOther )
 	if (pev->message)
 	{
 		g_engfuncs.pfnEndSection(STRING(pev->message));
+		SpeedrunStats::EndRun();
 	}
 	UTIL_Remove( this );
 }

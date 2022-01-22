@@ -139,7 +139,7 @@ public:
 	int					m_afButtonOriginal;		// buttons that the player has pressed at the start of the frame (no processing yet)
 	int					m_afButtonOnLoad;		// buttons that the player has pressed right before starting a load, and that should be kept in the meanwhile
 
-	int					m_fLoading;	// when loading a save or map in singleplayer
+	int					m_iLoading;	// when loading a save or map in singleplayer
 	float				m_flInputFixReady; // global time at which we guess mouse input should have been fixed already after some -showscores spam
 	
 	edict_t			   *m_pentSndLast;			// last sound entity to modify player room type

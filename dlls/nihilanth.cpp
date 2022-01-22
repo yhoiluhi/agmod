@@ -21,6 +21,7 @@
 #include "weapons.h"
 #include "nodes.h"
 #include "effects.h"
+#include "speedrunstats.h"
 
 #define N_SCALE		15
 #define N_SPHERES	20
@@ -848,6 +849,9 @@ void CNihilanth :: HuntThink( void )
 	{
 		SetThink( &CNihilanth::DyingThink );
 		m_fSequenceFinished = TRUE;
+
+		SpeedrunStats::EndRun();
+
 		return;
 	}
 

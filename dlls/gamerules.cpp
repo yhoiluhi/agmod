@@ -322,7 +322,25 @@ AgGameRules* InstallGameRules(void)
 //-- Martin Webrant
 {
 	CVar::StopRecordingStartupChanges();
+
+	if (singleplayer.value > 0.0f)
+	{
+		SERVER_COMMAND("exec game.cfg\n");
+		SERVER_EXECUTE();
+
+		CVar::StartRecordingChanges();
+		{
+			SERVER_COMMAND("exec gamemodes/singleplayer.cfg\n");
+			SERVER_EXECUTE();
+		}
+		CVar::StopRecordingGamemodeChanges();
+
+		// generic half-life
+		g_teamplay = 0;
+		return new CHalfLifeRules;
+	}
 	CVar::StartRecordingChanges();
+
 	SERVER_COMMAND( "exec game.cfg\n" );
 	SERVER_EXECUTE( );
 
@@ -369,33 +387,24 @@ AgGameRules* InstallGameRules(void)
 
 	ReseedSpawnSystem();
 
-	if ( singleplayer.value > 0.0f )
+	if ( teamplay.value > 0 )
 	{
-		// generic half-life
+		// teamplay
+
+		g_teamplay = 1;
+		return new CHalfLifeTeamplay;
+	}
+	if ((int)gpGlobals->deathmatch == 1)
+	{
+		// vanilla deathmatch
 		g_teamplay = 0;
-		return new CHalfLifeRules;
+		return new CHalfLifeMultiplay;
 	}
 	else
 	{
-		if ( teamplay.value > 0 )
-		{
-			// teamplay
-
-			g_teamplay = 1;
-			return new CHalfLifeTeamplay;
-		}
-		if ((int)gpGlobals->deathmatch == 1)
-		{
-			// vanilla deathmatch
-			g_teamplay = 0;
-			return new CHalfLifeMultiplay;
-		}
-		else
-		{
-			// vanilla deathmatch??
-			g_teamplay = 0;
-			return new CHalfLifeMultiplay;
-		}
+		// vanilla deathmatch??
+		g_teamplay = 0;
+		return new CHalfLifeMultiplay;
 	}
 }
 

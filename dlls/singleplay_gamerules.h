@@ -112,6 +112,8 @@ public:
 	// Teamplay stuff	
 	virtual const char* GetTeamID(CBaseEntity* pEntity) { return ""; };
 	virtual int PlayerRelationship(CBaseEntity* pPlayer, CBaseEntity* pTarget);
+
+	virtual void EndMultiplayerGame();
 };
 
 #endif //_SINGLEPLAY_H_

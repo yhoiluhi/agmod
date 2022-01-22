@@ -12,6 +12,7 @@
 #include "aggamerules.h"
 #include "agclient.h"
 #include "cvar.h"
+#include "speedrunstats.h"
 
 #include "voice_gamemgr.h"
 extern CVoiceGameMgr g_VoiceGameMgr;
@@ -320,6 +321,24 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
         AgConsoleLarge(msg, pPlayer);
 
         return true;
+    }
+    else if (FStrEq(CMD_ARGV(0), "stats_run"))
+    {
+        if (singleplayer.value > 0.0f && g_bLangame)
+        {
+            SpeedrunStats::PrintRun();
+            return true;
+        }
+        return false;
+    }
+    else if (FStrEq(CMD_ARGV(0), "stats_session"))
+    {
+        if (singleplayer.value > 0.0f && g_bLangame)
+        {
+            SpeedrunStats::PrintSession();
+            return true;
+        }
+        return false;
     }
 #ifndef AG_NO_CLIENT_DLL
     else if (FStrEq(CMD_ARGV(0), "dropitems") && CTF == AgGametype())

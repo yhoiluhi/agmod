@@ -40,6 +40,7 @@
 #include "netadr.h"
 #include "pm_shared.h"
 #include "cvar.h"
+#include "speedrunstats.h"
 
 #if !defined ( _WIN32 )
 #include <ctype.h>
@@ -710,6 +711,9 @@ void ServerDeactivate( void )
 	CVar::IgnoreLogging();
 }
 
+extern bool g_isRestoring;
+extern bool g_isUsingChangelevelTrigger;
+
 void ServerActivate( edict_t *pEdictList, int edictCount, int clientMax )
 {
 	int				i;
@@ -717,6 +721,21 @@ void ServerActivate( edict_t *pEdictList, int edictCount, int clientMax )
 
 	// Every call to ServerActivate should be matched by a call to ServerDeactivate
 	g_serveractive = 1;
+
+	if (singleplayer.value != 0.0f)
+	{
+		if (g_isRestoring)
+		{
+			if (!g_isUsingChangelevelTrigger)
+				SpeedrunStats::AddLoad(); // it's a `load <name>` command
+			// else it's a normal map transition
+		}
+		else
+			SpeedrunStats::Init(); // it's a `map <name>` command
+	}
+
+	g_isRestoring = false;
+	g_isUsingChangelevelTrigger = false;
 
 	// Clients have not been initialized yet
 	for ( i = 0; i < edictCount; i++ )
