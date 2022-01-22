@@ -3386,6 +3386,8 @@ int CBasePlayer::Restore( CRestore &restore )
 		g_engfuncs.pfnSetPhysicsKeyValue( edict(), "slj", "0" );
 	}
 
+	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "bj", CVAR_GET_STRING("sv_ag_oldphysics") );
+
 	RenewItems();
 
 #if defined( CLIENT_WEAPONS )
