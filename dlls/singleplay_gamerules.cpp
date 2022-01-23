@@ -151,9 +151,68 @@ void CHalfLifeRules :: PlayerSpawn( CBasePlayer *pPlayer )
 
 	if (addDefault)
 	{
-		pPlayer->GiveNamedItem("weapon_crowbar");
-		pPlayer->GiveNamedItem("weapon_9mmhandgun");
-		pPlayer->GiveAmmo(68, "9mm", _9MM_MAX_CARRY); // 4 full reloads
+		pPlayer->pev->health = ag_start_health.value;
+		pPlayer->pev->armorvalue = ag_start_armour.value;
+
+		if (0 < ag_start_longjump.value)
+		{
+			pPlayer->m_fLongJump = TRUE;
+			g_engfuncs.pfnSetPhysicsKeyValue(pPlayer->edict(), "slj", "1");
+			pPlayer->OnPickupLongjump();
+		}
+		if (0 < ag_start_glock.value)
+			pPlayer->GiveNamedItem("weapon_9mmhandgun");
+		if (0 < ag_start_crowbar.value)
+			pPlayer->GiveNamedItem("weapon_crowbar");
+		if (0 < ag_start_shotgun.value)
+			pPlayer->GiveNamedItem("weapon_shotgun");
+		if (0 < ag_start_mp5.value)
+			pPlayer->GiveNamedItem("weapon_9mmAR");
+		if (0 < ag_start_gauss.value)
+			pPlayer->GiveNamedItem("weapon_gauss");
+		if (0 < ag_start_hgrenade.value)
+			pPlayer->GiveNamedItem("weapon_handgrenade");
+		if (0 < ag_start_tripmine.value)
+			pPlayer->GiveNamedItem("weapon_tripmine");
+		if (0 < ag_start_egon.value)
+			pPlayer->GiveNamedItem("weapon_egon");
+		if (0 < ag_start_crossbow.value)
+			pPlayer->GiveNamedItem("weapon_crossbow");
+		if (0 < ag_start_357.value)
+			pPlayer->GiveNamedItem("weapon_357");
+		if (0 < ag_start_rpg.value)
+			pPlayer->GiveNamedItem("weapon_rpg");
+		if (0 < ag_start_satchel.value)
+			pPlayer->GiveNamedItem("weapon_satchel");
+		if (0 < ag_start_snark.value)
+			pPlayer->GiveNamedItem("weapon_snark");
+		if (0 < ag_start_hornet.value)
+			pPlayer->GiveNamedItem("weapon_hornetgun");
+
+		if (0 < ag_start_hgrenade.value)
+			pPlayer->GiveAmmo(ag_start_hgrenade.value, "Hand Grenade", HANDGRENADE_MAX_CARRY);
+		if (0 < ag_start_satchel.value)
+			pPlayer->GiveAmmo(ag_start_satchel.value, "Satchel Charge", SATCHEL_MAX_CARRY);
+		if (0 < ag_start_tripmine.value)
+			pPlayer->GiveAmmo(ag_start_tripmine.value, "Trip Mine", TRIPMINE_MAX_CARRY);
+		if (0 < ag_start_snark.value)
+			pPlayer->GiveAmmo(ag_start_snark.value, "Snarks", SNARK_MAX_CARRY);
+		if (0 < ag_start_hornet.value)
+			pPlayer->GiveAmmo(ag_start_hornet.value, "Hornets", HORNET_MAX_CARRY);
+		if (0 < ag_start_m203.value)
+			pPlayer->GiveAmmo(ag_start_m203.value, "ARgrenades", M203_GRENADE_MAX_CARRY);
+		if (0 < ag_start_uranium.value)
+			pPlayer->GiveAmmo(ag_start_uranium.value, "uranium", URANIUM_MAX_CARRY);
+		if (0 < ag_start_9mmar.value)
+			pPlayer->GiveAmmo(ag_start_9mmar.value, "9mm", _9MM_MAX_CARRY);
+		if (0 < ag_start_357ammo.value)
+			pPlayer->GiveAmmo(ag_start_357ammo.value, "357", _357_MAX_CARRY);
+		if (0 < ag_start_bockshot.value)
+			pPlayer->GiveAmmo(ag_start_bockshot.value, "buckshot", BUCKSHOT_MAX_CARRY);
+		if (0 < ag_start_bolts.value)
+			pPlayer->GiveAmmo(ag_start_bolts.value, "bolts", BOLT_MAX_CARRY);
+		if (0 < ag_start_rockets.value)
+			pPlayer->GiveAmmo(ag_start_rockets.value, "rockets", ROCKET_MAX_CARRY);
 	}
 }
 
