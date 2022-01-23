@@ -103,6 +103,9 @@ DLL_GLOBAL cvar_t	ag_bot_limit = CVar::Create("sv_ag_bot_limit", "5", FCVAR_SERV
 // Default: 1 - How many suicides will trigger for the player changing team during a match. 0 -> no penalty, 1 -> -1 frag & +1 death, 5 -> -5 frags & +5 deaths
 DLL_GLOBAL cvar_t	ag_match_teamchange_suicide_penalty = CVar::Create("sv_ag_match_teamchange_suicide_penalty", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
+// Default: 0 - Whether to have gauss/egon spend ammo or not
+DLL_GLOBAL cvar_t	ag_unlimited_uranium = CVar::Create("sv_ag_unlimited_uranium", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
 
 // ## Voting ##
 
@@ -499,6 +502,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_forcerespawn_time);
     CVAR_REGISTER(&ag_bot_limit);
     CVAR_REGISTER(&ag_match_teamchange_suicide_penalty);
+    CVAR_REGISTER(&ag_unlimited_uranium);
 
     // ## Voting ##
     CVAR_REGISTER(&ag_allow_vote);

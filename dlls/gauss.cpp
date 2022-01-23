@@ -169,7 +169,8 @@ void CGauss::PrimaryAttack()
 
 		m_fPrimaryFire = TRUE;
 
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 10;
+		if (ag_unlimited_uranium.value == 0.0f)
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 10;
 
 		StartFire();
 		m_fInAttack = 0;
@@ -197,7 +198,8 @@ void CGauss::PrimaryAttack()
 	m_pPlayer->m_iWeaponVolume = GAUSS_PRIMARY_FIRE_VOLUME;
 	m_fPrimaryFire = TRUE;
 
-	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 2;
+	if (ag_unlimited_uranium.value == 0.0f)
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 2;
 
 	StartFire();
 	m_fInAttack = 0;
@@ -250,7 +252,9 @@ void CGauss::SecondaryAttack()
 
 		m_fPrimaryFire = FALSE;
 
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;// take one ammo just to start the spin
+		if (ag_unlimited_uranium.value == 0.0f)
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;// take one ammo just to start the spin
+
 		m_pPlayer->m_flNextAmmoBurn = UTIL_WeaponTimeBase();
 
 		// spin up
@@ -283,7 +287,9 @@ void CGauss::SecondaryAttack()
 		// during the charging process, eat one bit of ammo every once in a while
 		if ( UTIL_WeaponTimeBase() >= m_pPlayer->m_flNextAmmoBurn && m_pPlayer->m_flNextAmmoBurn != 1000 )
 		{
-			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+			if (ag_unlimited_uranium.value == 0.0f)
+				m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+
 			m_pPlayer->m_flNextAmmoBurn = UTIL_WeaponTimeBase() + 0.1;
 		}
 

@@ -236,6 +236,8 @@ extern cvar_t ag_speedrun;
 extern cvar_t ag_countdown;
 extern cvar_t ag_log_cvars;
 
+extern cvar_t ag_unlimited_uranium;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 

@@ -175,6 +175,9 @@ BOOL CEgon::HasAmmo( void )
 
 void CEgon::UseAmmo( int count )
 {
+	if (ag_unlimited_uranium.value != 0.0f)
+		return;
+
 	if ( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] >= count )
 		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= count;
 	else
