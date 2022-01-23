@@ -527,6 +527,8 @@ void CBasePlayer :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector 
 #define ARMOR_RATIO	 0.2	// Armor Takes 80% of the damage
 #define ARMOR_BONUS  0.5	// Each Point of Armor is work 1/x points of health
 
+extern entvars_t *g_pevLastInflictor;
+
 int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
 	if (m_iLoading)
@@ -555,6 +557,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	float flBonus;
 	float flHealthPrev = pev->health;
 	float flArmorPrev = pev->armorvalue;
+	float flOriginalDamage;
 
 	flBonus = ARMOR_BONUS;
 	flRatio = ARMOR_RATIO;
@@ -564,6 +567,11 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		// blasts damage armor more.
 		flBonus *= 2;
 	}
+
+	flOriginalDamage = flDamage;
+
+	if (this == pAttacker)
+		flDamage *= ag_selfdamage.value;
 
 	// go take the damage first
 
@@ -580,10 +588,10 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	if (pev->armorvalue && !(bitsDamageType & (DMG_FALL | DMG_DROWN)) )// armor doesn't protect against fall or drown damage!
 	{
 		float flNew = flDamage * flRatio;
+		float flOriginalNew = flOriginalDamage * flRatio;
 
-		float flArmor;
-
-		flArmor = (flDamage - flNew) * flBonus;
+		float flArmor = (flDamage - flNew) * flBonus;
+		float flOriginalArmor = (flOriginalDamage - flOriginalNew) * flBonus;
 
 		// Does this use more armor than we have?
 		if (flArmor > pev->armorvalue)
@@ -595,27 +603,81 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		}
 		else
 			pev->armorvalue -= flArmor;
+
+		// Simulate the same for the case of modified self-damage (sv_ag_selfdamage)
+		if (flOriginalArmor > pev->armorvalue)
+		{
+			flOriginalArmor = pev->armorvalue;
+			flOriginalArmor *= (1/flBonus);
+			flOriginalNew = flOriginalDamage - flOriginalArmor;
+		}
 		
 		flDamage = flNew;
+		flOriginalDamage = flOriginalNew;
 	}
 
-	if (ag_gauss_fix.value >= 3.0f && this == pAttacker && pAttacker->m_pActiveItem->m_iId == WEAPON_GAUSS)
+	if (this == pAttacker)
 	{
+		// When it's self-damage we try to conserve the boost given by the damage that you would have taken
+		const auto realHpDamage = (int) flDamage;
+		auto boostedDamage = flOriginalDamage * ag_selfdamage_boost.value;
+
 		// Little hack to not die in CBaseMonster::TakeDamage
-		pev->health = pev->max_health + flDamage;
-		CBaseMonster::TakeDamage(pevInflictor, pevAttacker, (int)flDamage, bitsDamageType);
+		pev->health += (boostedDamage + 2);
 
-		// Restore the armor and hp. The previous CBaseMonster::TakeDamage has taken
-		// care of applying the velocity corresponding to the damage that we were
-		// to receive from the gauss boost
-		pev->health = flHealthPrev;
-		pev->armorvalue = flArmorPrev;
-		return 0;
+		if (ag_gauss_fix.value >= 3.0f && pAttacker->m_pActiveItem->m_iId == WEAPON_GAUSS)
+		{
+
+			CBaseMonster::TakeDamage(pevInflictor, pevAttacker, boostedDamage, bitsDamageType);
+
+			// Restore the armor and hp. The previous CBaseMonster::TakeDamage has taken
+			// care of applying the velocity corresponding to the damage that we were
+			// to receive from the gauss boost
+			pev->health = flHealthPrev;
+			pev->armorvalue = flArmorPrev;
+			return 0; // don't show the damage indicators etc.
+		}
+		else
+		{
+			CBaseMonster::TakeDamage(pevInflictor, pevAttacker, boostedDamage, bitsDamageType);
+
+			// Restore accounting for the actual damage that it would take
+			pev->health = flHealthPrev - realHpDamage;
+
+			// This is to display damage indicators accordingly
+			// We don't take it directly from CBaseMonster::TakeDamage
+			// because the returned damage is faked with the boostedDamage
+			fTookDamage = realHpDamage;
+
+			if ( pev->health <= 0 )
+			{
+				g_pevLastInflictor = pevInflictor;
+
+				if ( bitsDamageType & DMG_ALWAYSGIB )
+				{
+					Killed( pevAttacker, GIB_ALWAYS );
+				}
+				else if ( bitsDamageType & DMG_NEVERGIB )
+				{
+					Killed( pevAttacker, GIB_NEVER );
+				}
+				else
+				{
+					Killed( pevAttacker, GIB_NORMAL );
+				}
+
+				g_pevLastInflictor = NULL;
+
+				return 0;
+			}
+		}
 	}
-
-	// this cast to INT is critical!!! If a player ends up with 0.5 health, the engine will get that
-	// as an int (zero) and think the player is dead! (this will incite a clientside screentilt, etc)
-	fTookDamage = CBaseMonster::TakeDamage(pevInflictor, pevAttacker, (int)flDamage, bitsDamageType);
+	else
+	{
+		// this cast to INT is critical!!! If a player ends up with 0.5 health, the engine will get that
+		// as an int (zero) and think the player is dead! (this will incite a clientside screentilt, etc)
+		fTookDamage = CBaseMonster::TakeDamage(pevInflictor, pevAttacker, (int)flDamage, bitsDamageType);
+	}
 
 	// reset damage time countdown for each type of time based damage player just sustained
 

@@ -237,6 +237,8 @@ extern cvar_t ag_countdown;
 extern cvar_t ag_log_cvars;
 
 extern cvar_t ag_unlimited_uranium;
+extern cvar_t ag_selfdamage;
+extern cvar_t ag_selfdamage_boost;
 
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;

@@ -106,6 +106,12 @@ DLL_GLOBAL cvar_t	ag_match_teamchange_suicide_penalty = CVar::Create("sv_ag_matc
 // Default: 0 - Whether to have gauss/egon spend ammo or not
 DLL_GLOBAL cvar_t	ag_unlimited_uranium = CVar::Create("sv_ag_unlimited_uranium", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
+// Default: 1 - How much self-damage players take. 1 means normal, 0.5 means half
+DLL_GLOBAL cvar_t	ag_selfdamage = CVar::Create("sv_ag_selfdamage", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
+// Default: 1 - How much boost you get from damage. Works even when self-damage is disabled
+DLL_GLOBAL cvar_t	ag_selfdamage_boost = CVar::Create("sv_ag_selfdamage_boost", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+
 
 // ## Voting ##
 
@@ -503,6 +509,8 @@ void AgInitGame()
     CVAR_REGISTER(&ag_bot_limit);
     CVAR_REGISTER(&ag_match_teamchange_suicide_penalty);
     CVAR_REGISTER(&ag_unlimited_uranium);
+    CVAR_REGISTER(&ag_selfdamage);
+    CVAR_REGISTER(&ag_selfdamage_boost);
 
     // ## Voting ##
     CVAR_REGISTER(&ag_allow_vote);
