@@ -67,6 +67,7 @@ cvar_t	spgausscharging = { "sv_sp_gauss_charging", "0", FCVAR_SERVER }; // only 
 cvar_t 	*g_psv_gravity = NULL;
 cvar_t	*g_psv_aim = NULL;
 cvar_t	*g_footsteps = NULL;
+cvar_t	*g_timescale = nullptr;
 
 //CVARS FOR SKILL LEVEL SETTINGS
 // Agrunt
@@ -479,6 +480,22 @@ void GameDLLInit( void )
 	g_psv_gravity = CVAR_GET_POINTER( "sv_gravity" );
 	g_psv_aim = CVAR_GET_POINTER( "sv_aim" );
 	g_footsteps = CVAR_GET_POINTER( "mp_footsteps" );
+	
+	// Credits to suXinjke (https://github.com/suXinjke/HalfPayne/blob/cc42f6ee19c23b36c4e9fd14e89181e222f1d27c/dlls/game.cpp#L539)
+	g_timescale = (cvar_t*) ((char*) CVAR_GET_POINTER( "fps_max" ) - 36); // TODO: improve these C style casts?
+
+	const auto fpsMax = CVAR_GET_POINTER("fps_max");
+	auto isValid = !!fpsMax;
+	if (isValid)
+	{
+		isValid = std::abs(g_timescale->name - fpsMax->name) <= 1024; // heuristic
+		if (isValid)
+		{
+			// Fake Create(), only to track it
+			CVar::Create("sys_timescale", "1.0", 0, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+			CVAR_REGISTER(g_timescale);
+		}
+	}
 
 	CVar::Load();
 
