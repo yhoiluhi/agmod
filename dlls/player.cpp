@@ -5434,6 +5434,18 @@ void CStripWeapons :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 
 	if ( pPlayer )
 		pPlayer->RemoveAllItems( FALSE );
+
+	if (ag_unlimited_uranium.value != 0.0f)
+	{
+		if (ag_start_gauss.value > 0.0f)
+			pPlayer->GiveNamedItem("weapon_gauss");
+
+		if (ag_start_egon.value > 0.0f)
+			pPlayer->GiveNamedItem("weapon_egon");
+
+		if (ag_start_uranium.value > 0.0f)
+			pPlayer->GiveAmmo(ag_start_uranium.value, "uranium", URANIUM_MAX_CARRY);
+	}
 }
 
 
