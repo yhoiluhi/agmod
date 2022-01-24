@@ -641,6 +641,15 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		{
 			CBaseMonster::TakeDamage(pevInflictor, pevAttacker, boostedDamage, bitsDamageType);
 
+			// TODO: refactor repeated code here and in CBaseMonster::TakeDamage
+			// check for godmode or invincibility
+			if (pev->flags & FL_GODMODE)
+			{
+				pev->health = flHealthPrev;
+				pev->armorvalue = flArmorPrev;
+				return 0;
+			}
+
 			// Restore accounting for the actual damage that it would take
 			pev->health = flHealthPrev - realHpDamage;
 

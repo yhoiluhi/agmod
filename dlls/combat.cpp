@@ -867,18 +867,21 @@ int CBaseMonster :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker,
 			pev->dmg_inflictor = ENT(pevInflictor);
 
 		pev->dmg_take += flTake;
-
-		// check for godmode or invincibility
-		if ( pev->flags & FL_GODMODE )
-		{
-			return 0;
-		}
 	}
 
 	// if this is a player, move him around!
 	if ( ( !FNullEnt( pevInflictor ) ) && (pev->movetype == MOVETYPE_WALK) && (!pevAttacker || pevAttacker->solid != SOLID_TRIGGER) )
 	{
 		pev->velocity = pev->velocity + vecDir * -DamageForce( flDamage );
+	}
+
+	if (IsPlayer())
+	{
+		// check for godmode or invincibility
+		if (pev->flags & FL_GODMODE)
+		{
+			return 0;
+		}
 	}
 
 	// do the damage
