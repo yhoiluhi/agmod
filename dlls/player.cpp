@@ -593,6 +593,14 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		float flArmor = (flDamage - flNew) * flBonus;
 		float flOriginalArmor = (flOriginalDamage - flOriginalNew) * flBonus;
 
+		// Simulate how much HP damage it would be without the self-damage factor
+		if (flOriginalArmor > pev->armorvalue)
+		{
+			flOriginalArmor = pev->armorvalue;
+			flOriginalArmor *= (1/flBonus);
+			flOriginalNew = flOriginalDamage - flOriginalArmor;
+		}
+
 		// Does this use more armor than we have?
 		if (flArmor > pev->armorvalue)
 		{
@@ -603,14 +611,6 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		}
 		else
 			pev->armorvalue -= flArmor;
-
-		// Simulate the same for the case of modified self-damage (sv_ag_selfdamage)
-		if (flOriginalArmor > pev->armorvalue)
-		{
-			flOriginalArmor = pev->armorvalue;
-			flOriginalArmor *= (1/flBonus);
-			flOriginalNew = flOriginalDamage - flOriginalArmor;
-		}
 		
 		flDamage = flNew;
 		flOriginalDamage = flOriginalNew;
