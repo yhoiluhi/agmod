@@ -68,6 +68,7 @@ cvar_t 	*g_psv_gravity = NULL;
 cvar_t	*g_psv_aim = NULL;
 cvar_t	*g_footsteps = NULL;
 cvar_t	*g_timescale = nullptr;
+cvar_t	*g_cheats = nullptr;
 
 //CVARS FOR SKILL LEVEL SETTINGS
 // Agrunt
@@ -496,6 +497,8 @@ void GameDLLInit( void )
 			CVAR_REGISTER(g_timescale);
 		}
 	}
+
+	g_cheats = CVAR_GET_POINTER("sv_cheats");
 
 	CVar::Load();
 
