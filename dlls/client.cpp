@@ -147,7 +147,7 @@ void ClientDisconnect( edict_t *pEntity )
 // called by ClientKill and DeadThink
 void respawn(entvars_t* pev, BOOL fCopyCorpse)
 {
-	if (gpGlobals->coop || gpGlobals->deathmatch)
+	if ((gpGlobals->coop || gpGlobals->deathmatch) && singleplayer.value == 0.0f)
 	{
 //++ BulliT
 		if ( fCopyCorpse && pev->movetype != MOVETYPE_NOCLIP && 0 < ag_show_gibs.value)

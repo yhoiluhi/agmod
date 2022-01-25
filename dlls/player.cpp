@@ -5544,7 +5544,7 @@ void CRevertSaved :: MessageThink( void )
 
 void CRevertSaved :: LoadThink( void )
 {
-	if ( !gpGlobals->deathmatch )
+	if ( !gpGlobals->deathmatch || singleplayer.value != 0.0f )
 	{
 		SERVER_COMMAND("reload\n");
 	}
