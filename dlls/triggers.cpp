@@ -1490,14 +1490,20 @@ void CChangeLevel :: ChangeLevel( CBaseEntity *pActivator )
 		gpGlobals->vecLandmarkOffset = VARS(pentLandmark)->origin;
 	}
 
-	g_isUsingChangelevelTrigger = true;
-
 //	ALERT( at_console, "Level touches %d levels\n", ChangeList( levels, 16 ) );
-	ALERT( at_console, "CHANGE LEVEL: %s %s\n", st_szNextMap, st_szNextSpot );
-
-	if (g_bPostponeChangelevel)
-		g_pLastChangelevel = this;
+	const auto msg = UTIL_VarArgs("CHANGE LEVEL: %s %s\n", st_szNextMap, st_szNextSpot);
+	if (g_bPostponeChangelevel && ag_say_on_changelevel_delay.value != 0.0f)
+	{
+		if (g_pLastChangelevel != this)
+			UTIL_ServerMessage(msg);
+	}
 	else
+		ALERT(at_console, msg);
+
+	g_isUsingChangelevelTrigger = true;
+	g_pLastChangelevel = this;
+
+	if (!g_bPostponeChangelevel)
 		DoChangeLevel();
 }
 

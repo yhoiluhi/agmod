@@ -235,6 +235,7 @@ extern cvar_t ag_match_teamchange_suicide_penalty;
 extern cvar_t ag_speedrun;
 extern cvar_t ag_countdown;
 extern cvar_t ag_log_cvars;
+extern cvar_t ag_say_on_changelevel_delay;
 
 extern cvar_t ag_unlimited_uranium;
 extern cvar_t ag_selfdamage;

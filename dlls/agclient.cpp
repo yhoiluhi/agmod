@@ -352,8 +352,14 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
 
             g_bPostponeChangelevel = !g_bPostponeChangelevel;
 
-            // If this ever goes to multiplayer, change this AgConsole to UTIL_ClientPrintAll I guess
-            AgConsole(UTIL_VarArgs("Changelevel delay: %s", g_bPostponeChangelevel ? "ON" : "OFF"), pPlayer);
+            const auto msg = UTIL_VarArgs("Changelevel delay: %s\n", g_bPostponeChangelevel ? "ON" : "OFF");
+            if (ag_say_on_changelevel_delay.value != 0.0f)
+                UTIL_ServerMessage(msg);
+            else
+            {
+                // If this ever goes to multiplayer, change this AgConsole to UTIL_ClientPrintAll I guess
+                AgConsole(msg, pPlayer);
+            }
 
             return true;
         }
