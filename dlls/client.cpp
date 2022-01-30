@@ -734,7 +734,6 @@ void ServerActivate( edict_t *pEdictList, int edictCount, int clientMax )
 	}
 
 	g_isRestoring = false;
-	g_isUsingChangelevelTrigger = false;
 
 	// Clients have not been initialized yet
 	for ( i = 0; i < edictCount; i++ )

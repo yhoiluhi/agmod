@@ -2055,6 +2055,8 @@ void CBasePlayer::UpdateStatusBar()
 #define	CLIMB_PUNCH_X			-7  // how far to 'punch' client X axis when climbing
 #define CLIMB_PUNCH_Z			7	// how far to 'punch' client Z axis when climbing
 
+extern bool g_isUsingChangelevelTrigger;
+
 void CBasePlayer::PreThink(void)
 {
 	int buttonsChanged = (m_afButtonLast ^ pev->button);	// These buttons have changed this frame
@@ -2070,6 +2072,11 @@ void CBasePlayer::PreThink(void)
 
 	if ( g_fGameOver )
 		return;         // intermission or finale
+
+	if (ag_unstuck_on_changelevel.value != 0.0f && g_isUsingChangelevelTrigger && IsStuck())
+		UnstuckTowardsChangelevel();
+
+	g_isUsingChangelevelTrigger = false;
 
 	if ( m_fFpsMaxNextQuery <= gpGlobals->time && !(pev->flags & FL_FAKECLIENT) )
 	{
@@ -2829,7 +2836,6 @@ void CBasePlayer :: UpdatePlayerSound ( void )
 	//ALERT ( at_console, "%d/%d\n", iVolume, m_iTargetVolume );
 }
 
-extern bool g_isUsingChangelevelTrigger;
 
 void CBasePlayer::PostThink()
 {
@@ -3073,7 +3079,6 @@ pt_end:
 		if ( m_flAmmoStartCharge < -0.001 )
 			m_flAmmoStartCharge = -0.001;
 	}
-	
 
 #else
 	return;
@@ -6548,3 +6553,48 @@ void CBasePlayer::StopGameRecording()
 	CLIENT_COMMAND(edict(), "stop\n");
 	m_bRecording = false;
 }
+
+void CBasePlayer::UnstuckTowardsChangelevel()
+{
+	if (!g_isUsingChangelevelTrigger)
+		return;
+
+	// Find the closest landmark and use it as a reference to unstuck towards its origin,
+	// because we assume it's in a passable position and should be right behind the stuck point,
+	// without turns or anything that could make it unstuck towards a wrong direction
+	// Edit: wrong assumption, but now you can change how many unstuck attempts you want, and that
+	// fixes it for some cases. 100 attempts seems good enough
+
+	float closestDist = WORLD_BOUNDARY_DIST * 2.0f;
+	CBaseEntity* closestLandmark = nullptr;
+
+	CBaseEntity* pLandmark = NULL;
+	while ((pLandmark = UTIL_FindEntityByClassname(pLandmark, "info_landmark")) != NULL)
+	{
+		const auto dist = pLandmark->DistanceTo(this);
+		if (dist < closestDist)
+		{
+			closestDist = dist;
+			closestLandmark = pLandmark;
+		}
+	}
+
+	if (!closestLandmark)
+		return;
+
+	Unstuck(closestLandmark->pev->origin);
+}
+
+void CBasePlayer::Unstuck(Vector towardsPoint)
+{
+	const auto amountToMove = (pev->origin - towardsPoint).Normalize();
+
+	for (auto i = static_cast<int>(ag_unstuck_max_attempts.value); i > 0; i--)
+	{
+		pev->origin = pev->origin - amountToMove;
+
+		if (!IsStuck())
+			break;
+	}
+}
+

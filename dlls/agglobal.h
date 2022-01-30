@@ -241,6 +241,9 @@ extern cvar_t ag_unlimited_uranium;
 extern cvar_t ag_selfdamage;
 extern cvar_t ag_selfdamage_boost;
 
+extern cvar_t ag_unstuck_on_changelevel;
+extern cvar_t ag_unstuck_max_attempts;
+
 extern bool g_bLangame;
 extern bool g_bUseTeamColors;
 

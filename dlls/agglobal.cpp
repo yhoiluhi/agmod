@@ -112,6 +112,11 @@ DLL_GLOBAL cvar_t	ag_selfdamage = CVar::Create("sv_ag_selfdamage", "1", FCVAR_SE
 // Default: 1 - How much boost you get from damage. Works even when self-damage is disabled
 DLL_GLOBAL cvar_t	ag_selfdamage_boost = CVar::Create("sv_ag_selfdamage_boost", "1", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 
+DLL_GLOBAL cvar_t	ag_unstuck_on_changelevel = CVar::Create("sv_ag_unstuck_on_changelevel", "1");
+
+// 100 attempts works for the pipe after c2p, some pipe after meatgrab and vortigaunts the before barney skip
+DLL_GLOBAL cvar_t	ag_unstuck_max_attempts = CVar::Create("sv_ag_unstuck_max_attempts", "100");
+
 
 // ## Voting ##
 
@@ -514,6 +519,8 @@ void AgInitGame()
     CVAR_REGISTER(&ag_unlimited_uranium);
     CVAR_REGISTER(&ag_selfdamage);
     CVAR_REGISTER(&ag_selfdamage_boost);
+    CVAR_REGISTER(&ag_unstuck_on_changelevel);
+    CVAR_REGISTER(&ag_unstuck_max_attempts);
 
     // ## Voting ##
     CVAR_REGISTER(&ag_allow_vote);

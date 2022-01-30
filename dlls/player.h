@@ -536,6 +536,10 @@ public:
 	void StopGameRecording();
 
 	bool HasVotingRestrictions();
+
+	bool IsStuck();
+	void UnstuckTowardsChangelevel();
+	void Unstuck(Vector towardsPoint);
 };
 //++ BulliT
 inline const char* CBasePlayer::GetAuthID()
@@ -625,6 +629,16 @@ inline bool CBasePlayer::IsBot()
 {
 	return pev->flags & FL_FAKECLIENT;
 };
+
+inline bool CBasePlayer::IsStuck()
+{
+	const auto hull = pev->flags & FL_DUCKING ? head_hull : human_hull;
+
+	TraceResult trace;
+	UTIL_TraceHull(pev->origin, pev->origin, dont_ignore_monsters, hull, edict(), &trace);
+
+	return trace.fStartSolid == 1;
+}
 
 // Spectator Movement modes (stored in pev->iuser1, so the physics code can get at them)
 #define OBS_NONE				0
