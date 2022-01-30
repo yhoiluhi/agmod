@@ -915,14 +915,13 @@ void AgChangelevel(const AgString& sLevelname)
 
 void AgConsole(const AgString& sText, CBasePlayer* pPlayer)
 {
+    // We add a line break if there isn't one already
+    const auto msg = UTIL_EndsWith(sText, "\n") ? sText.c_str() : UTIL_VarArgs("%s\n", sText.c_str());
+
     if (pPlayer && pPlayer->pev)
-    {
-        ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, UTIL_VarArgs("%s\n", sText.c_str()));
-    }
+        ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, msg);
     else
-    {
-        g_engfuncs.pfnServerPrint(UTIL_VarArgs("%s\n", sText.c_str()));
-    }
+        g_engfuncs.pfnServerPrint(msg);
 }
 
 void AgConsoleLarge(AgString sText, CBasePlayer* pPlayer)
