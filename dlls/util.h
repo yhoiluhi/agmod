@@ -572,3 +572,4 @@ float UTIL_WeaponTimeBase( void );
 
 bool UTIL_IsPointInEntity(Vector point, CBaseEntity* entity);
 bool UTIL_EndsWith(const std::string& str, const std::string& suffix);
+std::string UTIL_GetFormattedTime(double timeSeconds);

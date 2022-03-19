@@ -198,6 +198,8 @@ namespace SpeedrunStats
 			avgSpeed2D = runDistance2D / runTime;
 		}
 
+		const auto formattedTime = UTIL_GetFormattedTime(runTime);
+
 		std::string msg;
 		msg.append("-------------------\n");
 		msg.append("     Run Stats\n");
@@ -210,7 +212,7 @@ namespace SpeedrunStats
 		msg.append(UTIL_VarArgs("Avg. Speed 2D: %.2f\n", avgSpeed2D));
 		msg.append(UTIL_VarArgs("Loads: %ld\n", runLoads));
 		msg.append(UTIL_VarArgs("Resets: %ld\n", runResets));
-		msg.append(UTIL_VarArgs("Time w/ loads: %.3f\n", runTime));
+		msg.append(UTIL_VarArgs("Time w/ loads: %s\n", formattedTime.c_str()));
 		msg.append("-------------------\n");
 
 		AgConsoleLarge(msg, nullptr);
@@ -220,22 +222,12 @@ namespace SpeedrunStats
 	{
 		// TODO: refactor similar code, in AgGameRules::GoToIntermission()
         const auto runTime = AgTime() - runStartTime;
-        const auto truncatedTime = static_cast<int>(std::trunc(runTime));
-    
-        const auto hours = truncatedTime / 3600;
-        const auto minutes = (truncatedTime / 60) - (hours * 60);
-	    const auto seconds = runTime - (60 * static_cast<double>(minutes)) - (static_cast<double>(hours) * 3600);
-    
-        AgString durationMsg;
 
-        if (hours > 0)
-            durationMsg = UTIL_VarArgs("\nRun duration: %d:%02d:%06.3f\n", hours, minutes, seconds);
-        else if (minutes > 0)
-            durationMsg = UTIL_VarArgs("\nRun duration: %d:%06.3f\n", minutes, seconds);
-        else
-            durationMsg = UTIL_VarArgs("\nRun duration: %.3f\n", seconds);
+		const auto formattedTime = UTIL_GetFormattedTime(runTime);
+    
+        AgString msg = UTIL_VarArgs("\nRun duration: %s\n", formattedTime.c_str());
 
-		AgConsole(durationMsg);
+		AgConsole(msg);
 	}
 
 	void EndRun()

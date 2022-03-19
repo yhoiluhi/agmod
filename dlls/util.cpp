@@ -2627,3 +2627,23 @@ bool UTIL_EndsWith(const std::string& str, const std::string& suffix)
     return str.size() >= suffix.size() &&
            str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
+
+std::string UTIL_GetFormattedTime(double timeSeconds)
+{
+    std::string time;
+
+    const auto truncatedTime = static_cast<int>(std::trunc(timeSeconds));
+    
+    const auto hours = truncatedTime / 3600;
+    const auto minutes = (truncatedTime / 60) - (hours * 60);
+	const auto seconds = timeSeconds - (60.0 * minutes) - (hours * 3600.0);
+
+    if (hours > 0)
+        time = UTIL_VarArgs("%d:%02d:%06.3f\n", hours, minutes, seconds);
+    else if (minutes > 0)
+        time = UTIL_VarArgs("%d:%06.3f\n", minutes, seconds);
+    else
+        time = UTIL_VarArgs("%.3f\n", seconds);
+
+	return time;
+}

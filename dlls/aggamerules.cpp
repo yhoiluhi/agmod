@@ -959,21 +959,12 @@ void AgGameRules::GoToIntermission()
     if (ag_speedrun.value != 0.0f && g_flSpeedrunStartTime > 0.0f && fraglimit.value != 0.0f)
     {
         const auto runTime = gpGlobals->time - g_flSpeedrunStartTime;
-        const auto truncatedTime = static_cast<int>(std::trunc(runTime));
-    
-        const auto hours = truncatedTime / 3600;
-        const auto minutes = (truncatedTime / 60) - (hours * 60);
-	    const auto seconds = runTime - (60 * minutes) - (hours * 3600);
-    
-        AgString durationMsg;
-        AgString seedMsg;
 
-        if (hours > 0)
-            durationMsg = UTIL_VarArgs("Game duration: %d:%02d:%06.3f\n", hours, minutes, seconds);
-        else if (minutes > 0)
-            durationMsg = UTIL_VarArgs("Game duration: %d:%06.3f\n", minutes, seconds);
-        else
-            durationMsg = UTIL_VarArgs("Game duration: %.3f\n", seconds);
+        const auto formattedTime = UTIL_GetFormattedTime(runTime);
+    
+        AgString durationMsg = UTIL_VarArgs("Game duration: %s\n", formattedTime.c_str());
+
+        AgString seedMsg;
 
         const auto seed = g_spawnRNG.GetSeed();
         if (seed == 0)
