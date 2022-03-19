@@ -682,6 +682,7 @@ void AgCommand::AddRespawningStaticBot(CBasePlayer* pPlayer)
     pBot->Init();
     pBot->m_bRespawning = true;
     pBot->m_flLastThinkTime = gpGlobals->time - 0.1;
+    pBot->m_bAgBot = true;
 
     pBot->Spawn();
     pev->flags |= FL_FAKECLIENT; // bot is fakeclient

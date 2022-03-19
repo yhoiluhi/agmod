@@ -124,6 +124,9 @@ bool AgGameRules::AgThink()
         if (!player->IsBot())
             continue;
 
+        if (!player->IsAgBot())
+            continue; // don't wanna mess up bots added by addons/plugins
+
         player->BotThink();
     }
 

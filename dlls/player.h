@@ -443,6 +443,8 @@ public:
 
 	double m_flLastGamemodeVarsRequest;
 
+	bool m_bAgBot;
+
 	void          Init();     //Init all extra variables.
 	const char* GetAuthID(); //Get steam ID
 	const char* GetName();  //Get name
@@ -540,6 +542,8 @@ public:
 	bool IsStuck();
 	void UnstuckTowardsChangelevel();
 	void Unstuck(Vector towardsPoint);
+
+	bool IsAgBot();
 };
 //++ BulliT
 inline const char* CBasePlayer::GetAuthID()
@@ -638,6 +642,11 @@ inline bool CBasePlayer::IsStuck()
 	UTIL_TraceHull(pev->origin, pev->origin, dont_ignore_monsters, hull, edict(), &trace);
 
 	return trace.fStartSolid == 1;
+}
+
+inline bool CBasePlayer::IsAgBot()
+{
+	return m_bAgBot;
 }
 
 // Spectator Movement modes (stored in pev->iuser1, so the physics code can get at them)
