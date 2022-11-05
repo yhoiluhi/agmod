@@ -23,7 +23,7 @@
 #include "pm_shared.h"
 #include "pm_movevars.h"
 #include "pm_debug.h"
-#include "speedrunstats.h"
+#include "../dlls/speedrunstats.h"
 #include <stdio.h>  // NULL
 #include <math.h>   // sqrt
 #include <string.h> // strcpy
