@@ -131,7 +131,7 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
             pPlayer->Spectate_Spectate();
         return true;
     }
-    else if (FStrEq(CMD_ARGV(0), "follownext") && 2 == CMD_ARGC() && (pPlayer->pev->flags & FL_SPECTATOR))
+    else if (FStrEq(CMD_ARGV(0), "follownext") && 2 == CMD_ARGC())
     {
         bool bReverse = 1 == atoi(CMD_ARGV(1));
         pPlayer->Spectate_Nextplayer(bReverse);

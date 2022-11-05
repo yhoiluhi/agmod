@@ -254,7 +254,7 @@ void CBasePlayer::Spectate_Nextplayer(bool bReverse)
     if (!pev)
         return;
 
-    if (IsProxy())
+    if (IsProxy() || !IsSpectator())
         return;
 
     // MOD AUTHORS: Modify the logic of this function if you want to restrict the observer to watching
@@ -322,7 +322,7 @@ void CBasePlayer::Spectate_HandleButtons()
     if (!pev)
         return;
 
-    if (IsProxy())
+    if (IsProxy() || !IsSpectator())
         return;
 
     // Slow down mouse clicks
@@ -517,7 +517,7 @@ void CBasePlayer::Spectate_Nextspot(bool bReverse)
     if (!pev || !g_pGameRules)
         return;
 
-    if (IsProxy())
+    if (IsProxy() || !IsSpectator())
         return;
 
     m_iSpot += bReverse ? -1 : 1;
@@ -536,7 +536,7 @@ void CBasePlayer::Spectate_Nextspot(bool bReverse)
 
 bool CBasePlayer::Spectate_Follow(EHANDLE& pPlayer, int iMode)
 {
-    if (IsProxy())
+    if (IsProxy() || !IsSpectator())
         return true;
 
     m_hSpectateTarget = pPlayer;
