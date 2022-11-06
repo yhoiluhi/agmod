@@ -1705,6 +1705,9 @@ void CBasePlayer::PlayerUse ( void )
 	if ( ! ((pev->button | m_afButtonPressed | m_afButtonReleased) & IN_USE) )
 		return;
 
+	if ( (pev->button & IN_USE) && (pev->flags & FL_SPECTATOR) )
+		return;
+
 	// Hit Use on a train?
 	if ( m_afButtonPressed & IN_USE )
 	{
