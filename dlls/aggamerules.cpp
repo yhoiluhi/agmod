@@ -994,7 +994,7 @@ void AgGameRules::GoToIntermission()
                 msg.append(UTIL_VarArgs("- %s [%s -> %s]\n",
                     changedCVar.name.c_str(), changedCVar.defaultValue.c_str(), changedCVar.changedValue.c_str()));
             }
-            AgConsoleLarge(msg);
+            AgConsole(msg);
         }
         else
             AgConsole("There was no gamemode-related cvar changed by the end of this game");

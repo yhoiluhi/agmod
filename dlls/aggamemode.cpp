@@ -357,7 +357,7 @@ void AgGameMode::ExecConfig()
             {
                 msg.append(UTIL_VarArgs("-> %s: %s\n", entry.first.c_str(), entry.second.c_str()));
             }
-            AgConsoleLarge(msg);
+            AgConsole(msg);
         }
 
         if (ag_log_cvars.value >= 1.0f)
@@ -373,7 +373,7 @@ void AgGameMode::ExecConfig()
                     msg.append(UTIL_VarArgs("- %s [%s -> %s]\n",
                         changedCVar.name.c_str(), changedCVar.defaultValue.c_str(), changedCVar.changedValue.c_str()));
                 }
-                AgConsoleLarge(msg);
+                AgConsole(msg);
             }
             else
                 AgConsole("No gamemode-related cvar is changed");

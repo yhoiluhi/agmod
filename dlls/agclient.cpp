@@ -299,7 +299,7 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
                 msg.append(UTIL_VarArgs("- %s [%s -> %s]\n",
                     changedCVar.name.c_str(), changedCVar.defaultValue.c_str(), changedCVar.changedValue.c_str()));
             }
-            AgConsoleLarge(msg, pPlayer);
+            AgConsole(msg, pPlayer);
         }
         else
             AgConsole("No gamemode-related cvar changed", pPlayer);
@@ -321,7 +321,7 @@ bool AgClient::HandleCommand(CBasePlayer* pPlayer)
         {
             msg.append(UTIL_VarArgs("-> %s: %s\n", entry.first.c_str(), entry.second.c_str()));
         }
-        AgConsoleLarge(msg, pPlayer);
+        AgConsole(msg, pPlayer);
 
         return true;
     }

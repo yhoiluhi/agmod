@@ -182,7 +182,7 @@ namespace SpeedrunStats
 		msg.append(UTIL_VarArgs("Attempts: %ld\n", attempts));
 		msg.append("-------------------\n");
 
-		AgConsoleLarge(msg, nullptr);
+		AgConsole(msg, nullptr);
 	}
 
 	void PrintRun()
@@ -215,7 +215,7 @@ namespace SpeedrunStats
 		msg.append(UTIL_VarArgs("Time w/ loads: %s\n", formattedTime.c_str()));
 		msg.append("-------------------\n");
 
-		AgConsoleLarge(msg, nullptr);
+		AgConsole(msg, nullptr);
 	}
 
 	void ShowRunTime()

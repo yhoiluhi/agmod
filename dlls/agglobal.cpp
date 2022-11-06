@@ -923,24 +923,16 @@ void AgChangelevel(const AgString& sLevelname)
 void AgConsole(const AgString& sText, CBasePlayer* pPlayer)
 {
     // We add a line break if there isn't one already
-    const auto msg = UTIL_EndsWith(sText, "\n") ? sText.c_str() : UTIL_VarArgs("%s\n", sText.c_str());
-
-    if (pPlayer && pPlayer->pev)
-        ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, msg);
-    else
-        g_engfuncs.pfnServerPrint(msg);
-}
-
-void AgConsoleLarge(AgString sText, CBasePlayer* pPlayer)
-{
-    if (!UTIL_EndsWith(sText, "\n"))
-        sText.append("\n");
+    const AgString& msg = UTIL_EndsWith(sText, "\n") ? sText.c_str() : UTIL_VarArgs("%s\n", sText.c_str());
 
     // Split the message into chunks, because only the first 127 bytes of the message are displayed
     // on the client's console, and this is potentially longer than that
-    for (size_t i = 0; i < sText.size(); i += 127)
+    for (size_t i = 0; i < msg.size(); i += 127)
     {
-        AgString chunk = sText.substr(i, 127);
+        AgString chunk = msg;
+        if (msg.size() > 127)
+            chunk = msg.substr(i, 127);
+
         if (pPlayer && pPlayer->pev)
             ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, chunk.c_str());
         else
