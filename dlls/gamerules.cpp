@@ -352,6 +352,7 @@ AgGameRules* InstallGameRules(void)
 		SERVER_COMMAND(UTIL_VarArgs("exec %s\n", servercfgfile));
 		SERVER_EXECUTE();
 	}
+	CVar::StopRecordingServerChanges();
 
 #ifndef AG_NO_CLIENT_DLL
 	if (ag_gamemode_auto.value > 0.0f)
@@ -373,7 +374,6 @@ AgGameRules* InstallGameRules(void)
 		}
 	}
 #endif
-	CVar::StopRecordingServerChanges();
 
 	//Execute my rules just before allocating what class to use. 
 	//This ensures that all is set correctly. Server.cfg can override my vars with no trouble.
