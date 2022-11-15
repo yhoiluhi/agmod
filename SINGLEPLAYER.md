@@ -7,7 +7,9 @@ which is automatically executed right before the first map loads, thus you don't
 Singleplayer in AG has some quirks. It uses most of the multiplayer features, like vertical gauss boosting, constant 10hp falldamage...
 and some more stuff not related to multiplayer, like dead corpses being non-solid, fixes for some common crashes... you can find the changes below.
 
-If you want to run the AG% speedrunning category, there's this [AG speedrunning package](https://drive.google.com/open?id=1hSErqgUqDmbJCYJZLAHsrfC6NziW1494) that includes some fixes to the HL1 campaign maps to make them more compatible with AG and have nicer speedruns. You need AG installed, and then replace the files in your installation with the ones from the package, but make sure you backup your files just in case. You'll also need to inject the BunnymodXT included in the speedrunning package (backup your current one or put this somewhere else), which is not
+_TO DO: Update the AG speedrunning package_
+
+If you want to run the AG% speedrunning category, there's this [(OUTDATED) AG speedrunning package](https://drive.google.com/open?id=1hSErqgUqDmbJCYJZLAHsrfC6NziW1494) that includes some fixes to the HL1 campaign maps to make them more compatible with AG and have nicer speedruns. You need AG installed, and then replace the files in your installation with the ones from the package, but make sure you backup your files just in case. You'll also need to inject the BunnymodXT included in the speedrunning package (backup your current one or put this somewhere else), which is not
 merged yet with the [official BunnymodXT](https://github.com/YaLTeR/BunnymodXT), but it will be in the future after more testing and some fixes that are pending (e.g.: `bxt_autopause` not working on AG apparently).
 You inject it the same way we do for HL1 speedrunning. There's a `speedrun.cfg` in there for the required cvars to run AG%, an `example.cfg` to check some useful cvars and aliases, and some demos to learn the first chapter of the game, that you can replay with `startdemos start_1 start_2 start_3 start_4 start_5 start_6`.
 
@@ -61,6 +63,8 @@ These are the changes to singleplayer in AG 6.7 when compared to HL Steam, and s
 - HEV chargers now give at maximum 30 AP.
 - Now you start with crowbar and glock in the campaign or map.
 - Now scientists and barneys have +50 and +30 hp respectively, to be balanced with the increased weapon damage.
+- Fixed getting stuck on walls or other brushes after a changelevel (e.g.: ST pipe, after the pipe2pipe strat).
+- Fixed NPCs not being able to open doors on saveload.
 
 ## Known issues
 Some of these are specific to the HL campaign.
