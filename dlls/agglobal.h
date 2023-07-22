@@ -182,6 +182,7 @@ extern cvar_t ag_spawn_pa_audible_chance;
 extern cvar_t ag_spawn_pa_safe_chance;
 extern cvar_t ag_spawn_seed;
 
+extern cvar_t ag_fov_limit;
 extern cvar_t ag_fps_limit;
 extern cvar_t ag_fps_limit_auto;
 extern cvar_t ag_fps_limit_check_interval;

@@ -101,6 +101,7 @@ enum sbar_data
 enum request_ids
 {
 	REQUEST_ID_FPS_MAX = 1,
+	REQUEST_ID_DEFAULT_FOV,
 };
 
 #define CHAT_INTERVAL 1.0f
@@ -423,6 +424,7 @@ public:
 
 	// Used for framerate limitation
 	float m_flFpsMax;
+	float m_flDefaultFov;
 
 	std::string m_UserInfoName;
 

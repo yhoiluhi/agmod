@@ -195,7 +195,31 @@ CBaseEntity* CSpawnChooser::GetRandomSpawnPoint()
 		// If this gets to find a spot then there's some bug, the vector containing spawns shouldn't be empty
 		return GetClassicSpawnPoint();
 	}
-	return g_spawnPoints[GetRandomNumber(0, g_spawnPoints.size() - 1)];
+
+	static int previous_spawn = -1;
+
+	// First spawn
+	if (previous_spawn == -1)
+	{
+		int random_number = GetRandomNumber(0, g_spawnPoints.size() - 1);
+		previous_spawn = random_number;
+
+		return g_spawnPoints[random_number];
+	}
+
+	// Shift upper spawns in order to prevent repeating spawnpoints
+	int random_number = GetRandomNumber(0, g_spawnPoints.size() - 2);
+	if (random_number >= previous_spawn)
+	{
+		random_number = random_number + 1;
+		previous_spawn = random_number;
+
+		return g_spawnPoints[random_number];
+	}
+
+	previous_spawn = random_number;
+
+	return g_spawnPoints[random_number];
 }
 
 // Get a random spawn point with increased chances that it will be a spawn far from some opponent,

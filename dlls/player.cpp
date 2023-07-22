@@ -1545,7 +1545,7 @@ void CBasePlayer::PlayerDeathThink(void)
 // wait for any button down,  or mp_forcerespawn is set and the respawn time is up
   //++ BulliT
   //Don't trigg on any button - just attack button.
-  if ( !(pev->button & IN_ATTACK || pev->button & IN_USE) && !( g_pGameRules->IsMultiplayer() && CVAR_GET_FLOAT("mp_forcerespawn") > 0
+  if ( !(pev->button & IN_ATTACK || pev->button & IN_USE) && !( g_pGameRules->IsMultiplayer()
 	  && (gpGlobals->time > (m_flLastUnaliveTime + ag_forcerespawn_time.value) ) ) )
     return;
   //-- Martin Webrant
@@ -2084,6 +2084,7 @@ void CBasePlayer::PreThink(void)
 	if ( m_fFpsMaxNextQuery <= gpGlobals->time && !(pev->flags & FL_FAKECLIENT) )
 	{
 		g_engfuncs.pfnQueryClientCvarValue2(edict(), "fps_max", request_ids::REQUEST_ID_FPS_MAX);
+		g_engfuncs.pfnQueryClientCvarValue2(edict(), "default_fov", request_ids::REQUEST_ID_DEFAULT_FOV);
 		m_fFpsMaxNextQuery = gpGlobals->time + ag_fps_limit_check_interval.value;
 	}
 
@@ -6288,59 +6289,106 @@ bool CBasePlayer::ShouldLimitFps()
 void CBasePlayer::LimitFps()
 {
 	auto fpsLimit = ag_fps_limit.value;
+	auto defaultfovLimit = ag_fov_limit.value;
 
-	if (fpsLimit == 0)
-		return;
-
-	if (fpsLimit < MIN_FPS_LIMIT)
+	if (fpsLimit != 0.0)
 	{
-		fpsLimit = MIN_FPS_LIMIT;
-		CVAR_SET_FLOAT("ag_fps_limit", MIN_FPS_LIMIT);
-	}
-
-	if (ag_fps_limit_steampipe.value > 0)
-		fpsLimit -= 0.5;
-
-	if (fpsLimit >= m_flFpsMax)
-		return;
-
-	if (m_flNextFpsWarning < gpGlobals->time)
-	{
-		CLIENT_COMMAND(edict(), "fps_max %.6f\n", fpsLimit);
-
-		m_flNextFpsWarning = gpGlobals->time + ag_fps_limit_warnings_interval.value;
-		m_iFpsWarnings++;
-
-		char text[80];
-		sprintf(text, "Warning #%d: Please, set your fps_max to %.2f or less!\n", m_iFpsWarnings, fpsLimit);
-		UTIL_SayText(text, this);
-	}
-
-	if (m_iFpsWarnings > ag_fps_limit_warnings.value)
-	{
-		const auto punishment = ag_fps_limit_punishment.string;
-		
-		if (FStrEq(punishment, "slap"))
+		if (fpsLimit < MIN_FPS_LIMIT)
 		{
-			if (m_flNextSlap < gpGlobals->time)
+			fpsLimit = MIN_FPS_LIMIT;
+			CVAR_SET_FLOAT("ag_fps_limit", MIN_FPS_LIMIT);
+		}
+
+		if (ag_fps_limit_steampipe.value > 0)
+			fpsLimit -= 0.5;
+
+		if (fpsLimit < m_flFpsMax)
+		{
+			if (m_flNextFpsWarning < gpGlobals->time)
 			{
-				m_flNextSlap = gpGlobals->time + ag_fps_limit_punishment_slap_interval.value;
-				Slap(ag_fps_limit_punishment_slap_intensity.value);
+				//CLIENT_COMMAND(edict(), "fps_max %.6f\n", fpsLimit);
+
+				m_flNextFpsWarning = gpGlobals->time + ag_fps_limit_warnings_interval.value;
+				m_iFpsWarnings++;
+
+				char text[80];
+				sprintf(text, "Warning #%d: Please, set your fps_max to %.2f or less!\n", m_iFpsWarnings, fpsLimit);
+				UTIL_SayText(text, this);
+			}
+
+			if (m_iFpsWarnings > ag_fps_limit_warnings.value)
+			{
+				const auto punishment = ag_fps_limit_punishment.string;
+
+				if (FStrEq(punishment, "slap"))
+				{
+					if (m_flNextSlap < gpGlobals->time)
+					{
+						m_flNextSlap = gpGlobals->time + ag_fps_limit_punishment_slap_interval.value;
+						Slap(ag_fps_limit_punishment_slap_intensity.value);
+					}
+				}
+				else if (FStrEq(punishment, "ban"))
+				{
+					char szCommand[96];
+					sprintf(szCommand, "banid %d #%d kick\n", static_cast<int>(ag_fps_limit_punishment_ban_time.value), GETPLAYERUSERID(edict()));
+					SERVER_COMMAND(szCommand);
+				}
+				else
+				{
+					// TODO: doesn't work in singleplayer, think about what we should do instead,
+					// it will just print annoying warnings forever otherwise
+					char szCommand[64];
+					sprintf(szCommand, "kick #%d\n", GETPLAYERUSERID(edict()));
+					SERVER_COMMAND(szCommand);
+				}
 			}
 		}
-		else if (FStrEq(punishment, "ban"))
+	}
+
+	if (defaultfovLimit != 0.0)
+	{
+		if (defaultfovLimit > m_flDefaultFov)
 		{
-			char szCommand[96];
-			sprintf(szCommand, "banid %d #%d kick\n", static_cast<int>(ag_fps_limit_punishment_ban_time.value), GETPLAYERUSERID(edict()));
-			SERVER_COMMAND(szCommand);
-		}
-		else
-		{
-			// TODO: doesn't work in singleplayer, think about what we should do instead,
-			// it will just print annoying warnings forever otherwise
-			char szCommand[64];
-			sprintf(szCommand, "kick #%d\n", GETPLAYERUSERID(edict()));
-			SERVER_COMMAND(szCommand);
+			if (m_flNextFpsWarning < gpGlobals->time)
+			{
+				//CLIENT_COMMAND(edict(), "default_fov %.6f\n", defaultfovLimit);
+
+				m_flNextFpsWarning = gpGlobals->time + ag_fps_limit_warnings_interval.value;
+				m_iFpsWarnings++;
+
+				char text[80];
+				sprintf(text, "Warning #%d: Please, set your default_fov to %.2f or more!\n", m_iFpsWarnings, defaultfovLimit);
+				UTIL_SayText(text, this);
+			}
+
+			if (m_iFpsWarnings > ag_fps_limit_warnings.value)
+			{
+				const auto punishment = ag_fps_limit_punishment.string;
+
+				if (FStrEq(punishment, "slap"))
+				{
+					if (m_flNextSlap < gpGlobals->time)
+					{
+						m_flNextSlap = gpGlobals->time + ag_fps_limit_punishment_slap_interval.value;
+						Slap(ag_fps_limit_punishment_slap_intensity.value);
+					}
+				}
+				else if (FStrEq(punishment, "ban"))
+				{
+					char szCommand[96];
+					sprintf(szCommand, "banid %d #%d kick\n", static_cast<int>(ag_fps_limit_punishment_ban_time.value), GETPLAYERUSERID(edict()));
+					SERVER_COMMAND(szCommand);
+				}
+				else
+				{
+					// TODO: doesn't work in singleplayer, think about what we should do instead,
+					// it will just print annoying warnings forever otherwise
+					char szCommand[64];
+					sprintf(szCommand, "kick #%d\n", GETPLAYERUSERID(edict()));
+					SERVER_COMMAND(szCommand);
+				}
+			}
 		}
 	}
 }
@@ -6525,6 +6573,7 @@ void CBasePlayer::Init()
 	m_bSentCheatCheck = false;
 
 	m_flFpsMax = 0.0;
+	m_flDefaultFov = 0.0;
 	m_iFpsWarnings = 0;
 	m_flNextFpsWarning = gpGlobals->time + ag_fps_limit_warnings_interval.value;
 	m_flNextSlap = gpGlobals->time;

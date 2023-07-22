@@ -34,7 +34,7 @@ cvar_t	timelimit      = CVar::Create("mp_timelimit", "0", FCVAR_SERVER, CCVAR_VO
 cvar_t	friendlyfire   = CVar::Create("mp_friendlyfire", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 cvar_t	falldamage     = CVar::Create("mp_falldamage", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 cvar_t	weaponstay     = CVar::Create("mp_weaponstay", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
-cvar_t	forcerespawn   = CVar::Create("mp_forcerespawn", "1", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
+//cvar_t  forcerespawn   = CVar::Create("mp_forcerespawn", "1", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 cvar_t	flashlight     = CVar::Create("mp_flashlight", "0", FCVAR_SERVER, CCVAR_VOTABLE | CCVAR_GAMEMODE);
 cvar_t	aimcrosshair   = CVar::Create("mp_autocrosshair", "1", FCVAR_SERVER);
 cvar_t	decalfrequency = CVar::Create("decalfrequency", "30", FCVAR_SERVER, CCVAR_VOTABLE);
@@ -514,7 +514,7 @@ void GameDLLInit( void )
 	CVAR_REGISTER (&friendlyfire);
 	CVAR_REGISTER (&falldamage);
 	CVAR_REGISTER (&weaponstay);
-	CVAR_REGISTER (&forcerespawn);
+	//CVAR_REGISTER (&forcerespawn);
 	CVAR_REGISTER (&flashlight);
 	CVAR_REGISTER (&aimcrosshair);
 	CVAR_REGISTER (&decalfrequency);

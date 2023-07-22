@@ -349,6 +349,9 @@ DLL_GLOBAL cvar_t	ag_spawn_seed = CVar::Create("ag_spawn_seed", "0", FCVAR_SERVE
 // as you can just type ag_fps_limit and tab or press down arrow to see all the different cvars, instead
 // of having to do this with both sv_ag_fps_limit and ag_fps_limit. We'll see if it's the right decision
 
+// Default: 0 - Cap players' default_fov. Min value is 70
+DLL_GLOBAL cvar_t	ag_fov_limit = CVar::Create("ag_fov_limit", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
+
 // Default: 0 - Cap players' fps_max. Standard in 2021 is 144 (125 and 100 before; 250 for bhop)
 DLL_GLOBAL cvar_t	ag_fps_limit = CVar::Create("ag_fps_limit", "0", FCVAR_SERVER | FCVAR_UNLOGGED, CCVAR_VOTABLE);
 
@@ -652,6 +655,7 @@ void AgInitGame()
     CVAR_REGISTER(&ag_spawn_seed);
 
     // ## FPS Limiter ##
+    CVAR_REGISTER(&ag_fov_limit);
     CVAR_REGISTER(&ag_fps_limit);
     CVAR_REGISTER(&ag_fps_limit_auto);
     CVAR_REGISTER(&ag_fps_limit_check_interval);
